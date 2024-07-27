@@ -24,10 +24,11 @@ class FoodItem:
         self.price = food_price
 
     def calc_cal_per_dollar(self) -> float:
-        if self.price == 0:
-            self.cpd = self.calories / self.epsilon
-        else:
-            self.cpd = self.calories / self.price
+        """ Calculate, set and return the calories per dollar (cpd)
+        :return:
+        """
+        # If the food is free, then division by a smaller number bloats the CPD as needed.
+        self.cpd = self.calories / (self.price + self.epsilon)
         return self.cpd
 
 
