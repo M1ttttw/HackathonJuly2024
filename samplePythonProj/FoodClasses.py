@@ -37,12 +37,14 @@ class Restaurant:
     addr: a string that distinguishes which specific restaurant
     app: a string that represents which app the restaurant was found.
     catalogue: a list of FoodItems
+    rest_cpd: the calories per dollar score of all the items in the catalogue here.
 
     """
     name: str
     addr: str
     app: str
     catalogue: list[FoodItem]
+    rest_cpd: float
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str) -> None:
         self.name = rest_name
@@ -60,8 +62,9 @@ class Restaurant:
         """
         self.catalogue.append(food_item)
 
-    def showcase_items(self, show_num=5) -> list[FoodItem]:
-        """ Sort the catalogue by cpd, and return the first <show_num> items
+    def showcase_restaurant(self, show_num=5) -> list[FoodItem]:
+        """ Sort the catalogue by cpd, and return the first <show_num> items. Calculate and set the cpd score for the
+        restaurant
 
         :param show_num:
         :return:
@@ -76,8 +79,16 @@ class Restaurant:
 
         # sort by cpd
         self.catalogue.sort(key=lambda x: x.cpd, reverse=True)
-        return self.catalogue[0: num]
+        final_list = self.catalogue[0: num]
 
-     
+        # Calculate and set the CPD of the restaurant
+        acc = 0
+        for item in final_list:
+            acc += item.cpd
+
+        self.rest_cpd = acc
+        return final_list
+
+
 
 
