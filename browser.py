@@ -8,12 +8,11 @@ from selenium_stealth import stealth
 from bs4 import BeautifulSoup
 
 
-
+#USELESS but still may be useful so i keep around{
 #dd login
 dd_email = "g5ctz.test@inbox.testmail.app"
 dd_pw = "Hackathon2024"
 dd_cell = "3434804602"
-
 #skip login
 sd_email = "g5ctz.test@inbox.testmail.app"
 sd_pw = "@Hackathon2024"
@@ -37,6 +36,7 @@ params = dict(
     livequery="true",
     timeout=10
 )
+#}-------------------
 
 #chrome options
 options = webdriver.ChromeOptions()
@@ -50,6 +50,7 @@ stealth(web,
         renderer="Intel Iris OpenGL Engine",
         fix_hairline=True
         )
+#USELESS but i keep around just in case{
 #doesnt work
 def dd_login():
     web.get("https://identity.doordash.com/auth?client_id=1666519390426295040&intl=en-US&layout=consumer_web&prompt=none&redirect_uri=https%3A%2F%2Fwww.doordash.com%2Fpost-login%2F&response_type=code&scope=%2A&state=%2Fhome%2F%7C%7C6999544b-6d39-406e-ab3f-b616e93a3656&_gl=1*1xp33s6*_gcl_au*NjY4OTMyNjY2LjE3MjIwMzg2MjY.&_ga=2.196267308.1601632065.1722038626-404033190.1722038626")
@@ -170,22 +171,21 @@ def sd_login():
         except:
             print("phone verif fail")
             return
+#}----
 
+#inputs location into skip
 def sd_init(adr):
     web.get("https://www.skipthedishes.com/")
     time.sleep(5)
     adr_fld = web.find_element(By.XPATH,"/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[1]/div/div[1]/div[1]/div/input")
     adr_fld.send_keys(adr)
     time.sleep(2)
-    # adr_lst = web.find_element(By.ID,"address-list")
-    # adr_btn = adr_lst.find_element(By.TAG_NAME,"li").find_element(By.TAG_NAME,"button")
     adr_btn = web.find_element(By.XPATH,"/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[1]/div/div[2]/ul/li[1]/button")
-    # print(adr_btn.id)
     adr_btn.click()
     time.sleep(2)
     adr_conf_btn = web.find_element(By.XPATH,"/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[3]/button")
     adr_conf_btn.click()
-
+#inputs location and item into doordash
 def dd_init(adr,food):
     web.get("https://www.doordash.com/search/store/"+food)
     time.sleep(10)
@@ -205,6 +205,8 @@ def dd_init(adr,food):
         save_btn = web.find_element(By.XPATH,"/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div/div/div[6]/button[2]")
     save_btn.click()
     time.sleep(20)
+#input location into uber eats
+#may break in future? works for now tho
 def ue_init(adr):
     web.get("https://www.ubereats.com/")
     time.sleep(3)
@@ -215,6 +217,7 @@ def ue_init(adr):
     adr_btn = adr_lst.find_element(By.TAG_NAME,"li")
     adr_btn.click()
     time.sleep(10)
+#when calling the functions make sure to space out the address and add the city for the adr param
 # sd_init("4820 201 st")
 # dd_init("4820 201 st","chicken")
 # ue_init("4820 201 st langley")
