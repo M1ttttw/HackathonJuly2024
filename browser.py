@@ -183,6 +183,7 @@ def sd_init(adr,web):
     time.sleep(2)
     adr_conf_btn = web.find_element(By.XPATH,"/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[3]/button")
     adr_conf_btn.click()
+    time.sleep(5)
 #inputs location and item into doordash
 def dd_init(adr,food,web):
     web.get("https://www.doordash.com/search/store/"+food)
@@ -202,7 +203,7 @@ def dd_init(adr,food,web):
     except:
         save_btn = web.find_element(By.XPATH,"/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div/div/div[6]/button[2]")
     save_btn.click()
-    time.sleep(20)
+    time.sleep(5)
 #input location into uber eats
 #may break in future? works for now tho
 def ue_init(adr,web):
@@ -214,7 +215,7 @@ def ue_init(adr,web):
     adr_lst = web.find_element(By.ID,"location-typeahead-home-menu")
     adr_btn = adr_lst.find_element(By.TAG_NAME,"li")
     adr_btn.click()
-    time.sleep(10)
+    time.sleep(5)
 
 
 #when calling the functions make sure to space out the address and add the city for the adr param
