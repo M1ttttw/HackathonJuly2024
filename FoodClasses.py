@@ -45,12 +45,25 @@ class Restaurant:
     app: str
     catalogue: list[FoodItem]
     rest_cpd: float
+    rating: float
+    dist_to_user: float
+    deliv_fee: float
+    discounts: list[Any] # I'll leave this as any while we figure out how discounts are represented.
+    review_count: int
+    deliv_time: float
 
-    def __init__(self, rest_name: str, rest_dist: float,rest_delivery_fee:float, rest_app: str) -> None:
+    def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
+                 rest_fee: float, rev_count: int, rest_deliv_time: float) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
         self.catalogue = []
+        self.rating = rest_rating
+        self.dist_to_user = rest_dist
+        self.deliv_fee = rest_fee
+        self.discounts = []
+        self.review_count = rev_count
+        self. deliv_time = rest_deliv_time
 
     def add_item(self, food_item: FoodItem) -> None:
         """ Add the <food_item> to the catalogue
@@ -61,6 +74,16 @@ class Restaurant:
         :return:
         """
         self.catalogue.append(food_item)
+
+    def add_disc(self, discount: Any) -> None:
+        """ Add the <discount> to the list of discounts for this restaurant.
+
+        # Preconditions: Make sure that the class that will represent the discount, is already configured. (has info)
+
+        :param discount:
+        :return:
+        """
+        self.discounts.append(discount)
 
     def showcase_restaurant(self, show_num=5) -> list[FoodItem]:
         """ Sort the catalogue by cpd, and return the first <show_num> items. Calculate and set the cpd score for the
