@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Optional
 from browser import sd_init
+from browser import wait_and_grab
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -15,19 +16,6 @@ test_limit = 10
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 web = webdriver.Chrome(options=options)
-
-def wait_and_grab(driver, search_type: str, search_val: str, timeout = 5) -> Any:
-    """ Wait until an element is available and return it once it's found.
-
-    :param search_type:
-    :param search_val:
-    :param timeout:
-    :return:
-    """
-    wait = WebDriverWait(driver, timeout)
-    wait.until(ec.presence_of_element_located((search_type, search_val)))
-
-    return driver.find_element(search_type, search_val)
 
 def sd_home_scrape():
     # Navigate web driver to home page
