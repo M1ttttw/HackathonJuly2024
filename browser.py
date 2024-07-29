@@ -2,7 +2,7 @@ from selenium import webdriver
 import time
 from selenium.webdriver.common.by import By
 
-
+# web = webdriver.Chrome()
 #inputs location into skip
 def sd_init(adr,web):
     web.get("https://www.skipthedishes.com/")

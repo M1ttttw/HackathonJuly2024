@@ -46,7 +46,7 @@ class Restaurant:
     catalogue: list[FoodItem]
     rest_cpd: float
 
-    def __init__(self, rest_name: str, rest_address: str, rest_app: str) -> None:
+    def __init__(self, rest_name: str, rest_dist: float,rest_delivery_fee:float, rest_app: str) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
