@@ -79,4 +79,5 @@ def ue_init(adr,web):
 # web = webdriver.Chrome(options=options)
 # sd_init("4820 201 st",web)
 # dd_init("4820 201 st","chicken",web)
+# web = webdriver.Chrome()
 # ue_init("4820 201 st langley",web)
