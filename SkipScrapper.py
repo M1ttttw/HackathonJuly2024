@@ -17,14 +17,15 @@ def sd_home_scrape():
     sd_init("4820 201 st", web)
 
     # Input the food into the search bar
-    search_field = web.find_element(By.XPATH, "/html/body/div[2]/div/div[1]/div/header/div[3]/div[1]/div/div/div/input")
+    search_field = web.find_element(By.XPATH, '//*[@id="header-search"]')
     search_field.send_keys(test_food)
 
     # Delay slightly until the pages change
     # TODO: Implemented Conditional Delay Here
+    time.sleep(5)
 
     # Find the button for looking at food in items
-    items_button = web.find_element(By.XPATH, "/html/body/div[2]/div/div[1]/div/header/div[4]/div[2]/div/button")
+    items_button = web.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div/header/div/div/div[2]/div[3]/div[2]/div/button')
     items_button.click()
 
     # Delay Again, until we have our search results
@@ -36,12 +37,12 @@ def sd_home_scrape():
 
     # Iterate through a fixed amount of restaurants
     for rest_UI in rests_UI_list[0: test_limit]:
-        # For each rest_UI, we want to store the
+        # Create a new web driver to check the restaurant out
+        rest_web = webdriver.Chrome(options=options)
+        
+
+
+
         pass
-
-
-
-
-
 
 sd_home_scrape()
