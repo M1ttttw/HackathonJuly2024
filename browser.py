@@ -2,7 +2,7 @@ from selenium import webdriver
 import time
 from selenium.webdriver.common.by import By
 
-# web = webdriver.Chrome()
+
 #inputs location into skip
 def sd_init(adr,web):
     web.get("https://www.skipthedishes.com/")
@@ -55,4 +55,5 @@ def ue_init(adr,web):
 #for food in dd_init just put in the string for what food to search
 # sd_init("4820 201 st",web)
 # dd_init("4820 201 st","chicken",web)
+# web = webdriver.Chrome()
 # ue_init("4820 201 st langley",web)
