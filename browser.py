@@ -38,8 +38,8 @@ def sd_init(adr,web):
 #inputs location and item into doordash
 def dd_init(adr,food,web):
     web.get("https://www.doordash.com/search/store/"+food)
-
-    loc_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div/main/div[1]/div/div[1]/div[1]/div/div/div[1]/header/div[2]/div[2]/div[2]/div/div/button")
+    # current workaround is to disable custom locations and use the defualt locatiom
+    loc_btn = wait_and_grab(web, By.CSS_SELECTOR, ".styles__ButtonRoot-sc-1nqx07s-0.ixDTkG")
     loc_btn.click()
 
     adr_fld = web.find_element(By.XPATH,"/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div[1]/div/div[1]/div/div/div[2]/div/div[2]/input")
