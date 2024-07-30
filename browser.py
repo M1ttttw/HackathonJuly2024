@@ -21,6 +21,19 @@ def wait_and_grab(webElem, search_type: str, search_val: str, timeout = 10) -> A
 
     return webElem.find_element(search_type, search_val)
 
+def wait_and_grab_elms(webElem, search_type: str, search_val: str, timeout = 10) -> Any:
+    """ Wait until an element is available and return it once it's found.
+
+    :param webElem:
+    :param search_type:
+    :param search_val:
+    :param timeout:
+    :return:
+    """
+    wait = WebDriverWait(webElem, timeout)
+    wait.until(ec.presence_of_element_located((search_type, search_val)))
+
+    return webElem.find_elements(search_type, search_val)
 
 #inputs location into skip
 def sd_init(adr,web):

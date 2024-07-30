@@ -45,7 +45,7 @@ class Restaurant:
     name: str
     addr: str
     app: str
-    catalogue: list[FoodItem]
+    catalogue: dict
     rest_cpd: float
     rating: float
     dist_to_user: float
@@ -59,7 +59,7 @@ class Restaurant:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
-        self.catalogue = []
+        self.catalogue = dict()
         self.rating = rest_rating
         self.dist_to_user = rest_dist
         self.deliv_fee = rest_fee
@@ -75,8 +75,10 @@ class Restaurant:
         :param food_item:
         :return:
         """
-        self.catalogue.append(food_item)
+        self.catalogue[food_item.name] = food_item
 
+    def add_discount(self,discount_str:str):
+        self.discounts.append(discount_str)
     def add_disc(self, discount: Any) -> None:
         """ Add the <discount> to the list of discounts for this restaurant.
 
