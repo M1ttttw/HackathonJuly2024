@@ -57,8 +57,13 @@ def sd_home_scrape():
 
             # We then iterate through the items in that subdivision.
             for item in item_list:
+                # Skip over any items that have no children
+                item_children = item.find_elements(By.XPATH, "*")
+                if len(item_children) == 0:
+                    print("Fake Item detected")
+                    continue
+
                 # Then grab everything you need about the food item
-                
                 print(item.text)
 
         # Once we are done with the restaurant, close the menu
