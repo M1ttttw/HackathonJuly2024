@@ -15,11 +15,13 @@ class FoodItem:
     price: float
     calories: float
     cpd: float
+    image: str
 
-    def __init__(self, food_name: str, food_desc: str, food_price: float) -> None:
+    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str) -> None:
         self.name = food_name
         self.desc = food_desc
         self.price = food_price
+        self.image = image
 
     def calc_cal_per_dollar(self, epsilon=0.01) -> float:
         """ Calculate, set and return the calories per dollar (cpd)
@@ -50,10 +52,10 @@ class Restaurant:
     deliv_fee: float
     discounts: list[Any] # I'll leave this as any while we figure out how discounts are represented.
     review_count: int
-    deliv_time: float
+    deliv_time: int
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
-                 rest_fee: float, rev_count: int, rest_deliv_time: float) -> None:
+                 rest_fee: float, rev_count: int, rest_deliv_time: int) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
