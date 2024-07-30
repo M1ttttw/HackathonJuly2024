@@ -64,7 +64,7 @@ def sd_home_scrape():
                     continue
 
                 # Then grab everything you need about the food item
-                print(item.text)
+                print(item.text.split("\n"))
 
         # Once we are done with the restaurant, close the menu
         rest_driver.close()
