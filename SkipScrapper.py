@@ -36,7 +36,8 @@ def sd_home_scrape():
     # Iterate through a fixed amount of restaurants
     for rest_UI in rests_UI_list[0: test_limit]:
         # Create a new web driver to check the restaurant out
-        rest_web = webdriver.Chrome(options=options)
+        # rest_web = webdriver.Chrome(options=options)
+        print(rest_UI.text)
 
         pass
 
