@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from FoodClasses import Restaurant
+from FoodClasses import Restaurant, FoodItem
 import time
 
 test_addr = "4820 201 st"
@@ -59,6 +59,26 @@ def sd_home_scrape(addr, food, limit):
         except:
             print("Convenience Store Detected")
             continue
+
+        # We need to know the restaurant's information, thus, we grab the restaurant's info
+        rest_info = rest_UI.text.split("\n")
+        rest_name, rest_deliv_time_str, rest_deliv_fee_str, rest_rate = (rest_info[0], rest_info[1], rest_info[2],
+                                                                         float(rest_info[3]))
+
+        # Cut out the fat in rest_deliv_time_str
+        rest_deliv_time_split = rest_deliv_time_str.split(" ")
+        rest_deliv_time = int(rest_deliv_time_split[2]) - int(rest_deliv_time_split[0])
+
+        # Cut out the fat in rest_deliv_fee_str
+        rest_deliv_fee_split = rest_deliv_fee_str.split(" ")
+        rest_deliv_fee = float(rest_deliv_fee_split[0][1:])
+
+
+
+
+
+
+
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
         for section in item_section_lst:
             # There are some sections that could be talking about allergies or place settings, so we skip over those
@@ -81,7 +101,7 @@ def sd_home_scrape(addr, food, limit):
                 # Then grab everything you need about the food item
                 print(item.text.split("\n"))
 
-        # Once we are done with the restaurant, close the menu
+        # Once we are done with the restaurant, close the webdriver
         rest_driver.close()
         rest_count += 1
 

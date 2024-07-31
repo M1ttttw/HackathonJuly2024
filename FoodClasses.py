@@ -65,7 +65,7 @@ class Restaurant:
         self.deliv_fee = rest_fee
         self.discounts = []
         self.review_count = rev_count
-        self. deliv_time = rest_deliv_time
+        self.deliv_time = rest_deliv_time
 
     def add_item(self, food_item: FoodItem) -> None:
         """ Add the <food_item> to the catalogue
