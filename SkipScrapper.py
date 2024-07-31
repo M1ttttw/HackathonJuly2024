@@ -55,17 +55,22 @@ def sd_home_scrape(addr, food, limit):
         # Convenience store pages are very different, take advantage of this!
         try:
             # Find the container containing the subdivisions of a menu
-            mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div[2]')
+            mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div')
         except:
             print("Convenience Store Detected")
             continue
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
         for section in item_section_lst:
+            # There are some sections that could be talking about allergies or place settings, so we skip over those
+            section_name = section.text.split("\n")[0]
+            if section_name == "Allergies & Intolerances" or section_name == "Place Settings":
+                continue
+
             # Then Find the item list of that respective subdivision of the menu
             item_list_parent = wait_and_grab(section, By.XPATH, ".//div/div/ul")
             item_list = item_list_parent.find_elements(By.XPATH, "*")
 
-            # We then iterate through the items in that subdivision.
+            # # We then iterate through the items in that subdivision.
             for item in item_list:
                 # Skip over any items that have no children
                 item_children = item.find_elements(By.XPATH, "*")
