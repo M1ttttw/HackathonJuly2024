@@ -7,33 +7,45 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
-def wait_and_grab(webElem, search_type: str, search_val: str, timeout = 10) -> Any:
-    """ Wait until an element is available and return it once it's found.
+def wait_for_elem(web_elem, search_type: str, search_val: str, timeout = 5) -> Any:
+    """ Wait until an element is available, but do not return it.
 
-    :param webElem:
+    :param web_elem:
     :param search_type:
     :param search_val:
     :param timeout:
     :return:
     """
-    wait = WebDriverWait(webElem, timeout)
+    wait = WebDriverWait(web_elem, timeout)
     wait.until(ec.presence_of_element_located((search_type, search_val)))
 
-    return webElem.find_element(search_type, search_val)
 
-def wait_and_grab_elms(webElem, search_type: str, search_val: str, timeout = 10) -> Any:
+def wait_and_grab(web_elem, search_type: str, search_val: str, timeout = 5) -> Any:
     """ Wait until an element is available and return it once it's found.
 
-    :param webElem:
+    :param web_elem:
     :param search_type:
     :param search_val:
     :param timeout:
     :return:
     """
-    wait = WebDriverWait(webElem, timeout)
-    wait.until(ec.presence_of_element_located((search_type, search_val)))
+    wait_for_elem(web_elem, search_type, search_val, timeout)
 
-    return webElem.find_elements(search_type, search_val)
+    return web_elem.find_element(search_type, search_val)
+
+
+def wait_and_grab_elms(web_elem, search_type: str, search_val: str, timeout = 10) -> Any:
+    """ Wait until an element is available and return it once it's found.
+
+    :param web_elem:
+    :param search_type:
+    :param search_val:
+    :param timeout:
+    :return:
+    """
+    wait_for_elem(web_elem, search_type, search_val, timeout)
+
+    return web_elem.find_elements(search_type, search_val)
 
 #inputs location into skip
 def sd_init(adr,web):
