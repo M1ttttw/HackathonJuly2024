@@ -7,7 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
-def wait_and_grab(webElem, search_type: str, search_val: str, timeout = 5) -> Any:
+def wait_and_grab(webElem, search_type: str, search_val: str, timeout = 10) -> Any:
     """ Wait until an element is available and return it once it's found.
 
     :param webElem:
@@ -21,6 +21,19 @@ def wait_and_grab(webElem, search_type: str, search_val: str, timeout = 5) -> An
 
     return webElem.find_element(search_type, search_val)
 
+def wait_and_grab_elms(webElem, search_type: str, search_val: str, timeout = 10) -> Any:
+    """ Wait until an element is available and return it once it's found.
+
+    :param webElem:
+    :param search_type:
+    :param search_val:
+    :param timeout:
+    :return:
+    """
+    wait = WebDriverWait(webElem, timeout)
+    wait.until(ec.presence_of_element_located((search_type, search_val)))
+
+    return webElem.find_elements(search_type, search_val)
 
 #inputs location into skip
 def sd_init(adr,web):
@@ -38,24 +51,24 @@ def sd_init(adr,web):
 #inputs location and item into doordash
 def dd_init(adr,food,web):
     web.get("https://www.doordash.com/search/store/"+food)
-
-    loc_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div/main/div[1]/div/div[1]/div[1]/div/div/div[1]/header/div[2]/div[2]/div[2]/div/div/button")
-    loc_btn.click()
-
-    adr_fld = web.find_element(By.XPATH,"/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div[1]/div/div[1]/div/div/div[2]/div/div[2]/input")
-    adr_fld.send_keys(adr)
-
-    adr_lst = wait_and_grab(web, By.ID, "addressAutocompleteDropdown")
-
-    adr_btn = adr_lst.find_element(By.TAG_NAME,"span")
-    print(adr_btn.text)
-    adr_btn.click()
-
-    try:
-        save_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div/div/div[5]/button[2]")
-    except:
-        save_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div/div/div[6]/button[2]")
-    save_btn.click()
+    #current workaround is to disable custom locations and use the defualt locatiom
+    # loc_btn = wait_and_grab(web, By.CSS_SELECTOR, ".styles__ButtonRoot-sc-1nqx07s-0.ixDTkG")
+    # loc_btn.click()
+    #
+    # adr_fld = web.find_element(By.XPATH,"/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div[1]/div/div[1]/div/div/div[2]/div/div[2]/input")
+    # adr_fld.send_keys(adr)
+    #
+    # adr_lst = wait_and_grab(web, By.ID, "addressAutocompleteDropdown")
+    #
+    # adr_btn = adr_lst.find_element(By.TAG_NAME,"span")
+    # print(adr_btn.text)
+    # adr_btn.click()
+    #
+    # try:
+    #     save_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div/div/div[5]/button[2]")
+    # except:
+    #     save_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div/main/div[2]/div/div/div[2]/div/div/div[1]/div/div/div[6]/button[2]")
+    # save_btn.click()
 
 #input location into uber eats
 #may break in future? works for now tho

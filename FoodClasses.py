@@ -15,11 +15,13 @@ class FoodItem:
     price: float
     calories: float
     cpd: float
+    image: str
 
-    def __init__(self, food_name: str, food_desc: str, food_price: float) -> None:
+    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str) -> None:
         self.name = food_name
         self.desc = food_desc
         self.price = food_price
+        self.image = image
 
     def calc_cal_per_dollar(self, epsilon=0.01) -> float:
         """ Calculate, set and return the calories per dollar (cpd)
@@ -43,21 +45,21 @@ class Restaurant:
     name: str
     addr: str
     app: str
-    catalogue: list[FoodItem]
+    catalogue: dict
     rest_cpd: float
     rating: float
     dist_to_user: float
     deliv_fee: float
     discounts: list[Any] # I'll leave this as any while we figure out how discounts are represented.
     review_count: int
-    deliv_time: float
+    deliv_time: int
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
-                 rest_fee: float, rev_count: int, rest_deliv_time: float) -> None:
+                 rest_fee: float, rev_count: int, rest_deliv_time: int) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
-        self.catalogue = []
+        self.catalogue = dict()
         self.rating = rest_rating
         self.dist_to_user = rest_dist
         self.deliv_fee = rest_fee
@@ -73,8 +75,10 @@ class Restaurant:
         :param food_item:
         :return:
         """
-        self.catalogue.append(food_item)
+        self.catalogue[food_item.name] = food_item
 
+    def add_discount(self,discount_str:str):
+        self.discounts.append(discount_str)
     def add_disc(self, discount: Any) -> None:
         """ Add the <discount> to the list of discounts for this restaurant.
 
