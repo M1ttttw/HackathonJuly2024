@@ -17,13 +17,13 @@ options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 web = webdriver.Chrome(options=options)
 
-def sd_home_scrape():
+def sd_home_scrape(addr, food, limit):
     # Navigate web driver to home page
-    sd_init("4820 201 st", web)
+    sd_init(addr, web)
 
     # Input the food into the search bar
     search_field = web.find_element(By.XPATH, '//*[@id="header-search"]')
-    search_field.send_keys(test_food)
+    search_field.send_keys(food)
 
     # Wait and grab the food in items button
     items_button = wait_and_grab(web, By.XPATH, '//*[@id="root"]/div/div[1]/div/header/div/div/div[2]/div[3]/div[2]/div/button')
@@ -40,20 +40,19 @@ def sd_home_scrape():
 
     # Iterate through a fixed amount of restaurants
     for rest_UI in rests_UI_list:
-        # Break away from the loop once we've looked through a valid number of restaurants
-        if rest_count >= test_limit:
+        # Break away from the loop once we've looked through a fixed number of restaurants
+        if rest_count >= limit:
             break
 
         # Grab the url of the restaurant we want to check out
-        rest_url = wait_and_grab(rest_UI, By.XPATH, ".//div/div[1]/a")
-        rest_url_w_food = rest_url.get_attribute("href") + f"?search={test_food}"
-        print(rest_url_w_food)
+        rest_url = wait_and_grab(rest_UI, By.XPATH, ".//div/div[1]/a").get_attribute("href")
+        print(rest_url)
 
         # Start a new driver set to our new rest_url_w_food
         rest_driver = webdriver.Chrome(options=options)
-        rest_driver.get(rest_url_w_food)
+        rest_driver.get(rest_url)
 
-        # Convenience store pages, very different, take advantage of this!
+        # Convenience store pages are very different, take advantage of this!
         try:
             # Find the container containing the subdivisions of a menu
             mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div[2]')
@@ -83,4 +82,6 @@ def sd_home_scrape():
 
     print(f"Successfully Went through {rest_count} stores")
 
-sd_home_scrape()
+
+# This is a test
+sd_home_scrape(test_addr, test_food, test_limit)
