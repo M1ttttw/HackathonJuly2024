@@ -35,8 +35,15 @@ def sd_home_scrape():
     rests_UI_list = rests_parent.find_elements(By.XPATH, "*")
     print(f"there are {len(rests_UI_list)} restaurants currently in view")
 
+    # Keep a counter to go through a limited number of restaurant.
+    rest_count = 0
+
     # Iterate through a fixed amount of restaurants
     for rest_UI in rests_UI_list:
+        # Break away from the loop once we've looked through a valid number of restaurants
+        if rest_count >= test_limit:
+            break
+
         # Grab the url of the restaurant we want to check out
         rest_url = wait_and_grab(rest_UI, By.XPATH, ".//div/div[1]/a")
         rest_url_w_food = rest_url.get_attribute("href") + f"?search={test_food}"
@@ -46,12 +53,16 @@ def sd_home_scrape():
         rest_driver = webdriver.Chrome(options=options)
         rest_driver.get(rest_url_w_food)
 
-        # Find the container containing the subdivisions of a menu
-        mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div[2]')
+        # Convenience store pages, very different, take advantage of this!
+        try:
+            # Find the container containing the subdivisions of a menu
+            mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div[2]')
+        except:
+            print("Convenience Store Detected")
+            continue
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
         for section in item_section_lst:
             # Then Find the item list of that respective subdivision of the menu
-            # item_list_parent = section.find_element(By.XPATH, "styles__ItemsList-sc-120s71t-2 hdduBA")
             item_list_parent = wait_and_grab(section, By.XPATH, ".//div/div/ul")
             item_list = item_list_parent.find_elements(By.XPATH, "*")
 
@@ -68,5 +79,8 @@ def sd_home_scrape():
 
         # Once we are done with the restaurant, close the menu
         rest_driver.close()
+        rest_count += 1
+
+    print(f"Successfully Went through {rest_count} stores")
 
 sd_home_scrape()

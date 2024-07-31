@@ -30,11 +30,8 @@ def wait_and_grab(web_elem, search_type: str, search_val: str, timeout = 5) -> A
     :return:
     """
     wait_for_elem(web_elem, search_type, search_val, timeout)
-    
+
     return web_elem.find_element(search_type, search_val)
-
-
-
 
 
 #inputs location into skip
