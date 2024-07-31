@@ -64,7 +64,7 @@ class Restaurant:
     deliv_time: float
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
-                 rest_fee: float, rev_count: int, rest_deliv_time: int) -> None:
+                 rest_fee: float, rev_count: int, rest_deliv_time: float) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app

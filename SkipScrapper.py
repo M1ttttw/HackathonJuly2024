@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from FoodClasses import Restaurant, FoodItem
 import time
 
-test_addr = "4820 201 st"
+test_addr = "9937 157 St"
 test_food = "Beef"
 test_limit = 10
 
@@ -17,7 +17,7 @@ options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 web = webdriver.Chrome(options=options)
 
-def sd_home_scrape(addr, food, limit):
+def sd_home_scrape(addr, food, limit=5):
     # Navigate web driver to home page
     sd_init(addr, web)
 
@@ -26,17 +26,23 @@ def sd_home_scrape(addr, food, limit):
     search_field.send_keys(food)
 
     # Wait and grab the food in items button
-    items_button = wait_and_grab(web, By.XPATH, '//*[@id="root"]/div/div[1]/div/header/div/div/div[2]/div[3]/div[2]/div/button')
+    items_button = wait_and_grab(web, By.XPATH, '//*[@id="root"]/div/div[1]/div/header/div/'
+                                                'div/div[2]/div[3]/div[2]/div/button')
     items_button.click()
 
     # Next, we want to wait and find the restaurant list
-    wait_for_elem(web, By.XPATH, '//*[@id="root"]/div/main/div/div/div/div/ul/li[1]/div/div[1]/div/a')
+    try:
+        wait_for_elem(web, By.XPATH, '//*[@id="root"]/div/main/div/div/div/div/ul/li[1]/div/div[1]/div/a')
+    except:
+        # If we time out, we return nothing as there may be a chance that no restaurants showed up...
+        return []
     rests_parent = wait_and_grab(web, By.XPATH, "/html/body/div[2]/div/main/div/div/div/div/ul")
     rests_UI_list = rests_parent.find_elements(By.XPATH, "*")
     print(f"there are {len(rests_UI_list)} restaurants currently in view")
 
     # Keep a counter to go through a limited number of restaurant.
     rest_count = 0
+    rest_list = []
 
     # Iterate through a fixed amount of restaurants
     for rest_UI in rests_UI_list:
@@ -109,7 +115,7 @@ def sd_home_scrape(addr, food, limit):
                 item_info_bits = item.text.split("\n")
 
                 # It's possible for the item to be sold out, so check for it, and skip over it if needed
-                if item_info_bits[-1] == "SOLD OUT":
+                if item_info_bits[-1] == "SOLD OUT" or "See Item":
                     print("Item sold out")
                     continue
 
@@ -120,25 +126,38 @@ def sd_home_scrape(addr, food, limit):
                     item_price = float(item_info_bits[1][1:])
                 else:
                     item_name, item_price = item_info_bits[0], float(item_info_bits[2][1:])
-                    item_desc = item.find_element(By.XPATH, ".//div[contains(@class, 'styles__Description-sc-1xl58bi-7 wvRWw')]/div").get_attribute("aria-label")
+                    item_desc = item.find_element(By.XPATH, ".//div[contains(@class, "
+                                                            "'styles__Description-sc-1xl58bi-7 wvRWw')]"
+                                                            "/div").get_attribute("aria-label")
                 print(item_name, item_desc, item_price)
 
-                # We attempt to grab the image of the item
-                # item_img = item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
-                # print(item_img)
-                # try:
-                #     item_img = item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
-                # except:
-                #     print("Failed to grab image")
+                # We attempt to grab the image of the item. there are 3 cases we handle
+                try:
+                    # Case 1: Big image is being used to showcase the item, thus the html shifts around
+                    item_img = item.find_element(By.XPATH, ".//div/div[1]/div/div[1]/div/img").get_attribute("src")
+                except:
+                    try:
+                        # Case 2: A smaller thumbnail image is being used to showcase the item.
+                        item_img = item.find_element(By.XPATH,
+                                                     ".//div/div[1]/div/div/div[2]/div/div/img").get_attribute("src")
+                    except:
+                        # Case 3: It just has no image at all...
+                        item_img = f"{item_name} img not found"
 
+                # Create a new food item with the stored info
+                food_item = FoodItem(item_name, item_desc, item_price, item_img)
 
+                # Add this new food item to the restaurant
+                rest.add_item(food_item)
 
-
-        # Once we are done with the restaurant, close the webdriver
+        # Once we are done with the restaurant, close the webdriver and add the restaurant
         rest_driver.close()
+        rest_list.append(rest)
         rest_count += 1
 
+    # Return our results!
     print(f"Successfully Went through {rest_count} stores")
+    return rest_list
 
 
 # This is a test
