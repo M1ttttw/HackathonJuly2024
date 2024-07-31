@@ -58,6 +58,7 @@ def sd_home_scrape(addr, food, limit):
             mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div')
         except:
             print("Convenience Store Detected")
+            rest_driver.close()
             continue
 
         # We need to know the restaurant's information, thus, we grab the restaurant's info
@@ -67,17 +68,19 @@ def sd_home_scrape(addr, food, limit):
 
         # Cut out the fat in rest_deliv_time_str
         rest_deliv_time_split = rest_deliv_time_str.split(" ")
-        rest_deliv_time = int(rest_deliv_time_split[2]) - int(rest_deliv_time_split[0])
+        rest_deliv_time = (int(rest_deliv_time_split[2]) + int(rest_deliv_time_split[0])) / 2
 
         # Cut out the fat in rest_deliv_fee_str
         rest_deliv_fee_split = rest_deliv_fee_str.split(" ")
         rest_deliv_fee = float(rest_deliv_fee_split[0][1:])
 
+        # We also need to grab the text
+        rest_addr = rest_driver.find_element(By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
+                                                       'div/div/div/div[2]/div[1]/span/span[2]/p').text
 
-
-
-
-
+        print(f"{rest_name}, {rest_deliv_time}, {rest_deliv_fee}, {rest_rate}, {rest_addr}")
+        rest = Restaurant(rest_name, rest_addr, "SkipTheDishes", rest_rate, -1, rest_deliv_fee, -1,
+                          rest_deliv_time)
 
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
         for section in item_section_lst:

@@ -40,7 +40,12 @@ class Restaurant:
     app: a string that represents which app the restaurant was found.
     catalogue: a list of FoodItems
     rest_cpd: the calories per dollar score of all the items in the catalogue here.
-
+    rating: the rating of the restaurant
+    dist_to_user: How far the restaurant is from the user. Leave -1 as an error or placeholder value
+    deliv_fee: this is how much the delivery fee of the restaurant is
+    discounts: this is the list of discounts that are applicable to that restaurant
+    review_count: the number of reviews for the restaurant. Leave -1 as an error or placeholder value
+    deliv_time: the approximate time it takes to deliver food to the user's location
     """
     name: str
     addr: str
@@ -52,7 +57,7 @@ class Restaurant:
     deliv_fee: float
     discounts: list[Any] # I'll leave this as any while we figure out how discounts are represented.
     review_count: int
-    deliv_time: int
+    deliv_time: float
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
                  rest_fee: float, rev_count: int, rest_deliv_time: int) -> None:
