@@ -9,6 +9,8 @@ class FoodItem:
     desc: a string that contains the item's description
     price: a float that contains how expensive the item is.
     calories: a float that contains how many calories the item is
+    cpd: a float that represents calories per dollar
+    image: a string representing the image
     """
     name: str
     desc: str
@@ -22,6 +24,8 @@ class FoodItem:
         self.desc = food_desc
         self.price = food_price
         self.image = image
+        self.calories = 0
+        self.cpd = 0
 
     def calc_cal_per_dollar(self, epsilon=0.01) -> float:
         """ Calculate, set and return the calories per dollar (cpd)

@@ -74,7 +74,7 @@ def sd_home_scrape(addr, food, limit):
         rest_deliv_fee_split = rest_deliv_fee_str.split(" ")
         rest_deliv_fee = float(rest_deliv_fee_split[0][1:])
 
-        # We also need to grab the text
+        # We also need to grab the text that describes the restaurant's address
         rest_addr = rest_driver.find_element(By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
                                                        'div/div/div/div[2]/div[1]/span/span[2]/p').text
 
@@ -84,13 +84,17 @@ def sd_home_scrape(addr, food, limit):
 
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
         for section in item_section_lst:
-            # There are some sections that could be talking about allergies or place settings, so we skip over those
+            # There are some sections that could be talking about place settings, so we skip over those
             section_name = section.text.split("\n")[0]
-            if section_name == "Allergies & Intolerances" or section_name == "Place Settings":
+            if section_name == "Place Settings":
                 continue
 
-            # Then Find the item list of that respective subdivision of the menu
-            item_list_parent = wait_and_grab(section, By.XPATH, ".//div/div/ul")
+            # Skip over invalid subdivisions of the menu
+            try:
+                # Then Find the item list of that respective subdivision of the menu
+                item_list_parent = wait_and_grab(section, By.XPATH, ".//div/div/ul")
+            except:
+                continue
             item_list = item_list_parent.find_elements(By.XPATH, "*")
 
             # # We then iterate through the items in that subdivision.
@@ -102,7 +106,33 @@ def sd_home_scrape(addr, food, limit):
                     continue
 
                 # Then grab everything you need about the food item
-                print(item.text.split("\n"))
+                item_info_bits = item.text.split("\n")
+
+                # It's possible for the item to be sold out, so check for it, and skip over it if needed
+                if item_info_bits[-1] == "SOLD OUT":
+                    print("Item sold out")
+                    continue
+
+                # Some item's don't have descriptions, so we need to take that into account
+                if len(item_info_bits) == 2:
+                    item_name = item_info_bits[0]
+                    item_desc = ""
+                    item_price = float(item_info_bits[1][1:])
+                else:
+                    item_name, item_price = item_info_bits[0], float(item_info_bits[2][1:])
+                    item_desc = item.find_element(By.XPATH, ".//div[contains(@class, 'styles__Description-sc-1xl58bi-7 wvRWw')]/div").get_attribute("aria-label")
+                print(item_name, item_desc, item_price)
+
+                # We attempt to grab the image of the item
+                # item_img = item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
+                # print(item_img)
+                # try:
+                #     item_img = item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
+                # except:
+                #     print("Failed to grab image")
+
+
+
 
         # Once we are done with the restaurant, close the webdriver
         rest_driver.close()
