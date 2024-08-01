@@ -12,7 +12,7 @@ from FoodClasses import Restaurant, FoodItem
 import time
 
 test_addr = "9937 157 St"
-test_food = "rainbow shake"
+test_food = "Beef"
 test_limit = 10
 
 options = webdriver.ChromeOptions()
