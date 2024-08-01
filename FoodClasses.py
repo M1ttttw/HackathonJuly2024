@@ -1,7 +1,29 @@
 from __future__ import annotations
 from typing import Any, Optional
 
+#extracts the first int in a string
+def clean_int(num_str):
+    num = ""
+    for i in num_str:
+        if i.isnumeric():
+            num += i
+    return int(num)
+#extracts the first float in a string
+def clean_float(num_str):
+    num = ""
+    has_dot = False
+    first_num = False
+    for i in num_str:
+        if i.isnumeric():
+            num += i
+            first_num = True
+        elif i == "." and not has_dot:
+            has_dot = True
+            num += i
+        elif first_num:
+            break
 
+    return float(num)
 class FoodItem:
     """ A class that represents a food item.
 
@@ -34,6 +56,8 @@ class FoodItem:
         # If the food is free, then division by a smaller number bloats the CPD as needed.
         self.cpd = self.calories / (self.price + epsilon)
         return self.cpd
+    def __str__(self):
+        return "\nname:"+self.name+"\ndescription:" + self.desc + "\nprice:"+str(self.price)+"\nimage link:"+self.image
 
 
 class Restaurant:
@@ -75,6 +99,9 @@ class Restaurant:
         self.discounts = []
         self.review_count = rev_count
         self.deliv_time = rest_deliv_time
+        self.rest_cpd = 0
+    def add_addr(self,address:str):
+        self.addr = address
 
     def add_item(self, food_item: FoodItem) -> None:
         """ Add the <food_item> to the catalogue
@@ -87,6 +114,26 @@ class Restaurant:
         self.catalogue[food_item.name] = food_item
 
     def add_discount(self,discount_str:str):
+        disc_dsc = discount_str.split(" ")
+        dsc_type = 0
+        if "Spend" in discount_str:
+            dsc_type = 1
+            spend = disc_dsc[1]
+            spend_int = clean_int(spend)
+            save = disc_dsc[3]
+            save_int = clean_int(save)
+            self.discounts.append((dsc_type,[spend_int,save_int]))
+        elif "up" in discount_str:
+            dsc_type = 2
+            dsc = disc_dsc[0]
+            dsc_int = clean_int(dsc)
+            upto = disc_dsc[4]
+            upto_int = clean_int(upto)
+            self.discounts.append((dsc_type, [dsc_int, upto_int]))
+        elif "delivery" in discount_str:
+            dsc_type = 3
+            self.discounts.append((dsc_type, []))
+
         self.discounts.append(discount_str)
     def add_disc(self, discount: Any) -> None:
         """ Add the <discount> to the list of discounts for this restaurant.
@@ -97,6 +144,14 @@ class Restaurant:
         :return:
         """
         self.discounts.append(discount)
+    def __str__(self):
+        string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
+                "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)
+                +"\nrating:"+str(self.rating)+"\naverage calories per dollar:"+str(self.rest_cpd)+"\nreview count:"+str(self.review_count)
+                +"\ndiscounts:"+str(self.discounts))+"\nmenu items:"
+        for i in self.catalogue:
+            string += i + str(self.catalogue[i]) + "\n"
+        return string
 
     def showcase_restaurant(self, show_num=5) -> list[FoodItem]:
         """ Sort the catalogue by cpd, and return the first <show_num> items. Calculate and set the cpd score for the
