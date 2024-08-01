@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
+from FoodClasses import clean_int
+from FoodClasses import clean_float
 from FoodClasses import Restaurant
 from FoodClasses import FoodItem
 from browser import wait_and_grab
@@ -30,6 +32,9 @@ class ScrapeThread(threading.Thread):
         driver = webdriver.Chrome(options=options)
         driver.get(self.url)
         time.sleep(1)
+        #grab address
+        self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".StackChildren__StyledStackChildren-sc-1tveqpz-0.ioNBQv.styles__MiddleContainer-sc-20nosb-1.ckGoYQ").text)
+        print("address:",wait_and_grab(driver,By.CSS_SELECTOR,".StackChildren__StyledStackChildren-sc-1tveqpz-0.ioNBQv.styles__MiddleContainer-sc-20nosb-1.ckGoYQ").text)
         #uses search bar in menu
         item_fld = wait_and_grab(driver,By.ID,"item-search-field")
         driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
@@ -40,6 +45,7 @@ class ScrapeThread(threading.Thread):
         scrl_cnt = 5
         cnt = 0
         while cnt < scrl_cnt:
+            time.sleep(1)
             #try to grab all the menu items. if none are present then that means we are at the bottom and we can break the loop
             try:
                 food_items = wait_and_grab_elms(driver,By.CSS_SELECTOR, ".sc-234bce1d-2.hAZmjs",5)
@@ -66,7 +72,7 @@ class ScrapeThread(threading.Thread):
                 desc = food_item.text.split("\n")
                 print(desc)
                 try:
-                    image = wait_and_grab(food_item,By.TAG_NAME,"source").get_attribute("srcset")
+                    image = wait_and_grab(food_item,By.TAG_NAME,"source",1).get_attribute("srcset").split(" ")[0]
                 except:
                     print("image not found")
                     image = "not found"
@@ -74,12 +80,10 @@ class ScrapeThread(threading.Thread):
                 self.restaurant.add_item(FoodItem(food_title,food_desc,food_price,image))
             #scrolls
             driver.execute_script("window.scrollBy(0,1000);")
-            # print(len(food_items)," menu items on this page ",self.restaurant.name)
             cnt += 1
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 
-        # do something with the page source
 #main scraper
 def dd_home_scrape(adr,food):
     #inits the doordash window
@@ -141,12 +145,14 @@ def dd_home_scrape(adr,food):
         total_thread_cnt -= thread_cnt
         #parses the restaurant description and creates the restaurant class
         for i in range(thread_cnt):
-            desc = valid_restaurants[url_cnt].text.split("\n")
-            distance = float(desc[4].split(" ")[0])
-            delivery_fee = float(desc[6].split(" ")[0][1:])
-            clean_text = int(''.join(char for char in desc[2] if char.isalnum()))
-            delivery_time = int(desc[6].split()[0])
-            r = Restaurant(desc[0], "", "DD", float(desc[1]), distance, delivery_fee, clean_text, delivery_time)
+            desc = valid_restaurants[url_cnt]
+            name = wait_and_grab(desc,By.CSS_SELECTOR,".Text-sc-16fu6d-0.sc-a488a75b-20.bunCMC").text
+            rating = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.VlCPZ").text)
+            distance = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
+            delivery_fee = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,"[data-testid='STORE_TEXT_PRICING_INFO']").text)
+            rev_cnt = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.cZhUKR.sc-3b51c52-0.hNbRoa").text[4:])
+            delivery_time = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
+            r = Restaurant(name, "", "DD", rating, distance, delivery_fee, rev_cnt, delivery_time)
             try:
                 discount = valid_restaurants[url_cnt].find_element(By.CSS_SELECTOR,".sc-a488a75b-0.dHRtoo").text
                 r.add_disc(discount)
@@ -162,5 +168,7 @@ def dd_home_scrape(adr,food):
         #joins the workers
         for t in threads:
             t.join()
+    for restaurant in restaurant_class_lst:
+        print(restaurant)
 
 dd_home_scrape("4820 201 st","chicken")
