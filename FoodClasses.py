@@ -98,7 +98,7 @@ class Restaurant:
         self.deliv_fee = rest_fee
         self.discounts = []
         self.review_count = rev_count
-        self. deliv_time = rest_deliv_time
+        self.deliv_time = rest_deliv_time
         self.rest_cpd = 0
     def add_addr(self,address:str):
         self.addr = address
