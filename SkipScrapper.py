@@ -13,7 +13,7 @@ import time
 
 test_addr = "9937 157 St"
 test_food = "Beef"
-test_limit = 10
+test_limit = 5
 
 def sd_home_scrape(addr, food, limit=5):
     # Create a new web driver
@@ -89,7 +89,7 @@ def sd_home_scrape(addr, food, limit=5):
 
         print(f"{rest_name}, {rest_deliv_time}, {rest_deliv_fee}, {rest_rate}, {rest_addr}")
         rest = Restaurant(rest_name, rest_addr, "SkipTheDishes", rest_rate, -1, rest_deliv_fee, -1,
-                          rest_deliv_time)
+                          rest_deliv_time, rest_url)
 
         addr_entered = False
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
@@ -134,18 +134,18 @@ def sd_home_scrape(addr, food, limit=5):
                         # Grab the text field for putting your address
                         addr_fld = wait_and_grab(rest_driver, By.XPATH,
                                                  "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div/div[1]/div[2]/form/input",
-                                                 15)
+                                                 30)
                         addr_fld.send_keys(addr)
 
                         # Grab the first address that pops up
                         addr_elem = wait_and_grab(rest_driver, By.XPATH,
                                                   "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[1]/div[2]/div/div/div[1]",
-                                                  15)
+                                                  30)
                         addr_elem.click()
 
                         submit_btn = wait_and_grab(rest_driver, By.XPATH,
                                                    "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[4]/button",
-                                                   15)
+                                                   30)
                         submit_btn.click()
 
                         addr_entered = True
@@ -210,4 +210,7 @@ def sd_home_scrape(addr, food, limit=5):
 
 
 # This is a test
+start_time = time.time()
 sd_home_scrape(test_addr, test_food, test_limit)
+end_time = time.time()
+print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")

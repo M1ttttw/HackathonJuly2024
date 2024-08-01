@@ -66,6 +66,7 @@ class Restaurant:
     name: a string that represents the restaurant's name
     addr: a string that distinguishes which specific restaurant
     app: a string that represents which app the restaurant was found.
+    url: a string that represents the url of the restaurant
     catalogue: a list of FoodItems
     rest_cpd: the calories per dollar score of all the items in the catalogue here.
     rating: the rating of the restaurant
@@ -78,6 +79,7 @@ class Restaurant:
     name: str
     addr: str
     app: str
+    url: str
     catalogue: dict
     rest_cpd: float
     rating: float
@@ -88,10 +90,11 @@ class Restaurant:
     deliv_time: float
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
-                 rest_fee: float, rev_count: int, rest_deliv_time: float) -> None:
+                 rest_fee: float, rev_count: int, rest_deliv_time: float, rest_url: str) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
+        self.url = rest_url
         self.catalogue = dict()
         self.rating = rest_rating
         self.dist_to_user = rest_dist
