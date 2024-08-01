@@ -110,12 +110,13 @@ def sd_home_scrape(addr, food, limit=5):
             for item in item_list:
                 # Skip over any items that have no children
                 item_children = item.find_elements(By.XPATH, "*")
-                if len(item_children) == 0:
-                    print("Fake Item detected")
-                    continue
 
                 # Then grab everything you need about the food item
                 item_info_bits = item.text.split("\n")
+
+                if len(item_children) == 0 or len(item_info_bits) == 0:
+                    print(f"Fake Item detected: {item_info_bits}")
+                    continue
 
                 # It's possible for the item to be sold out, so check for it, and skip over it if needed
                 if item_info_bits[-1] == "SOLD OUT":
