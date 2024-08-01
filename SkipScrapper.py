@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import Any, Optional
+
 from browser import sd_init
 from browser import wait_and_grab, wait_for_elem
 from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -88,6 +90,7 @@ def sd_home_scrape(addr, food, limit=5):
         rest = Restaurant(rest_name, rest_addr, "SkipTheDishes", rest_rate, -1, rest_deliv_fee, -1,
                           rest_deliv_time)
 
+        addr_entered = False
         item_section_lst = mega_container.find_elements(By.XPATH, "*")
         for section in item_section_lst:
             # There are some sections that could be talking about place settings, so we skip over those
@@ -107,28 +110,73 @@ def sd_home_scrape(addr, food, limit=5):
             for item in item_list:
                 # Skip over any items that have no children
                 item_children = item.find_elements(By.XPATH, "*")
-                if len(item_children) == 0:
-                    print("Fake Item detected")
-                    continue
 
                 # Then grab everything you need about the food item
                 item_info_bits = item.text.split("\n")
 
+                if len(item_children) == 0 or len(item_info_bits) == 0:
+                    print(f"Fake Item detected: {item_info_bits}")
+                    continue
+
                 # It's possible for the item to be sold out, so check for it, and skip over it if needed
-                if item_info_bits[-1] == "SOLD OUT" or "See Item":
+                if item_info_bits[-1] == "SOLD OUT":
                     print("Item sold out")
                     continue
 
+                if item_info_bits[-1] == "See Item":
+                    # Open the item in view, and grab the price
+                    print("Found a see item")
+                    item.click()
+
+                    # Check if you ever entered your address before
+                    if not addr_entered:
+                        # Grab the text field for putting your address
+                        addr_fld = wait_and_grab(rest_driver, By.XPATH,
+                                                 "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div/div[1]/div[2]/form/input",
+                                                 15)
+                        addr_fld.send_keys(addr)
+
+                        # Grab the first address that pops up
+                        addr_elem = wait_and_grab(rest_driver, By.XPATH,
+                                                  "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[1]/div[2]/div/div/div[1]",
+                                                  15)
+                        addr_elem.click()
+
+                        submit_btn = wait_and_grab(rest_driver, By.XPATH,
+                                                   "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[4]/button",
+                                                   15)
+                        submit_btn.click()
+
+                        addr_entered = True
+                        wait_for_elem(rest_driver, By.XPATH,
+                                      '//*[@id="container"]/div/div/div/div[2]/div/div/div/div/div/div/div/div/div[1]/div[2]')
+                        item.click()
+
+                    # Grab the price
+                    close_btn = wait_and_grab(rest_driver, By.CSS_SELECTOR,
+                                              ".MuiButtonBase-root.MuiIconButton-root.styles__StyledIconButton-sc-nhn5sv-0.cHIlwY",
+                                              20)
+                    item_price = float(
+                        rest_driver.find_element(By.CSS_SELECTOR, ".styles__Right-sc-gvk0sj-3.ixLLwq").text[1:])
+
+                    action = ActionChains(rest_driver)
+                    action.move_to_element(close_btn).click().perform()
+
+                else:
+                    if len(item_info_bits) == 2:
+                        item_price = float(item_info_bits[1][1:])
+                    else:
+                        item_price = float(item_info_bits[2][1:])
+
                 # Some item's don't have descriptions, so we need to take that into account
                 if len(item_info_bits) == 2:
-                    item_name = item_info_bits[0]
                     item_desc = ""
-                    item_price = float(item_info_bits[1][1:])
                 else:
-                    item_name, item_price = item_info_bits[0], float(item_info_bits[2][1:])
                     item_desc = item.find_element(By.XPATH, ".//div[contains(@class, "
                                                             "'styles__Description-sc-1xl58bi-7 wvRWw')]"
                                                             "/div").get_attribute("aria-label")
+                item_name = item_info_bits[0]
+
                 print(item_name, item_desc, item_price)
 
                 # We attempt to grab the image of the item. there are 3 cases we handle
