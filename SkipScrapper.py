@@ -15,11 +15,12 @@ test_addr = "9937 157 St"
 test_food = "Beef"
 test_limit = 10
 
-options = webdriver.ChromeOptions()
-options.add_argument("--start-maximized")
-web = webdriver.Chrome(options=options)
-
 def sd_home_scrape(addr, food, limit=5):
+    # Create a new web driver
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    web = webdriver.Chrome(options=options)
+
     # Navigate web driver to home page
     sd_init(addr, web)
 
