@@ -10,7 +10,7 @@ from FoodClasses import Restaurant, FoodItem
 import time
 
 test_addr = "9937 157 St"
-test_food = "Beef"
+test_food = "rainbow shake"
 test_limit = 10
 
 options = webdriver.ChromeOptions()
@@ -115,7 +115,7 @@ def sd_home_scrape(addr, food, limit=5):
                 item_info_bits = item.text.split("\n")
 
                 # It's possible for the item to be sold out, so check for it, and skip over it if needed
-                if item_info_bits[-1] == "SOLD OUT" or "See Item":
+                if item_info_bits[-1] == "SOLD OUT" or item_info_bits[-1] == "See Item":
                     print("Item sold out")
                     continue
 
@@ -125,10 +125,22 @@ def sd_home_scrape(addr, food, limit=5):
                     item_desc = ""
                     item_price = float(item_info_bits[1][1:])
                 else:
-                    item_name, item_price = item_info_bits[0], float(item_info_bits[2][1:])
+                    item_name = item_info_bits[0]
                     item_desc = item.find_element(By.XPATH, ".//div[contains(@class, "
                                                             "'styles__Description-sc-1xl58bi-7 wvRWw')]"
                                                             "/div").get_attribute("aria-label")
+                    item_price = float(item_info_bits[2][1:])
+                    # if item_info_bits[-1] == "See Item":
+                    #     # Open the item in view, and grab the price
+                    #     print("Found a see item")
+                    #     see_btn = item.find_element(By.XPATH, ".//div/div[1]")
+                    #
+                    #     see_btn.click()
+                    #     time.sleep(10)
+                    #
+                    # else:
+                    #     item_price = float(item_info_bits[2][1:])
+
                 print(item_name, item_desc, item_price)
 
                 # We attempt to grab the image of the item. there are 3 cases we handle
