@@ -33,8 +33,7 @@ class ScrapeThread(threading.Thread):
         driver.get(self.url)
         time.sleep(1)
         #grab address
-        self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".StackChildren__StyledStackChildren-sc-1tveqpz-0.ioNBQv.styles__MiddleContainer-sc-20nosb-1.ckGoYQ").text)
-        print("address:",wait_and_grab(driver,By.CSS_SELECTOR,".StackChildren__StyledStackChildren-sc-1tveqpz-0.ioNBQv.styles__MiddleContainer-sc-20nosb-1.ckGoYQ").text)
+        self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.hNVOUs").text+" "+wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.kVKROG").text)
         #uses search bar in menu
         item_fld = wait_and_grab(driver,By.ID,"item-search-field")
         driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
