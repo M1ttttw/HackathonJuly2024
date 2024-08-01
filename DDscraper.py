@@ -1,14 +1,8 @@
 from browser import dd_init
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions
-from FoodClasses import clean_int
-from FoodClasses import clean_float
-from FoodClasses import Restaurant
-from FoodClasses import FoodItem
-from browser import wait_and_grab
-from browser import wait_and_grab_elms
+from FoodClasses import clean_int, clean_float, Restaurant, FoodItem
+from browser import wait_and_grab, wait_and_grab_elms
 from selenium.webdriver.common.keys import Keys
 import time
 import threading
@@ -59,15 +53,7 @@ class ScrapeThread(threading.Thread):
                 except:
                     print("no descp")
                     food_desc = ""
-                food_price_raw = wait_and_grab(food_item,By.CSS_SELECTOR,"[data-anchor-id='StoreMenuItemPrice']").text
-                if food_price_raw[-1] == "+":
-                    food_price = float(
-                        food_price_raw[3:-1])
-                elif len(food_price_raw.split(" "))>1:
-                    food_price = food_price_raw.split(" ")[0][3:]
-                else:
-                    food_price = food_price_raw[3:]
-
+                food_price = clean_float(wait_and_grab(food_item,By.CSS_SELECTOR,"[data-anchor-id='StoreMenuItemPrice']").text)
                 desc = food_item.text.split("\n")
                 print(desc)
                 try:
@@ -84,7 +70,7 @@ class ScrapeThread(threading.Thread):
         driver.close()
 
 #main scraper
-def dd_home_scrape(adr,food):
+def dd_scrape(adr,food):
     #inits the doordash window
     dd_init(adr,food,web)
     #wait for a a specific icon that is the last in the loading order which indicates that the rest of the site is loaded
@@ -170,4 +156,4 @@ def dd_home_scrape(adr,food):
     for restaurant in restaurant_class_lst:
         print(restaurant)
 
-dd_home_scrape("4820 201 st","chicken")
+dd_scrape("1970 158a st","chicken")
