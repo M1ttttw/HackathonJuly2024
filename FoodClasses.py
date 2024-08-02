@@ -4,9 +4,14 @@ from typing import Any, Optional
 #extracts the first int in a string
 def clean_int(num_str):
     num = ""
+    has_num = False
     for i in num_str:
         if i.isnumeric():
             num += i
+            has_num = True
+        elif not i.isnumeric() and has_num:
+            break
+
     return int(num)
 #extracts the first float in a string
 def clean_float(num_str):

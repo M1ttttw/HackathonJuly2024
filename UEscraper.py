@@ -33,69 +33,57 @@ class ScrapeThread(threading.Thread):
         adr_btn = wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[2]/div/div/div[2]/div/div/div/div/ul/button")
         adr_btn.click()
         wait_for_elem(driver,By.CSS_SELECTOR,"[clip-rule='evenodd']")
-        #grab address
+        #grab rest name
+        self.restaurant.name = wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[1]/div[3]/div/div/div[1]/h1").text
+        #grab rest address
         self.restaurant.add_addr(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[3]/div/section/ul/button[1]/div[2]").text.replace("\n"," "))
-        print(self.restaurant.addr)
+        #grab rating
+        try:
+            self.restaurant.rating = clean_float(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[1]/div[3]/div/div/div[1]/div/p[1]/span[1]").text)
+        except:
+            print("no rating")
+        #grab delivery fee
+        self.restaurant.deliv_fee = clean_float(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[2]/div[2]/div/div/div[1]/div/div/p/span[2]").text)
+        #grab delivery time
+        self.restaurant.deliv_time = clean_int(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[2]/div[2]/div/div/div[3]/div/div/div/p[1]/span").text)
+        #grab review count
+        try:
+            self.restaurant.review_count = clean_int(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[1]/div[3]/div/div/div[1]/div/p[1]/span[3]").text)
+        except:
+            print("no reviews")
 
-        #uses search bar in menu
-        # item_fld = wait_and_grab(driver,By.CSS_SELECTOR,".af.e5.d9.db.da.dc.dd.df.de.dg.dh.bh.il.jy.r4.nw.r5.r6.qy.qz.bo.em.bq.dw.b1.r7.r8")
-        # driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
-        # item_fld.send_keys(self.food)
-        # item_fld.send_keys(Keys.ENTER)
-        #DD unloads elements outside of screen so we must scroll through the page to load elements and add to our data
-        #scrolls scrl_cnt amount of times through each menu and grabs all menu items
-        # scrl_cnt = 0
-        # scrl_max = 100
-        # SCROLL_PAUSE_TIME = 0.5
-        # # Get scroll height
-        # last_height = driver.execute_script("return document.body.scrollHeight")
-        #
-        # while scrl_cnt<scrl_max:
-        #     # Scroll down to bottom
-        #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        #
-        #     # Wait to load page
-        #     time.sleep(SCROLL_PAUSE_TIME)
-        #
-        #     # Calculate new scroll height and compare with last scroll height
-        #     new_height = driver.execute_script("return document.body.scrollHeight")
-        #     if new_height == last_height:
-        #         break
-        #     last_height = new_height
-        #     scrl_cnt += 1
-        # food_items = []
-        # try:
-        driver.execute_script("window.scrollBy(0, 2000);")
-        container = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div[1]/div[1]/div[2]/main/div[6]/div/div/div/ul",20)
-        print("container found")
-        food_item_class = container.find_element(By.TAG_NAME, "li").find_element(By.TAG_NAME, "div").find_element(
-            By.TAG_NAME, "ul").find_element(By.TAG_NAME, "li").get_attribute("class")
-        clean_class = ""
-        for i in food_item_class.split(" "):
-            clean_class += "."
-            clean_class += i
-        food_items = wait_and_grab_elms(web, By.CSS_SELECTOR, clean_class, 30)
-
-        # except:
-        #     print("no items present")
+        #grab
+        food_items = []
+        try:
+            food_items = wait_and_grab_elms(driver, By.CSS_SELECTOR, '[data-test^="store-item"]', 30)
+        except:
+            print("no items present")
         print(len(food_items))
         for food_item in food_items:
-            food_title = wait_and_grab(food_item, By.CSS_SELECTOR, ".is.im.it.dc.dd.de.df.b1").text
-            try:
-                food_desc = wait_and_grab(food_item, By.CSS_SELECTOR,".lx.kd.kf.ke.bb.p7.ex").text
-            except:
-                print("no descp")
-                food_desc = ""
-            food_price = clean_float(wait_and_grab(food_item, By.CSS_SELECTOR, ".lx.al.ca.hf").text)
+            has_price = True
             desc = food_item.text.split("\n")
             print(desc)
+            descs = food_item.find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_elements(By.XPATH,"*")
+            food_title = descs[0].text
+            food_desc = ""
+            food_price = 0
             try:
-                image = wait_and_grab(food_item, By.CSS_SELECTOR, "[type='image/webp']", 1).get_attribute("srcset")
+                food_desc = descs[2].text
+            except:
+                print("no desc")
+            try:
+                food_price = clean_float(descs[1].text)
+            except:
+                print("no price")
+                has_price = False
+            try:
+                image = food_item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
             except:
                 print("image not found")
                 image = "not found"
             # add fooditem to restaurant class
-            self.restaurant.add_item(FoodItem(food_title, food_desc, food_price, image))
+            if has_price:
+                self.restaurant.add_item(FoodItem(food_title, food_desc, food_price, image))
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food):
@@ -123,10 +111,13 @@ def ue_scrape(adr,food):
         else:
             valid_restaurants.append(restaurant)
             urls.append(wait_and_grab(restaurant,By.TAG_NAME,"a").get_attribute("href"))
+    rest_cnt = len(urls)
+    if rest_cnt>20:
+        rest_cnt = 20
     restaurant_class_lst = []
     threads = []
-    total_thread_cnt = len(urls)
-    active_threads = 1
+    total_thread_cnt = rest_cnt
+    active_threads = 2
     url_cnt = 0
     # total thread cnt indicates how many threads we need to run in total to go through all restaurants
     # it will create active_threads amount of workers each time to open a browser and grabs the menu item in parallel
@@ -138,10 +129,11 @@ def ue_scrape(adr,food):
         total_thread_cnt -= thread_cnt
         # parses the restaurant description and creates the restaurant class
         for i in range(thread_cnt):
+            print(i)
             desc = valid_restaurants[url_cnt].text.split("\n")
             print(desc)
             name = ""
-            r = Restaurant(name, "", "DD", 0, 0, 0, 0, 0)
+            r = Restaurant(name, "", "UE", 0, 0, 0, 0, 0)
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)
