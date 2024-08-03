@@ -118,37 +118,29 @@ class Restaurant:
         """
         self.catalogue[food_item.name] = food_item
 
-    def add_discount(self,discount_str:str):
-        disc_dsc = discount_str.split(" ")
-        dsc_type = 0
-        if "Spend" in discount_str:
-            dsc_type = 1
-            spend = disc_dsc[1]
-            spend_int = clean_int(spend)
-            save = disc_dsc[3]
-            save_int = clean_int(save)
-            self.discounts.append((dsc_type,[spend_int,save_int]))
-        elif "up" in discount_str:
-            dsc_type = 2
-            dsc = disc_dsc[0]
-            dsc_int = clean_int(dsc)
-            upto = disc_dsc[4]
-            upto_int = clean_int(upto)
-            self.discounts.append((dsc_type, [dsc_int, upto_int]))
-        elif "delivery" in discount_str:
-            dsc_type = 3
-            self.discounts.append((dsc_type, []))
-
-        self.discounts.append(discount_str)
-    def add_disc(self, discount: Any) -> None:
-        """ Add the <discount> to the list of discounts for this restaurant.
-
-        # Preconditions: Make sure that the class that will represent the discount, is already configured. (has info)
-
-        :param discount:
-        :return:
-        """
-        self.discounts.append(discount)
+    def add_discount(self,discount_str:str,food = None):
+        if self.app == "DD":
+            disc_dsc = discount_str.split(" ")
+            dsc_type = 0
+            if "Spend" in discount_str:
+                dsc_type = 1
+                spend = disc_dsc[1]
+                spend_int = clean_int(spend)
+                save = disc_dsc[3]
+                save_int = clean_int(save)
+                self.discounts.append((dsc_type,[spend_int,save_int]))
+            elif "up" in discount_str:
+                dsc_type = 2
+                dsc = disc_dsc[0]
+                dsc_int = clean_int(dsc)
+                upto = disc_dsc[4]
+                upto_int = clean_int(upto)
+                self.discounts.append((dsc_type, [dsc_int, upto_int]))
+            elif "delivery" in discount_str:
+                dsc_type = 3
+                self.discounts.append((dsc_type, []))
+        elif self.app == "UE":
+            self.discounts.append(discount_str)
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
                 "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)

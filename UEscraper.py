@@ -6,7 +6,6 @@ from browser import wait_and_grab, wait_and_grab_elms, wait_for_elem
 from selenium.webdriver.common.keys import Keys
 import time
 import threading
-import bs4
 
 #Options for chrome webdriver
 options = webdriver.ChromeOptions()
@@ -61,21 +60,36 @@ class ScrapeThread(threading.Thread):
         print(len(food_items))
         for food_item in food_items:
             has_price = True
+            has_discnt = False
             desc = food_item.text.split("\n")
             print(desc)
             descs = food_item.find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_elements(By.XPATH,"*")
-            food_title = descs[0].text
             food_desc = ""
             food_price = 0
-            try:
-                food_desc = descs[2].text
-            except:
-                print("no desc")
+            discnt = ""
+            food = None
+            food_title = descs[0].text
             try:
                 food_price = clean_float(descs[1].text)
             except:
                 print("no price")
                 has_price = False
+            try:
+                discnt_test = descs[2].find_element(By.TAG_NAME,"span").value_of_css_property("color")
+                if discnt_test == "#0E8345":
+                    discnt = descs[2].text
+                print(discnt," discountm")
+            except:
+                print("no discount")
+            if not has_discnt:
+                try:
+                    food_desc = descs[2].text
+                except:
+                    print("no desc")
+                try:
+                    discnt = descs[3].text
+                except:
+                    print("no discount")
             try:
                 image = food_item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
             except:
@@ -83,7 +97,10 @@ class ScrapeThread(threading.Thread):
                 image = "not found"
             # add fooditem to restaurant class
             if has_price:
-                self.restaurant.add_item(FoodItem(food_title, food_desc, food_price, image))
+                food = FoodItem(food_title, food_desc, food_price, image)
+                self.restaurant.add_item(food)
+            if has_discnt:
+                self.restaurant.add_discount(discnt,food)
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food):
@@ -144,6 +161,7 @@ def ue_scrape(adr,food):
         # joins the workers
         for t in threads:
             t.join()
+    restaurant_class_lst.pop(-1)
     for restaurant in restaurant_class_lst:
         print(restaurant)
 ue_scrape("1970 158a st","chicken")
