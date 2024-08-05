@@ -31,6 +31,9 @@
             margin: 10px 10px 10px 10px;
         }
     </style>
+    
+    <!-- Import the javascript file -->
+    <script src = "DealDash.js"></script>
   </head>
   <body>
       
@@ -43,39 +46,43 @@
     <!-- Here is the Header of our Deal Dash website-->
     <h1><b><u>Deal Dash</u></b></h1>
 
-    <p>This is a tool to help find the best deals across delivery services. To get started, type your address and the food you want in the search bar, filter which delivery services you want and click "Search".</p>
+    <p id = "siteDescText">This is a tool to help find the best deals across delivery services. To get started, type your address and the food you want in the search bar, filter which delivery services you want and click "Search".</p>
 
     <!-- Create checkboxes for all 3 delivery services using bootstrap -->
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-        <label class="form-check-label" for="flexCheckDefault">
-        SkipTheDishes
-        </label>
-    </div>
-
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-        <label class="form-check-label" for="flexCheckDefault">
-        DoorDash
-        </label>
-    </div>
-
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-        <label class="form-check-label" for="flexCheckDefault">
-        UberEats
-        </label>
+    <div id = "checkboxSection">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="skipCheckbox" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+            SkipTheDishes
+            </label>
+        </div>
+    
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="ddCheckbox" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+            DoorDash
+            </label>
+        </div>
+    
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="ueCheckbox" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+            UberEats
+            </label>
+        </div>
     </div>
 
     <!-- Create two text fields one for address, the other for food -->
-    <div class="form-group">
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Address">
-    </div>
-
-    <div class="form-group">
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Food">
+    <div id = "inputFieldSection">
+        <div class="form-group">
+            <input type="email" class="form-control" id="addressField" aria-describedby="emailHelp" placeholder="Address">
+        </div>
+    
+        <div class="form-group">
+            <input type="email" class="form-control" id="foodField" aria-describedby="emailHelp" placeholder="Food">
+        </div>
     </div>
     
-    <button>Search</button>
+    <button onclick="search()">Search</button>
   </body>
 </html>
