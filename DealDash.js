@@ -103,6 +103,4 @@ function search() {
         console.log("Launching UberEats Scraper...");
     }
 
-
-
 }
