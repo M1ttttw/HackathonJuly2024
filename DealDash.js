@@ -97,7 +97,7 @@ function search() {
         console.log("Launching Skip Scraper...");
         $.ajax({
             type: 'POST',
-            url: "SkipScrapper.py",
+            url: "app.py",
             data: { address: userAddress, food: userFood }
 
 
