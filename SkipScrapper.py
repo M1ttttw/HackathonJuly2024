@@ -38,6 +38,12 @@ class ScrapeThread(threading.Thread):
         self.restaurant.add_addr(rest_addr)
         # Convenience store pages are very different, take advantage of this!
         try:
+            wait_and_grab(rest_driver,By.CSS_SELECTOR,"[placeholder='Search Store']")
+            print("Convenience Store Detected")
+            rest_driver.close()
+        except:
+            pass
+        try:
             # Find the container containing the subdivisions of a menu
             mega_container = wait_and_grab(rest_driver, By.XPATH, '//*[@id="ComponentsContainer"]/div')
         except:
