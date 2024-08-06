@@ -118,7 +118,7 @@ class Restaurant:
         """
         self.catalogue[food_item.name] = food_item
 
-    def add_discount(self,discount_str:str,food = None):
+    def add_discount(self,discount_str:str,food = None,food_name = ""):
         if self.app == "DD":
             disc_dsc = discount_str.split(" ")
             dsc_type = 0
@@ -140,7 +140,14 @@ class Restaurant:
                 dsc_type = 3
                 self.discounts.append((dsc_type, []))
         elif self.app == "UE":
-            self.discounts.append(discount_str)
+            if "Buy" in discount_str:
+                dsc_type = 1
+                self.discounts.append((dsc_type,food,food_name))
+            elif "purchase" in discount_str:
+                dsc_type = 2
+                amount = clean_int(discount_str)
+                self.discounts.append((dsc_type,(amount,food,food_name)))
+
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
                 "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)

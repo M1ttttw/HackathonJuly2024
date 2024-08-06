@@ -76,9 +76,11 @@ class ScrapeThread(threading.Thread):
                 has_price = False
             try:
                 discnt_test = descs[2].find_element(By.TAG_NAME,"span").value_of_css_property("color")
-                if discnt_test == "#0E8345":
-                    discnt = descs[2].text
-                print(discnt," discountm")
+                if discnt_test == "rgba(14, 131, 69, 1)":
+                    discnt = descs[2].find_element(By.TAG_NAME,"span").text
+                if len(discnt) > 0:
+                    has_discnt = True
+                    print(discnt_test,discnt," discountm")
             except:
                 print("no discount")
             if not has_discnt:
@@ -88,6 +90,11 @@ class ScrapeThread(threading.Thread):
                     print("no desc")
                 try:
                     discnt = descs[3].text
+                    discnt_clr = descs[3].find_element(By.TAG_NAME,"span").value_of_css_property("color")
+                    if len(discnt) > 0:
+                        has_discnt = True
+                        print(discnt,discnt_clr," discountm2")
+
                 except:
                     print("no discount")
             try:
@@ -100,7 +107,7 @@ class ScrapeThread(threading.Thread):
                 food = FoodItem(food_title, food_desc, food_price, image)
                 self.restaurant.add_item(food)
             if has_discnt:
-                self.restaurant.add_discount(discnt,food)
+                self.restaurant.add_discount(discnt,food,food.name)
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food):
