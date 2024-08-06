@@ -150,6 +150,20 @@ class Restaurant:
                 dsc_type = 2
                 amount = clean_int(discount_str)
                 self.discounts.append((dsc_type,(amount,food,food_name)))
+        elif self.app == "SkipTheDishes":
+            if "Free" in discount_str:
+                discnt_desc = discount_str.split(" ")
+                price = clean_int(discnt_desc[-1])
+                item_name = ""
+                for w in discnt_desc[1:-3]:
+                    item_name += w
+                    item_name += " "
+                item_name = item_name[:-1]
+                self.discounts.append((1,(self.catalogue[item_name],price)))
+            elif "off" in discount_str:
+                discnt_desc = discount_str.split(" ")
+                self.discounts.append((2,(clean_int(discnt_desc[0]),clean_int(discnt_desc[-1]))))
+
 
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+

@@ -43,8 +43,6 @@ class ScrapeThread(threading.Thread):
             print("no rating")
         #grab delivery fee
         self.restaurant.deliv_fee = clean_float(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[2]/div[2]/div/div/div[1]/div/div/p/span[2]").text)
-        #grab delivery time
-        self.restaurant.deliv_time = clean_int(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[2]/div[2]/div/div/div[3]/div/div/div/p[1]/span").text)
         #grab review count
         try:
             self.restaurant.review_count = clean_int(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[1]/div[3]/div/div/div[1]/div/p[1]/span[3]").text)
@@ -110,7 +108,7 @@ class ScrapeThread(threading.Thread):
                 self.restaurant.add_discount(discnt,food,food.name)
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
-def ue_scrape(adr,food):
+def ue_scrape(adr,food,limit):
     ue_init(adr,web)
     srch_fld = wait_and_grab(web,By.ID,"search-suggestions-typeahead-input")
     srch_fld.send_keys(food)
@@ -136,8 +134,8 @@ def ue_scrape(adr,food):
             valid_restaurants.append(restaurant)
             urls.append(wait_and_grab(restaurant,By.TAG_NAME,"a").get_attribute("href"))
     rest_cnt = len(urls)
-    if rest_cnt>20:
-        rest_cnt = 20
+    if rest_cnt>limit:
+        rest_cnt = limit
     restaurant_class_lst = []
     threads = []
     total_thread_cnt = rest_cnt
@@ -153,11 +151,11 @@ def ue_scrape(adr,food):
         total_thread_cnt -= thread_cnt
         # parses the restaurant description and creates the restaurant class
         for i in range(thread_cnt):
-            print(i)
+            print(total_thread_cnt)
             desc = valid_restaurants[url_cnt].text.split("\n")
             print(desc)
             name = ""
-            r = Restaurant(name, "", "UE", 0, 0, 0, 0, 0)
+            r = Restaurant(name, "", "UE", 0, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt])
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)
@@ -171,4 +169,7 @@ def ue_scrape(adr,food):
     restaurant_class_lst.pop(-1)
     for restaurant in restaurant_class_lst:
         print(restaurant)
-ue_scrape("1970 158a st","chicken")
+start_time = time.time()
+ue_scrape("1970 158a st","chicken",10)
+end_time = time.time()
+print(f"Test took {end_time - start_time} seconds for 10 restaurants")

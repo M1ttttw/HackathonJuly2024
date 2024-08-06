@@ -27,7 +27,7 @@ class ScrapeThread(threading.Thread):
         driver.get(self.url)
         time.sleep(1)
         #grab address
-        self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.hNVOUs").text+" "+wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.kVKROG").text)
+        self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.hNVOUs",10).text+" "+wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.kVKROG",10).text)
         #uses search bar in menu
         item_fld = wait_and_grab(driver,By.ID,"item-search-field")
         driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
@@ -70,7 +70,7 @@ class ScrapeThread(threading.Thread):
         driver.close()
 
 #main scraper
-def dd_scrape(adr,food):
+def dd_scrape(adr,food,limit):
     #inits the doordash window
     dd_init(adr,food,web)
     #wait for a a specific icon that is the last in the loading order which indicates that the rest of the site is loaded
@@ -116,8 +116,11 @@ def dd_scrape(adr,food):
     print(urls)
     #create active_threads amount of worker threads to each open a browser to scroll through and collect all the menu datas
     #WARNING: THIS IS COMPUTATIONALLY EXPENSIVE AND ONLY INCREASE ACTIVE THREADS IF YOU HAVE GOOD COMPUTER
+    rest_cnt = len(urls)
+    if rest_cnt > limit:
+        rest_cnt = limit
     threads = []
-    total_thread_cnt = len(urls)
+    total_thread_cnt = rest_cnt
     active_threads = 2
     url_cnt = 0
     #total thread cnt indicates how many threads we need to run in total to go through all restaurants
@@ -131,7 +134,7 @@ def dd_scrape(adr,food):
         #parses the restaurant description and creates the restaurant class
         for i in range(thread_cnt):
             desc = valid_restaurants[url_cnt]
-            name = wait_and_grab(desc,By.CSS_SELECTOR,".Text-sc-16fu6d-0.sc-a488a75b-20.bunCMC").text
+            name = wait_and_grab(desc,By.CSS_SELECTOR,"[data-telemetry-id='store.name']").text
             rating = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.VlCPZ").text)
             distance = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
             delivery_fee = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,"[data-testid='STORE_TEXT_PRICING_INFO']").text)
@@ -140,7 +143,7 @@ def dd_scrape(adr,food):
             r = Restaurant(name, "", "DD", rating, distance, delivery_fee, rev_cnt, delivery_time, urls[url_cnt])
             try:
                 discount = valid_restaurants[url_cnt].find_element(By.CSS_SELECTOR,".sc-a488a75b-0.dHRtoo").text
-                r.add_disc(discount)
+                r.add_discount(discount)
             except:
                 pass
             restaurant_class_lst.append(r)
@@ -155,5 +158,8 @@ def dd_scrape(adr,food):
             t.join()
     for restaurant in restaurant_class_lst:
         print(restaurant)
+start_time = time.time()
+dd_scrape("1970 158a st","chicken",10)
+end_time = time.time()
+print(f"Test took {end_time - start_time} seconds for 10 restaurants")
 
-dd_scrape("1970 158a st","chicken")
