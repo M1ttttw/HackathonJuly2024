@@ -11,12 +11,6 @@ from selenium.webdriver.support import expected_conditions as ec
 from FoodClasses import Restaurant, FoodItem
 import time
 
-test_addr = "9937 157 St"
-test_food = "Beef"
-test_limit = 10
-
-options = webdriver.ChromeOptions()
-options.add_argument("--start-maximized")
 
 class ScrapeThread(threading.Thread):
     def __init__(self, url,food,restaurant,adr):
@@ -29,6 +23,8 @@ class ScrapeThread(threading.Thread):
     def run(self):
 
         # Start a new driver set to our new rest_url_w_food
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
         rest_driver = webdriver.Chrome(options=options)
         rest_driver.get(self.url)
 
@@ -249,8 +245,13 @@ def sd_home_scrape(addr, food, limit=5):
     return rest_list
 
 
-# This is a test
-start_time = time.time()
-sd_home_scrape(test_addr, test_food, test_limit)
-end_time = time.time()
-print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
+if __name__ == "__main__":
+    test_addr = "9937 157 St"
+    test_food = "Beef"
+    test_limit = 10
+
+    # This is a test
+    start_time = time.time()
+    sd_home_scrape(test_addr, test_food, test_limit)
+    end_time = time.time()
+    print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")

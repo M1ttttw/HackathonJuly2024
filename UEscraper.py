@@ -7,11 +7,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 import threading
 
-#Options for chrome webdriver
-options = webdriver.ChromeOptions()
-options.add_argument("--start-maximized")
-# options.add_argument("--headless")
-web = webdriver.Chrome(options=options)
+
 #worker threads for opening a chome tab and extracting all the menu items
 class ScrapeThread(threading.Thread):
     def __init__(self, url,food,restaurant,adr):
@@ -22,6 +18,10 @@ class ScrapeThread(threading.Thread):
         self.adr = adr
 
     def run(self):
+        # Options for chrome webdriver
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+
         driver = webdriver.Chrome(options=options)
         driver.get(self.url)
         time.sleep(1)
@@ -109,6 +109,12 @@ class ScrapeThread(threading.Thread):
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food,limit):
+    # Options for chrome webdriver
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    # options.add_argument("--headless")
+    web = webdriver.Chrome(options=options)
+
     ue_init(adr,web)
     srch_fld = wait_and_grab(web,By.ID,"search-suggestions-typeahead-input")
     srch_fld.send_keys(food)
@@ -169,7 +175,10 @@ def ue_scrape(adr,food,limit):
     restaurant_class_lst.pop(-1)
     for restaurant in restaurant_class_lst:
         print(restaurant)
-start_time = time.time()
-ue_scrape("1970 158a st","chicken",10)
-end_time = time.time()
-print(f"Test took {end_time - start_time} seconds for 10 restaurants")
+
+
+if __name__ == "__main__":
+    start_time = time.time()
+    ue_scrape("1970 158a st","chicken",10)
+    end_time = time.time()
+    print(f"Test took {end_time - start_time} seconds for 10 restaurants")

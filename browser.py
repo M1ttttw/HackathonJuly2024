@@ -100,10 +100,10 @@ def ue_init(adr,web):
 #when calling the functions make sure to space out the address and add the city for the adr param
 #the web param is meant for the webdriver
 #for food in dd_init just put in the string for what food to search
-# options = webdriver.ChromeOptions()
-# options.add_argument("--start-maximized")
-# web = webdriver.Chrome(options=options)
-# sd_init("4820 201 st",web)
-# dd_init("4820 201 st","chicken",web)
-# web = webdriver.Chrome()
-# ue_init("4820 201 st langley",web)
+if __name__ == "__main__":
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    web = webdriver.Chrome(options=options)
+    sd_init("4820 201 st",web)
+    dd_init("4820 201 st","chicken",web)
+    ue_init("4820 201 st langley",web)
