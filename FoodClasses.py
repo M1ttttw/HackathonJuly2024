@@ -4,9 +4,14 @@ from typing import Any, Optional
 #extracts the first int in a string
 def clean_int(num_str):
     num = ""
+    has_num = False
     for i in num_str:
         if i.isnumeric():
             num += i
+            has_num = True
+        elif not i.isnumeric() and has_num:
+            break
+
     return int(num)
 #extracts the first float in a string
 def clean_float(num_str):
@@ -116,37 +121,36 @@ class Restaurant:
         """
         self.catalogue[food_item.name] = food_item
 
-    def add_discount(self,discount_str:str):
-        disc_dsc = discount_str.split(" ")
-        dsc_type = 0
-        if "Spend" in discount_str:
-            dsc_type = 1
-            spend = disc_dsc[1]
-            spend_int = clean_int(spend)
-            save = disc_dsc[3]
-            save_int = clean_int(save)
-            self.discounts.append((dsc_type,[spend_int,save_int]))
-        elif "up" in discount_str:
-            dsc_type = 2
-            dsc = disc_dsc[0]
-            dsc_int = clean_int(dsc)
-            upto = disc_dsc[4]
-            upto_int = clean_int(upto)
-            self.discounts.append((dsc_type, [dsc_int, upto_int]))
-        elif "delivery" in discount_str:
-            dsc_type = 3
-            self.discounts.append((dsc_type, []))
+    def add_discount(self,discount_str:str,food = None,food_name = ""):
+        if self.app == "DD":
+            disc_dsc = discount_str.split(" ")
+            dsc_type = 0
+            if "Spend" in discount_str:
+                dsc_type = 1
+                spend = disc_dsc[1]
+                spend_int = clean_int(spend)
+                save = disc_dsc[3]
+                save_int = clean_int(save)
+                self.discounts.append((dsc_type,[spend_int,save_int]))
+            elif "up" in discount_str:
+                dsc_type = 2
+                dsc = disc_dsc[0]
+                dsc_int = clean_int(dsc)
+                upto = disc_dsc[4]
+                upto_int = clean_int(upto)
+                self.discounts.append((dsc_type, [dsc_int, upto_int]))
+            elif "delivery" in discount_str:
+                dsc_type = 3
+                self.discounts.append((dsc_type, []))
+        elif self.app == "UE":
+            if "Buy" in discount_str:
+                dsc_type = 1
+                self.discounts.append((dsc_type,food,food_name))
+            elif "purchase" in discount_str:
+                dsc_type = 2
+                amount = clean_int(discount_str)
+                self.discounts.append((dsc_type,(amount,food,food_name)))
 
-        self.discounts.append(discount_str)
-    def add_disc(self, discount: Any) -> None:
-        """ Add the <discount> to the list of discounts for this restaurant.
-
-        # Preconditions: Make sure that the class that will represent the discount, is already configured. (has info)
-
-        :param discount:
-        :return:
-        """
-        self.discounts.append(discount)
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
                 "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)

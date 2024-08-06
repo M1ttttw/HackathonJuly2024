@@ -3,11 +3,12 @@ from typing import Any, Optional
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote import webelement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
-def wait_for_elem(web_elem, search_type: str, search_val: str, timeout = 5) -> Any:
+def wait_for_elem(web_elem, search_type: str, search_val: str, timeout = 5):
     """ Wait until an element is available, but do not return it.
 
     :param web_elem:
@@ -20,7 +21,7 @@ def wait_for_elem(web_elem, search_type: str, search_val: str, timeout = 5) -> A
     wait.until(ec.presence_of_element_located((search_type, search_val)))
 
 
-def wait_and_grab(web_elem, search_type: str, search_val: str, timeout = 5) -> Any:
+def wait_and_grab(web_elem, search_type: str, search_val: str, timeout = 5) -> webelement.WebElement:
     """ Wait until an element is available and return it once it's found.
 
     :param web_elem:
@@ -34,7 +35,7 @@ def wait_and_grab(web_elem, search_type: str, search_val: str, timeout = 5) -> A
     return web_elem.find_element(search_type, search_val)
 
 
-def wait_and_grab_elms(web_elem, search_type: str, search_val: str, timeout = 10) -> Any:
+def wait_and_grab_elms(web_elem, search_type: str, search_val: str, timeout = 10) -> list[webelement.WebElement]:
     """ Wait until an element is available and return it once it's found.
 
     :param web_elem:
