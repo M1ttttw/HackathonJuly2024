@@ -97,11 +97,13 @@ function search() {
         console.log("Launching Skip Scraper...");
         $.ajax({
             type: 'POST',
-            url: "app.py",
+            url: "/skip",
             data: { address: userAddress, food: userFood }
-
-
+        })
+        .done(function(data) {
+            console.log("Addr and food sent")
         });
+        
     }
     if (ddCB.checked) {
         console.log("Launching DoorDash Scraper...");
