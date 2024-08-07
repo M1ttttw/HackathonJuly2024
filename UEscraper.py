@@ -16,7 +16,8 @@ class ScrapeThread(threading.Thread):
         self.food = food
         self.restaurant = restaurant
         self.adr = adr
-
+    def kill(self):
+        raise Exception
     def run(self):
         # Options for chrome webdriver
         options = webdriver.ChromeOptions()
@@ -108,7 +109,7 @@ class ScrapeThread(threading.Thread):
                 self.restaurant.add_discount(discnt,food,food.name)
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
-def ue_scrape(adr,food,limit):
+def ue_scrape(adr,food,limit,timeout=25):
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -171,10 +172,18 @@ def ue_scrape(adr,food,limit):
             url_cnt += 1
         # joins the workers
         for t in threads:
-            t.join()
+            t.join(timeout)
+            if t.is_alive():
+                print("timeout")
+                try:
+                    t.kill()
+                except:
+                    print("thread killed")
     restaurant_class_lst.pop(-1)
     for restaurant in restaurant_class_lst:
         print(restaurant)
+        if len(restaurant.catalogue) < 1:
+            restaurant_class_lst.remove(restaurant)
 
 
 if __name__ == "__main__":

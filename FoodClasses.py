@@ -11,7 +11,6 @@ def clean_int(num_str):
             has_num = True
         elif not i.isnumeric() and has_num:
             break
-
     return int(num)
 #extracts the first float in a string
 def clean_float(num_str):
