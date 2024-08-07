@@ -155,9 +155,10 @@ class Restaurant:
         :param food_item:
         :return:
         """
+
         food_item.id = self.item_cnt
-        self.catalogue[food_item.name] = food_item
         self.item_cnt += 1
+        self.catalogue[food_item.name] = food_item
 
     def add_discount(self,discount_str:str,food:FoodItem = None):
         #Doordash discount parsing
@@ -235,7 +236,6 @@ class Restaurant:
 
                 self.discounts.append((dsc_type,(res1, res2)))
                 self.d_json["discounts"][dsc_type].append([res1, res2])
-
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
                 "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)

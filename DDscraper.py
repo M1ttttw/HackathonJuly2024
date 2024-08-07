@@ -68,7 +68,7 @@ class ScrapeThread(threading.Thread):
         driver.close()
 
 #main scraper
-def dd_scrape(adr,food,limit,timeout=30):
+def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
