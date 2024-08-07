@@ -169,6 +169,7 @@ def ue_scrape(adr,food,limit):
     restaurant_class_lst.pop(-1)
     for restaurant in restaurant_class_lst:
         print(restaurant)
+    return restaurant_class_lst
 start_time = time.time()
 ue_scrape("1970 158a st","chicken",10)
 end_time = time.time()

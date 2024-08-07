@@ -158,6 +158,7 @@ def dd_scrape(adr,food,limit):
             t.join()
     for restaurant in restaurant_class_lst:
         print(restaurant)
+    return restaurant_class_lst
 start_time = time.time()
 dd_scrape("1970 158a st","chicken",10)
 end_time = time.time()
