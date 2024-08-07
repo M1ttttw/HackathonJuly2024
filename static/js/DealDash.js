@@ -132,3 +132,43 @@ function search() {
     }
 
 }
+function createItems(data){
+    const rests = JSON.parse(data);
+    for (const key in rests) {
+        var section = $("#output").append("<ul></ul>");
+        const rest_data = JSON.parse(rests[key]);
+        const name = rest_data.name;
+        const addr = rest_data.addr;
+        const app = rest_data.app;
+        const url = rest_data.url;
+        const cpd = rest_data.rest_cpd;
+        const dt = rest_data.deliv_time;
+        const rc = rest_data.review_count;
+        const df = rest_data.deliv_fee;
+        const du = rest_data.dist_to_user;
+        const rating = rest_data.rating;
+        const menu = JSON.parse(rest_data.catalogue);
+        for (const m_key in menu){
+            const food_data = JSON.parse(menu[m_key]);
+            const f_name = food_data.name;
+            const f_desc = food_data.desc;
+            const f_price = food_data.price;
+            const f_image = food_data.image;
+            const f_cal = food_data.calories;
+            const f_cpd = food_data.cpd;
+        }
+        const discounts = JSON.parse(rest_data.discounts);
+        for (const d_key in discounts){
+            const disnt_data = JSON.parse(discounts[d_key]);
+            for (const discount in disnt_data){
+                for (const discount_info in discount){
+
+                }
+            }
+        }
+    }
+    
+
+
+    
+}

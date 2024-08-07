@@ -139,6 +139,7 @@ class Restaurant:
         self.d_json["discounts"][1] = []
         self.d_json["discounts"][2] = []
         self.d_json["discounts"][3] = []
+        self.d_json["discounts"][4] = []
         self.d_json["review_count"] = rev_count
         self.d_json["deliv_time"] = rest_deliv_time
         self.d_json["rest_cpd"] = 0
