@@ -13,7 +13,7 @@ def init():
     return render_template("DealDash.html")
 
 @app.route('/skip', methods=['POST'])
-def sd_scrape():
+def sd():
     addr = request.form['address']
     food = request.form['food']
 
@@ -25,7 +25,7 @@ def sd_scrape():
     return jsonify(d)
 
 @app.route('/dash', methods=['POST'])
-def dd_scrape():
+def dd():
     addr = request.form['address']
     food = request.form['food']
 
@@ -37,7 +37,7 @@ def dd_scrape():
     return jsonify(d)
 
 @app.route('/eats', methods=['POST'])
-def ue_scrape():
+def ue():
     addr = request.form['address']
     food = request.form['food']
 
