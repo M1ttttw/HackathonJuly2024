@@ -1,4 +1,10 @@
 from flask import Flask, render_template, jsonify, request
+from FoodClasses import Restaurant, FoodItem
+
+from SkipScrapper import sd_home_scrape
+from DDscraper import dd_scrape
+from UEscraper import ue_scrape
+
 
 app = Flask(__name__)
 
@@ -11,22 +17,36 @@ def sd_scrape():
     addr = request.form['address']
     food = request.form['food']
 
-    print(f"received {addr} and {food}")
-    return jsonify({})
+    d = {}
+    rests_lst = sd_home_scrape(addr, food, 10)
+    for i, rest in enumerate(rests_lst):
+        d[f"rest_{i}"] = rest.d_json
+
+    return jsonify(d)
 
 @app.route('/dash', methods=['POST'])
 def dd_scrape():
     addr = request.form['address']
     food = request.form['food']
 
-    return jsonify({})
+    d = {}
+    rests_lst = dd_scrape(addr, food, 10)
+    for i, rest in enumerate(rests_lst):
+        d[f"rest_{i}"] = rest.d_json
+
+    return jsonify(d)
 
 @app.route('/eats', methods=['POST'])
 def ue_scrape():
     addr = request.form['address']
     food = request.form['food']
 
-    return jsonify({})
+    d = {}
+    rests_lst = ue_scrape(addr, food, 10)
+    for i, rest in enumerate(rests_lst):
+        d[f"rest_{i}"] = rest.d_json
+
+    return jsonify(d)
 
 
 if __name__ == "__main__":

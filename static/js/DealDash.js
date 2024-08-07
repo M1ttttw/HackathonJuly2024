@@ -92,7 +92,7 @@ function search() {
     if (error) return;
 
     // Individually check which delivery services are checked, and call their corresponding scrapers.
-    var rests = [];
+    // var rests = [];
     if (skipCB.checked) {
         console.log("Launching Skip Scraper...");
         $.ajax({
@@ -101,15 +101,34 @@ function search() {
             data: { address: userAddress, food: userFood }
         })
         .done(function(data) {
-            console.log("Addr and food sent")
+            // $('#output').text(data.address).show();
+            $('#output').text(data.rest_1).show();
         });
-        
+
     }
     if (ddCB.checked) {
         console.log("Launching DoorDash Scraper...");
+        $.ajax({
+            type: 'POST',
+            url: "/dash",
+            data: { address: userAddress, food: userFood }
+        })
+        .done(function(data) {
+            // $('#output').text(data.address).show();
+
+        });
     }
     if (ueCB.checked) {
         console.log("Launching UberEats Scraper...");
+        $.ajax({
+            type: 'POST',
+            url: "/eats",
+            data: { address: userAddress, food: userFood }
+        })
+        .done(function(data) {
+            // $('#output').text(data.address).show();
+
+        });
     }
 
 }
