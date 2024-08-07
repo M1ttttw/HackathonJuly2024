@@ -15,7 +15,8 @@ class ScrapeThread(threading.Thread):
         self.url = url
         self.food = food
         self.restaurant = restaurant
-
+    def kill(self):
+        raise Exception
     def run(self):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
@@ -67,7 +68,7 @@ class ScrapeThread(threading.Thread):
         driver.close()
 
 #main scraper
-def dd_scrape(adr,food,limit):
+def dd_scrape(adr,food,limit,timeout=30):
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -80,10 +81,17 @@ def dd_scrape(adr,food,limit):
     wait_and_grab(web,By.CSS_SELECTOR,".styles__StyledInlineSvg-sc-1hetb2e-0.eCVqVv.fetched-icon",20)
     #for some reason doordash alternates between the classes sometimes so this is a hacky workaround
     #grabs all the elements of this class which are restaurants
+    # time.sleep(60)
     try:
-        restaurants_lst = wait_and_grab_elms(web,By.CSS_SELECTOR,".sc-8d83c7bd-1.sc-e201b5cf-0.sc-2dec7c95-0.cQPKtK.dVIWQb.cAvxvr")
+        restarurant_id = wait_and_grab(web,By.CSS_SELECTOR,"[data-anchor-id='StoreLayoutListContainer']").find_element(By.TAG_NAME,"div").get_attribute("class")
+        clean_id = ""
+        for id in restarurant_id.split(" "):
+            clean_id += "."
+            clean_id += id
+        restaurants_lst = wait_and_grab_elms(web,By.CSS_SELECTOR,clean_id)
     except:
-        restaurants_lst = web.find_elements(By.CSS_SELECTOR,".sc-8d83c7bd-1.sc-e201b5cf-0.sc-2dec7c95-0.cQPKtK.kXJLqA.TvPiX")
+        print("no id")
+        return
     #parse through all the items to get rid of any closed, duplicate or none restaurant elements
     cnt = 0
     open_stores = []
@@ -158,10 +166,17 @@ def dd_scrape(adr,food,limit):
             url_cnt += 1
         #joins the workers
         for t in threads:
-            t.join()
+            t.join(timeout)
+            if t.is_alive():
+                print("timeout")
+                try:
+                    t.kill()
+                except:
+                    print("thread killed")
     for restaurant in restaurant_class_lst:
         print(restaurant)
-
+        if len(restaurant.catalogue) < 1:
+            restaurant_class_lst.remove(restaurant)
 if __name__ == "__main__":
     start_time = time.time()
     dd_scrape("1970 158a st","chicken",10)

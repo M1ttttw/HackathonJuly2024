@@ -10,6 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from FoodClasses import Restaurant, FoodItem
 import time
+from FoodClasses import clean_int,clean_float
 
 
 class ScrapeThread(threading.Thread):
@@ -19,7 +20,8 @@ class ScrapeThread(threading.Thread):
         self.food = food
         self.restaurant = restaurant
         self.adr = adr
-
+    def kill(self):
+        raise Exception
     def run(self):
 
         # Start a new driver set to our new rest_url_w_food
@@ -49,122 +51,113 @@ class ScrapeThread(threading.Thread):
 
 
         addr_entered = False
-        item_section_lst = mega_container.find_elements(By.XPATH, "*")
-        for section in item_section_lst:
-            # There are some sections that could be talking about place settings, so we skip over those
-            section_name = section.text.split("\n")[0]
-            if section_name == "Place Settings":
-                continue
-
-            # Skip over invalid subdivisions of the menu
+        item_list = rest_driver.find_elements(By.CSS_SELECTOR,".styles__ListItem-sc-120s71t-3.fpnvFo")
+            # # We then iterate through the items in that subdivision.
+        if len(item_list) > 150:
+            print(self.restaurant.name," too many items")
+            rest_driver.close()
+            return
+        for item in item_list:
             try:
-                # Then Find the item list of that respective subdivision of the menu
-                item_list_parent = wait_and_grab(section, By.XPATH, ".//div/div/ul")
+                item_name = item.find_element(By.CSS_SELECTOR,'[itemprop="name"]').text
             except:
                 continue
-            item_list = item_list_parent.find_elements(By.XPATH, "*")
+            # Skip over any items that have no children
+            # item_children = item.find_elements(By.XPATH, "*")
 
-            # # We then iterate through the items in that subdivision.
-            for item in item_list:
-                # Skip over any items that have no children
-                item_children = item.find_elements(By.XPATH, "*")
+            # Then grab everything you need about the food item
+            price_info = item.find_element(By.TAG_NAME,"h4").text
 
-                # Then grab everything you need about the food item
-                item_info_bits = item.text.split("\n")
+            # if len(item_children) == 0 or len(item_info_bits) == 0:
+            #     print(f"Fake Item detected: {item_info_bits}")
+            #     continue
 
-                if len(item_children) == 0 or len(item_info_bits) == 0:
-                    print(f"Fake Item detected: {item_info_bits}")
-                    continue
+            # It's possible for the item to be sold out, so check for it, and skip over it if needed
+            if price_info == "SOLD OUT":
+                print("Item sold out")
+                continue
 
-                # It's possible for the item to be sold out, so check for it, and skip over it if needed
-                if item_info_bits[-1] == "SOLD OUT":
-                    print("Item sold out")
-                    continue
+            if price_info == "See Item":
+                # Open the item in view, and grab the price
+                print("Found a see item")
+                item.click()
 
-                if item_info_bits[-1] == "See Item":
-                    # Open the item in view, and grab the price
-                    print("Found a see item")
+                # Check if you ever entered your address before
+                if not addr_entered:
+                    # Grab the text field for putting your address
+                    addr_fld = wait_and_grab(rest_driver, By.XPATH,
+                                             "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div/div[1]/div[2]/form/input",
+                                             30)
+                    addr_fld.send_keys(self.adr)
+
+                    # Grab the first address that pops up
+                    addr_elem = wait_and_grab(rest_driver, By.XPATH,
+                                              "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[1]/div[2]/div/div/div[1]",
+                                              30)
+                    addr_elem.click()
+
+                    submit_btn = wait_and_grab(rest_driver, By.XPATH,
+                                               "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[4]/button",
+                                               30)
+                    submit_btn.click()
+
+                    addr_entered = True
+                    wait_for_elem(rest_driver, By.XPATH,
+                                  '//*[@id="container"]/div/div/div/div[2]/div/div/div/div/div/div/div/div/div[1]/div[2]')
                     item.click()
 
-                    # Check if you ever entered your address before
-                    if not addr_entered:
-                        # Grab the text field for putting your address
-                        addr_fld = wait_and_grab(rest_driver, By.XPATH,
-                                                 "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div/div[1]/div[2]/form/input",
-                                                 30)
-                        addr_fld.send_keys(self.adr)
+                # Grab the price
+                close_btn = wait_and_grab(rest_driver, By.CSS_SELECTOR,
+                                          ".MuiButtonBase-root.MuiIconButton-root.styles__StyledIconButton-sc-nhn5sv-0.cHIlwY",
+                                          20)
+                item_price = float(
+                    rest_driver.find_element(By.CSS_SELECTOR, ".styles__Right-sc-gvk0sj-3.ixLLwq").text[1:])
 
-                        # Grab the first address that pops up
-                        addr_elem = wait_and_grab(rest_driver, By.XPATH,
-                                                  "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[1]/div[2]/div/div/div[1]",
-                                                  30)
-                        addr_elem.click()
+                action = ActionChains(rest_driver)
+                action.move_to_element(close_btn).click().perform()
 
-                        submit_btn = wait_and_grab(rest_driver, By.XPATH,
-                                                   "/html/body/div[2]/div/div[1]/div/header/div/div/div[1]/div[2]/div/div[2]/div[1]/div/div/div/div[3]/div[2]/div/div/div/div[4]/button",
-                                                   30)
-                        submit_btn.click()
+            else:
+                item_price = clean_float(price_info)
 
-                        addr_entered = True
-                        wait_for_elem(rest_driver, By.XPATH,
-                                      '//*[@id="container"]/div/div/div/div[2]/div/div/div/div/div/div/div/div/div[1]/div[2]')
-                        item.click()
+            # Some item's don't have descriptions, so we need to take that into account
 
-                    # Grab the price
-                    close_btn = wait_and_grab(rest_driver, By.CSS_SELECTOR,
-                                              ".MuiButtonBase-root.MuiIconButton-root.styles__StyledIconButton-sc-nhn5sv-0.cHIlwY",
-                                              20)
-                    item_price = float(
-                        rest_driver.find_element(By.CSS_SELECTOR, ".styles__Right-sc-gvk0sj-3.ixLLwq").text[1:])
+            try:
+                item_desc = item.find_element(By.CSS_SELECTOR,'[itemprop="description"]').text
+            except:
+                item_desc = ""
 
-                    action = ActionChains(rest_driver)
-                    action.move_to_element(close_btn).click().perform()
 
-                else:
-                    if len(item_info_bits) == 2:
-                        item_price = float(item_info_bits[1][1:])
-                    else:
-                        item_price = float(item_info_bits[2][1:])
+            print(item_name, item_desc, item_price)
 
-                # Some item's don't have descriptions, so we need to take that into account
-                if len(item_info_bits) == 2:
-                    item_desc = ""
-                else:
-                    item_desc = item.find_element(By.XPATH, ".//div[contains(@class, "
-                                                            "'styles__Description-sc-1xl58bi-7 wvRWw')]"
-                                                            "/div").get_attribute("aria-label")
-                item_name = item_info_bits[0]
-
-                print(item_name, item_desc, item_price)
-
-                # We attempt to grab the image of the item. there are 3 cases we handle
+            # We attempt to grab the image of the item. there are 3 cases we handle
+            try:
+                # Case 1: Big image is being used to showcase the item, thus the html shifts around
+                item_img = item.find_element(By.XPATH, ".//div/div[1]/div/div[1]/div/img").get_attribute("src")
+            except:
                 try:
-                    # Case 1: Big image is being used to showcase the item, thus the html shifts around
-                    item_img = item.find_element(By.XPATH, ".//div/div[1]/div/div[1]/div/img").get_attribute("src")
+                    # Case 2: A smaller thumbnail image is being used to showcase the item.
+                    item_img = item.find_element(By.XPATH,
+                                                 ".//div/div[1]/div/div/div[2]/div/div/img").get_attribute("src")
                 except:
-                    try:
-                        # Case 2: A smaller thumbnail image is being used to showcase the item.
-                        item_img = item.find_element(By.XPATH,
-                                                     ".//div/div[1]/div/div/div[2]/div/div/img").get_attribute("src")
-                    except:
-                        # Case 3: It just has no image at all...
-                        item_img = f"{item_name} img not found"
+                    # Case 3: It just has no image at all...
+                    item_img = f"{item_name} img not found"
 
-                # Create a new food item with the stored info
-                food_item = FoodItem(item_name, item_desc, item_price, item_img)
+            # Create a new food item with the stored info
+            food_item = FoodItem(item_name, item_desc, item_price, item_img)
 
-                # Add this new food item to the restaurant
-                self.restaurant.add_item(food_item)
+            # Add this new food item to the restaurant
+            self.restaurant.add_item(food_item)
         try:
-            discnt = rest_driver.find_element(By.CSS_SELECTOR,".styles__OfferTxt-sc-wnmoxv-2.jyTFiJ").text
+            discnt = rest_driver.find_element(By.CSS_SELECTOR, ".styles__OfferTxt-sc-wnmoxv-2.jyTFiJ").text
             self.restaurant.add_discount(discnt)
         except:
             print("no discount")
-        # Once we are done with the restaurant, close the webdriver and add the restaurant
+            # Once we are done with the restaurant, close the webdriver and add the restaurant
         rest_driver.close()
 
 
-def sd_home_scrape(addr, food, limit=5):
+
+def sd_home_scrape(addr, food, limit=5,timeout= 25):
     # Create a new web driver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -237,11 +230,19 @@ def sd_home_scrape(addr, food, limit=5):
             rest_list.append(rest)
             url_cnt += 1
         for t in threads:
-            t.join()
+            t.join(timeout)
+            if t.is_alive():
+                print("timeout")
+                try:
+                    t.kill()
+                except:
+                    print("thread killed")
     # Return our results!
     print(f"Successfully Went through {rest_count} stores")
     for r in rest_list:
         print(r)
+        if len(r.catalogue) < 1:
+            rest_list.remove(r)
     return rest_list
 
 
