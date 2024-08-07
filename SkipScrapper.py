@@ -68,10 +68,6 @@ class ScrapeThread(threading.Thread):
             # Then grab everything you need about the food item
             price_info = item.find_element(By.TAG_NAME,"h4").text
 
-            # if len(item_children) == 0 or len(item_info_bits) == 0:
-            #     print(f"Fake Item detected: {item_info_bits}")
-            #     continue
-
             # It's possible for the item to be sold out, so check for it, and skip over it if needed
             if price_info == "SOLD OUT":
                 print("Item sold out")
@@ -194,8 +190,10 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25):
     total_thread_cnt = rest_count
     threads = []
     url_cnt = 0
-    # Iterate through a fixed amount of restaurants
+    # total thread cnt indicates how many threads we need to run in total to go through all restaurants
+    # it will create active_threads amount of workers each time to open a browser and grabs the menu item in parallel
     while total_thread_cnt>0:
+        # calculates how many threads to use
         thread_cnt = total_thread_cnt
         if total_thread_cnt > active_threads:
             thread_cnt = active_threads
@@ -224,25 +222,30 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25):
             print(f"{rest_name}, {rest_deliv_time}, {rest_deliv_fee}, {rest_rate}")
             rest = Restaurant(rest_name, "", "SkipTheDishes", rest_rate, -1, rest_deliv_fee, -1,
                               rest_deliv_time, rest_url)
+            # creates the workers
             t = ScrapeThread(rest_url, food, rest, addr)
             t.start()
             threads.append(t)
             rest_list.append(rest)
             url_cnt += 1
+        #joins the workers
         for t in threads:
             t.join(timeout)
+            # kills thread if it exceeds timeout
             if t.is_alive():
                 print("timeout")
                 try:
                     t.kill()
                 except:
                     print("thread killed")
-    # Return our results!
+
     print(f"Successfully Went through {rest_count} stores")
+    # removes restaurants with empty menus
     for r in rest_list:
         print(r)
         if len(r.catalogue) < 1:
             rest_list.remove(r)
+    # Return our results!
     return rest_list
 
 

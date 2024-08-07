@@ -26,6 +26,7 @@ class ScrapeThread(threading.Thread):
         driver = webdriver.Chrome(options=options)
         driver.get(self.url)
         time.sleep(1)
+        #input location
         loc_btn=wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/header/div/div/div/div/div/div[3]/div[2]/div")
         loc_btn.click()
         loc_fld = wait_and_grab(driver,By.CSS_SELECTOR,"[placeholder='Search for an address']")
@@ -50,30 +51,37 @@ class ScrapeThread(threading.Thread):
         except:
             print("no reviews")
 
-        #grab
+        #grab food items
         food_items = []
         try:
             food_items = wait_and_grab_elms(driver, By.CSS_SELECTOR, '[data-test^="store-item"]', 30)
         except:
             print("no items present")
         print(len(food_items))
+        # for each food item, grab their relative info
         for food_item in food_items:
             has_price = True
             has_discnt = False
+            #grab and seperate item description
             desc = food_item.text.split("\n")
             print(desc)
+            #grab item description
             descs = food_item.find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_elements(By.XPATH,"*")
             food_desc = ""
             food_price = 0
             discnt = ""
             food = None
             food_title = descs[0].text
+            #grabs food price
             try:
                 food_price = clean_float(descs[1].text)
             except:
                 print("no price")
                 has_price = False
+                continue
+            #test for discount
             try:
+                #if text color is green then grab it
                 discnt_test = descs[2].find_element(By.TAG_NAME,"span").value_of_css_property("color")
                 if discnt_test == "rgba(14, 131, 69, 1)":
                     discnt = descs[2].find_element(By.TAG_NAME,"span").text
@@ -82,11 +90,14 @@ class ScrapeThread(threading.Thread):
                     print(discnt_test,discnt," discountm")
             except:
                 print("no discount")
+            #if third section is not discount then it is description
             if not has_discnt:
+                # try to grab description
                 try:
                     food_desc = descs[2].text
                 except:
                     print("no desc")
+                #if the third section is not discount and there exists a fourth section then it is discount
                 try:
                     discnt = descs[3].text
                     discnt_clr = descs[3].find_element(By.TAG_NAME,"span").value_of_css_property("color")
@@ -96,6 +107,7 @@ class ScrapeThread(threading.Thread):
 
                 except:
                     print("no discount")
+            #try to grab image url
             try:
                 image = food_item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
             except:
@@ -105,8 +117,15 @@ class ScrapeThread(threading.Thread):
             if has_price:
                 food = FoodItem(food_title, food_desc, food_price, image)
                 self.restaurant.add_item(food)
+            # if there is discount then add it
             if has_discnt:
                 self.restaurant.add_discount(discnt,food,food.name)
+        #if restuarant has banner discount then add it
+        try:
+            banner_discnt = driver.find_element(By.CSS_SELECTOR,'[data-testid="eater-message-card"]').text
+            self.restaurant.add_discount(banner_discnt)
+        except:
+            print("no banner discnt")
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food,limit,timeout=25):
@@ -115,19 +134,17 @@ def ue_scrape(adr,food,limit,timeout=25):
     options.add_argument("--start-maximized")
     # options.add_argument("--headless")
     web = webdriver.Chrome(options=options)
-
     ue_init(adr,web)
+    #searches food in search bar
     srch_fld = wait_and_grab(web,By.ID,"search-suggestions-typeahead-input")
     srch_fld.send_keys(food)
     srch_fld.send_keys(Keys.ENTER)
-    try:
-        wait_for_elem(web,By.CSS_SELECTOR,".bo.fx.cr.br.cp",10)
-    except:
-        wait_for_elem(web,By.CSS_SELECTOR,".bo.id.dv.br.hk")
+    #grabs all restaurants
     restaurant_lst = wait_and_grab(web,By.CSS_SELECTOR,"[data-testid='feed-desktop']").find_elements(By.XPATH,"*")
     print(len(restaurant_lst))
     valid_restaurants = []
     urls = []
+    #get rid of all closed/pickup only restaurant
     for restaurant in restaurant_lst:
         desc = restaurant.text
         print(desc.split("\n"))
@@ -140,6 +157,7 @@ def ue_scrape(adr,food,limit,timeout=25):
         else:
             valid_restaurants.append(restaurant)
             urls.append(wait_and_grab(restaurant,By.TAG_NAME,"a").get_attribute("href"))
+    #limits the restaurants to limit
     rest_cnt = len(urls)
     if rest_cnt>limit:
         rest_cnt = limit
@@ -173,17 +191,19 @@ def ue_scrape(adr,food,limit,timeout=25):
         # joins the workers
         for t in threads:
             t.join(timeout)
+            #kills thread if it exceeds timeout
             if t.is_alive():
                 print("timeout")
                 try:
                     t.kill()
                 except:
                     print("thread killed")
-    restaurant_class_lst.pop(-1)
+    #removes restaurants with empty menus
     for restaurant in restaurant_class_lst:
         print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
+    return restaurant_class_lst
 
 
 if __name__ == "__main__":

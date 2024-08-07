@@ -47,13 +47,14 @@ class FoodItem:
     image: str
     d_json: dict
 
-    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str) -> None:
+    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str,id:int) -> None:
         self.name = food_name
         self.desc = food_desc
         self.price = food_price
         self.image = image
         self.calories = 0
         self.cpd = 0
+        self.id = id
 
         # Build a dictionary representing this item
         self.d_json = {}
@@ -122,6 +123,7 @@ class Restaurant:
         self.review_count = rev_count
         self.deliv_time = rest_deliv_time
         self.rest_cpd = 0
+        self.item_cnt = 0
 
         # Build a dictionary representing this item
         self.d_json = {}
@@ -153,13 +155,15 @@ class Restaurant:
         :param food_item:
         :return:
         """
+        food_item.id = self.item_cnt
         self.catalogue[food_item.name] = food_item
-        self.d_json["catalogue"][food_item.name] = food_item.d_json
+        self.item_cnt += 1
 
-    def add_discount(self,discount_str:str,food = None,food_name = ""):
+    def add_discount(self,discount_str:str,food:FoodItem = None):
+        #Doordash discount parsing
         if self.app == "DD":
             disc_dsc = discount_str.split(" ")
-            dsc_type = 0
+            #parsing Spend $X save $X discounts
             if "Spend" in discount_str:
                 dsc_type = 1
                 spend = disc_dsc[1]
@@ -168,6 +172,7 @@ class Restaurant:
                 save_int = clean_int(save)
                 self.discounts.append((dsc_type,[spend_int,save_int]))
                 self.d_json["discounts"][dsc_type].append([spend_int, save_int])
+            #parsing X% off on orders X$+
             elif "up" in discount_str:
                 dsc_type = 2
                 dsc = disc_dsc[0]
@@ -176,26 +181,40 @@ class Restaurant:
                 upto_int = clean_int(upto)
                 self.discounts.append((dsc_type, [dsc_int, upto_int]))
                 self.d_json["discounts"][dsc_type].append([dsc_int, upto_int])
+            #parsing 0$ delivery
             elif "delivery" in discount_str:
                 dsc_type = 3
                 self.discounts.append((dsc_type, []))
-
-                # Why dsc_type, []? what's the empty list for?
                 self.d_json["discounts"][dsc_type].append([])
         elif self.app == "UE":
+            #Buy 1 get 1 free for _ item
             if "Buy" in discount_str:
                 dsc_type = 1
-                self.discounts.append((dsc_type,food,food_name))
-
-                # What is the food param? like a FoodItem class? not sure that can be turned into a json, so let's just
-                # use it's food item name, since we already have it's dictionary representation, we just have to find it
-                self.d_json["discounts"][dsc_type].append(food_name)
+                self.discounts.append((dsc_type,[food.id]))
+                self.d_json["discounts"][dsc_type].append(food.id)
+            #Free item with X$ purchase
             elif "purchase" in discount_str:
                 dsc_type = 2
                 amount = clean_int(discount_str)
-                self.discounts.append((dsc_type,(amount,food,food_name)))
-                self.d_json["discounts"][dsc_type].append([food_name, amount])
+                self.discounts.append((dsc_type,[amount,food.id]))
+                self.d_json["discounts"][dsc_type].append([food.id, amount])
+            #Save with 0$ delivery when you order X$ or more
+            elif "delivery" in discount_str:
+                dsc_type = 3
+                self.discounts.append((dsc_type,[]))
+                self.d_json["discounts"][dsc_type].append([])
+            #Save X$ (up to X$) when you order X$ or more
+            elif "up to" in discount_str:
+                dsc_type = 4
+                discnt_desc = discount_str.split(" ")
+                save_int = clean_int(discnt_desc[1])
+                upto_int = clean_int(discnt_desc[4])
+                order_int = clean_int(discnt_desc[-3])
+                self.discounts.append((dsc_type, [save_int, upto_int,order_int]))
+                self.d_json["discounts"][dsc_type].append([save_int, upto_int,order_int])
+
         elif self.app == "SkipTheDishes":
+            #Free item with X$ purchase
             if "Free" in discount_str:
                 dsc_type = 1
                 discnt_desc = discount_str.split(" ")
@@ -205,15 +224,16 @@ class Restaurant:
                     item_name += w
                     item_name += " "
                 item_name = item_name[:-1]
-                self.discounts.append((1,(self.catalogue[item_name],price)))
-                self.d_json["discounts"][dsc_type].append([self.catalogue[item_name], price])
+                self.discounts.append((dsc_type,[self.catalogue[item_name].id,price]))
+                self.d_json["discounts"][dsc_type].append([self.catalogue[item_name].id, price])
+            #X$ off with X$ purchase
             elif "off" in discount_str:
                 dsc_type = 2
                 discnt_desc = discount_str.split(" ")
                 res1 = clean_int(discnt_desc[0])
                 res2 = clean_int(discnt_desc[-1])
 
-                self.discounts.append((2,(res1, res2)))
+                self.discounts.append((dsc_type,(res1, res2)))
                 self.d_json["discounts"][dsc_type].append([res1, res2])
 
     def __str__(self):
