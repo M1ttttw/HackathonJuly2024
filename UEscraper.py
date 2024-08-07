@@ -109,7 +109,7 @@ class ScrapeThread(threading.Thread):
                 self.restaurant.add_discount(discnt,food,food.name)
         print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
-def ue_scrape(adr,food,limit,timeout=25):
+def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")

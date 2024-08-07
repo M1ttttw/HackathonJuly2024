@@ -47,13 +47,14 @@ class FoodItem:
     image: str
     d_json: dict
 
-    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str) -> None:
+    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str,id:int) -> None:
         self.name = food_name
         self.desc = food_desc
         self.price = food_price
         self.image = image
         self.calories = 0
         self.cpd = 0
+        self.id = id
 
         # Build a dictionary representing this item
         self.d_json = {}
@@ -122,6 +123,7 @@ class Restaurant:
         self.review_count = rev_count
         self.deliv_time = rest_deliv_time
         self.rest_cpd = 0
+        self.item_cnt = 0
 
         # Build a dictionary representing this item
         self.d_json = {}
@@ -153,13 +155,14 @@ class Restaurant:
         :param food_item:
         :return:
         """
+
+        food_item.id = self.item_cnt
+        self.item_cnt += 1
         self.catalogue[food_item.name] = food_item
-        self.d_json["catalogue"][food_item.name] = food_item.d_json
 
     def add_discount(self,discount_str:str,food = None,food_name = ""):
         if self.app == "DD":
             disc_dsc = discount_str.split(" ")
-            dsc_type = 0
             if "Spend" in discount_str:
                 dsc_type = 1
                 spend = disc_dsc[1]
@@ -215,7 +218,6 @@ class Restaurant:
 
                 self.discounts.append((2,(res1, res2)))
                 self.d_json["discounts"][dsc_type].append([res1, res2])
-
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
                 "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)
