@@ -157,7 +157,7 @@ class ScrapeThread(threading.Thread):
 
 
 
-def sd_home_scrape(addr, food, limit=5,timeout= 25):
+def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
     # Create a new web driver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
