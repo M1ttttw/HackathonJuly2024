@@ -7,12 +7,6 @@ from selenium.webdriver.common.keys import Keys
 import time
 import threading
 
-#Options for chrome webdriver
-options = webdriver.ChromeOptions()
-options.add_argument("--start-maximized")
-# options.add_argument("--headless")
-web = webdriver.Chrome(options=options)
-
 
 #worker threads for opening a chome tab and extracting all the menu items
 class ScrapeThread(threading.Thread):
@@ -23,6 +17,9 @@ class ScrapeThread(threading.Thread):
         self.restaurant = restaurant
 
     def run(self):
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+
         driver = webdriver.Chrome(options=options)
         driver.get(self.url)
         time.sleep(1)
@@ -71,6 +68,12 @@ class ScrapeThread(threading.Thread):
 
 #main scraper
 def dd_scrape(adr,food,limit):
+    # Options for chrome webdriver
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    # options.add_argument("--headless")
+    web = webdriver.Chrome(options=options)
+
     #inits the doordash window
     dd_init(adr,food,web)
     #wait for a a specific icon that is the last in the loading order which indicates that the rest of the site is loaded
@@ -158,9 +161,10 @@ def dd_scrape(adr,food,limit):
             t.join()
     for restaurant in restaurant_class_lst:
         print(restaurant)
-    return restaurant_class_lst
-start_time = time.time()
-dd_scrape("1970 158a st","chicken",10)
-end_time = time.time()
-print(f"Test took {end_time - start_time} seconds for 10 restaurants")
+
+if __name__ == "__main__":
+    start_time = time.time()
+    dd_scrape("1970 158a st","chicken",10)
+    end_time = time.time()
+    print(f"Test took {end_time - start_time} seconds for 10 restaurants")
 

@@ -13,18 +13,18 @@ function search() {
 
     // Grab the input fields
     var addressField = document.getElementById("addressField");
-    var address = addressField.value;
+    var userAddress = addressField.value;
     var foodField = document.getElementById("foodField");
-    var food = foodField.value;
+    var userFood = foodField.value;
 
     // Notify what the current values are
-    console.log(`Adress: ${address}\nFood: ${food}\nUsing Skip: ${skipCB.checked}\nUsing DD: ${ddCB.checked}\nUsing UE: ${ueCB.checked}`);
+    console.log(`Adress: ${userAddress}\nFood: ${userFood}\nUsing Skip: ${skipCB.checked}\nUsing DD: ${ddCB.checked}\nUsing UE: ${ueCB.checked}`);
 
     // Check for errors
     var error = false;
 
     // Check if there are blank values in any of the two input fields
-    if (address == "" || food == "") {
+    if (userAddress == "" || userFood == "") {
         // Debug to alert that this condition works
         console.log("Error, cannot start without a value for address or food!")
 
@@ -95,6 +95,13 @@ function search() {
     var rests = [];
     if (skipCB.checked) {
         console.log("Launching Skip Scraper...");
+        $.ajax({
+            type: 'POST',
+            url: "app.py",
+            data: { address: userAddress, food: userFood }
+
+
+        });
     }
     if (ddCB.checked) {
         console.log("Launching DoorDash Scraper...");
