@@ -19,6 +19,8 @@ def sd():
 
     d = {}
     rests_lst = sd_home_scrape(addr, food, 10)
+    if rests_lst is []:
+        return jsonify({})
     for i, rest in enumerate(rests_lst):
         d[f"rest_{i}"] = rest.d_json
 
@@ -31,6 +33,8 @@ def dd():
 
     d = {}
     rests_lst = dd_scrape(addr, food, 10)
+    if rests_lst is []:
+        return jsonify({})
     for i, rest in enumerate(rests_lst):
         d[f"rest_{i}"] = rest.d_json
 
@@ -43,6 +47,8 @@ def ue():
 
     d = {}
     rests_lst = ue_scrape(addr, food, 10)
+    if rests_lst is []:
+        return jsonify({})
     for i, rest in enumerate(rests_lst):
         d[f"rest_{i}"] = rest.d_json
 
