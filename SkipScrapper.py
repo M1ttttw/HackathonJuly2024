@@ -8,9 +8,9 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from FoodClasses import Restaurant, FoodItem
+from FoodClasses import Restaurant, FoodItem, clean_int, clean_float
 import time
-from FoodClasses import clean_int,clean_float
+from GPT import acquire_calories
 
 
 class ScrapeThread(threading.Thread):
@@ -227,6 +227,7 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
             t.start()
             threads.append(t)
             rest_list.append(rest)
+            acquire_calories(rest)
             url_cnt += 1
         #joins the workers
         for t in threads:
@@ -252,10 +253,16 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
 if __name__ == "__main__":
     test_addr = "9937 157 St"
     test_food = "Beef"
-    test_limit = 10
+    test_limit = 2
 
     # This is a test
     start_time = time.time()
-    sd_home_scrape(test_addr, test_food, test_limit)
+    rest_lst = sd_home_scrape(test_addr, test_food, test_limit)
     end_time = time.time()
     print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
+
+    for rest in rest_lst:
+        for food_name in rest.catalogue:
+            food_item = rest.catalogue[food_name]
+            print(f"{food_item.name} has {food_item.calories} calories and a cpd of {food_item.cpd}")
+

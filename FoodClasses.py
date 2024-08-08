@@ -74,6 +74,16 @@ class FoodItem:
         self.d_json["cpd"] = self.cpd
 
         return self.cpd
+
+    def set_cal(self, cals) -> None:
+        """ Set the calories of this food item, and update it's d_json
+
+        :param cals:
+        :return:
+        """
+        self.calories = cals
+        self.d_json["calories"] = cals
+
     def __str__(self):
         return "\nname:"+self.name+"\ndescription:" + self.desc + "\nprice:"+str(self.price)+"\nimage link:"+self.image
 
@@ -99,7 +109,7 @@ class Restaurant:
     addr: str
     app: str
     url: str
-    catalogue: dict
+    catalogue: dict[str, FoodItem]
     rest_cpd: float
     rating: float
     dist_to_user: float
@@ -261,10 +271,12 @@ class Restaurant:
         else:
             num = show_num
 
-        # TODO: Sense catalogue is now a dictionary, this method needs to be rewritten...
-        # sort by cpd
-        self.catalogue.sort(key=lambda x: x.cpd, reverse=True)
-        final_list = self.catalogue[0: num]
+        # Grab all values of each key, value pair as a list
+        val_list = list(self.catalogue.values())
+
+        # Then we sort by cpd and grab the first show_num.
+        val_list.sort(key=lambda x: x.cpd, reverse=True)
+        final_list = val_list[0: num]
 
         # Calculate and set the CPD of the restaurant
         acc = 0
@@ -272,5 +284,6 @@ class Restaurant:
             acc += item.cpd
 
         self.rest_cpd = acc
+        self.d_json["rest_cpd"] = self.rest_cpd
         return final_list
 

@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from FoodClasses import clean_int, clean_float, Restaurant, FoodItem
 from browser import wait_and_grab, wait_and_grab_elms, wait_for_elem
 from selenium.webdriver.common.keys import Keys
+from GPT import acquire_calories
 import time
 import threading
 
@@ -203,6 +204,8 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
         print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
+        else:
+            acquire_calories(restaurant)
     return restaurant_class_lst
 
 
