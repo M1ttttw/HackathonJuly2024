@@ -74,6 +74,16 @@ class FoodItem:
         self.d_json["cpd"] = self.cpd
 
         return self.cpd
+
+    def set_cal(self, cals) -> None:
+        """ Set the calories of this food item, and update it's d_json
+
+        :param cals:
+        :return:
+        """
+        self.calories = cals
+        self.d_json["calories"] = cals
+
     def __str__(self):
         return "\nname:"+self.name+"\ndescription:" + self.desc + "\nprice:"+str(self.price)+"\nimage link:"+self.image
 
@@ -261,8 +271,10 @@ class Restaurant:
         else:
             num = show_num
 
-        # sort by cpd
+        # Grab all values of each key, value pair as a list
         val_list = list(self.catalogue.values())
+
+        # Then we sort by cpd and grab the first show_num.
         val_list.sort(key=lambda x: x.cpd, reverse=True)
         final_list = val_list[0: num]
 
