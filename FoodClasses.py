@@ -261,10 +261,10 @@ class Restaurant:
         else:
             num = show_num
 
-        # TODO: Sense catalogue is now a dictionary, this method needs to be rewritten...
         # sort by cpd
-        self.catalogue.sort(key=lambda x: x.cpd, reverse=True)
-        final_list = self.catalogue[0: num]
+        val_list = list(self.catalogue.values())
+        val_list.sort(key=lambda x: x.cpd, reverse=True)
+        final_list = val_list[0: num]
 
         # Calculate and set the CPD of the restaurant
         acc = 0
@@ -272,5 +272,6 @@ class Restaurant:
             acc += item.cpd
 
         self.rest_cpd = acc
+        self.d_json["rest_cpd"] = self.rest_cpd
         return final_list
 
