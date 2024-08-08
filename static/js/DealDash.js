@@ -148,6 +148,7 @@ function createItems(data){
         const du = rest_data.dist_to_user;
         const rating = rest_data.rating;
         const menu = JSON.parse(rest_data.catalogue);
+        console.log(name);
         for (const m_key in menu){
             const food_data = JSON.parse(menu[m_key]);
             const f_name = food_data.name;
@@ -156,6 +157,7 @@ function createItems(data){
             const f_image = food_data.image;
             const f_cal = food_data.calories;
             const f_cpd = food_data.cpd;
+            console.log(f_name);
         }
         const discounts = JSON.parse(rest_data.discounts);
         for (const d_key in discounts){
