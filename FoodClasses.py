@@ -47,7 +47,7 @@ class FoodItem:
     image: str
     d_json: dict
 
-    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str,id:int) -> None:
+    def __init__(self, food_name: str, food_desc: str, food_price: float,image:str,id=0) -> None:
         self.name = food_name
         self.desc = food_desc
         self.price = food_price
