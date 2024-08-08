@@ -22,9 +22,11 @@ def acquire_calories(rest: Restaurant) -> None:
     """
     # Build a input string to pass on as input for ChatGPT
     input_str = ""
+    i = 0
     for d_key in rest.catalogue:
         food_item = rest.catalogue[d_key]
-        input_str += f"{food_item.name}\n{food_item.desc}\n\n"
+        input_str += f"{i}. {food_item.name}\n{food_item.desc}\n\n"
+        i += 1
 
     # Start a new client and pass on our input_str
     client = OpenAI(
@@ -41,6 +43,7 @@ def acquire_calories(rest: Restaurant) -> None:
 
     # Set the calories for each food_item, and calculate their cpd
     cal_list = completion.choices[0].message.parsed.calories
+    print(f"cal_list length: {len(cal_list)}, catalogue length: {len(rest.catalogue)}")
     i = 0
     for d_key in rest.catalogue:
         food_item = rest.catalogue[d_key]
