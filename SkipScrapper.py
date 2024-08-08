@@ -8,9 +8,9 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from FoodClasses import Restaurant, FoodItem
+from FoodClasses import Restaurant, FoodItem, clean_int, clean_float
 import time
-from FoodClasses import clean_int,clean_float
+from GPT import acquire_calories
 
 
 class ScrapeThread(threading.Thread):
@@ -227,6 +227,7 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
             t.start()
             threads.append(t)
             rest_list.append(rest)
+            acquire_calories(rest)
             url_cnt += 1
         #joins the workers
         for t in threads:
