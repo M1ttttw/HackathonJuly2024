@@ -109,7 +109,7 @@ class Restaurant:
     addr: str
     app: str
     url: str
-    catalogue: dict
+    catalogue: dict[str, FoodItem]
     rest_cpd: float
     rating: float
     dist_to_user: float

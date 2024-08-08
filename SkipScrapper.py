@@ -253,10 +253,16 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
 if __name__ == "__main__":
     test_addr = "9937 157 St"
     test_food = "Beef"
-    test_limit = 10
+    test_limit = 2
 
     # This is a test
     start_time = time.time()
-    sd_home_scrape(test_addr, test_food, test_limit)
+    rest_lst = sd_home_scrape(test_addr, test_food, test_limit)
     end_time = time.time()
     print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
+
+    for rest in rest_lst:
+        for food_name in rest.catalogue:
+            food_item = rest.catalogue[food_name]
+            print(f"{food_item.name} has {food_item.calories} calories and a cpd of {food_item.cpd}")
+

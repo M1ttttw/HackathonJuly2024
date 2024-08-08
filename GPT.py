@@ -1,7 +1,3 @@
-from DDscraper import dd_scrape
-from SkipScrapper import sd_home_scrape
-from UEscraper import ue_scrape
-
 from FoodClasses import Restaurant, FoodItem
 from pydantic import BaseModel
 from openai import OpenAI
@@ -12,11 +8,11 @@ class CalList(BaseModel):
 
 
 # What is this?
-def dd_complete(adr,food,*args):
-    rest_lst = dd_scrape(adr,food,args[0],args[1])
-    for rest in rest_lst:
-        for item in rest_lst:
-            pass
+# def dd_complete(adr,food,*args):
+#     rest_lst = dd_scrape(adr,food,args[0],args[1])
+#     for rest in rest_lst:
+#         for item in rest_lst:
+#             pass
 
 def acquire_calories(rest: Restaurant) -> None:
     """ Calculate the calories for all the food items of the restaurant.
