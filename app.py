@@ -14,12 +14,15 @@ def init():
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
+    # Grab the data sent along with the request
     addr = r.form['address']
     food = r.form['food']
     scrape_t = int(r.form['scrape_type'])
 
+    # Create a response json
     d = {"rests":[]}
 
+    # Use the corresponding scraper
     match scrape_t:
         case 0:
             rests_lst = sd_home_scrape(addr, food, 2)
@@ -28,11 +31,14 @@ def scrape():
         case _:
             rests_lst = ue_scrape(addr, food, 10)
 
+    # If the scraper doesn't have anything, just return a empty response
     if rests_lst is []:
         return jsonify({})
     for i, rest in enumerate(rests_lst):
+        # Add the restaurant's d_json representation.
         d["rests"].append(rest.d_json)
     print(d)
+    # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
 
 

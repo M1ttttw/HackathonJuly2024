@@ -11,7 +11,7 @@ def get_cal_list(input_str: str, client) -> list:
     :param client:
     :return:
     """
-    # Use the input string as is
+    # Use the input string as is. Use the beta version of gpt
     completion = client.beta.chat.completions.parse(
         model="gpt-4o-2024-08-06",
         messages=[
@@ -84,13 +84,17 @@ def acquire_calories(rest: Restaurant, items_per_it: int) -> None:
 
         i += 1
 
+    # If there is still a non-empty input_str, that means there are some items left to pass on to gpt
     if input_str != "":
         bld_lst += get_cal_list(input_str, client)
 
     print(f"cal_list length: {len(bld_lst)}, catalogue length: {len(rest.catalogue)}")
     i = 0
     for d_key in rest.catalogue:
+        # Iterate through the food items
         food_item = rest.catalogue[d_key]
+
+        # Set the calories we got back from gpt and calculate the cpd for each item
         food_item.set_cal(bld_lst[i])
         food_item.calc_cal_per_dollar()
         i += 1
