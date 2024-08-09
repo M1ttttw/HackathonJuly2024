@@ -1,10 +1,7 @@
 from FoodClasses import Restaurant, FoodItem
 from pydantic import BaseModel
 from openai import OpenAI
-
-
-class CalList(BaseModel):
-    calories: list[float]
+import json
 
 
 def get_cal_list(input_str: str, client) -> list:
@@ -22,10 +19,30 @@ def get_cal_list(input_str: str, client) -> list:
              "content": "Given a list of food items and their descriptions, give an estimate (do not use a range of values) of how many calories each food item has"},
             {"role": "user", "content": input_str},
         ],
-        response_format=CalList
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "calories_schema",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "calories_list": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "description": "A list of calories, the ith number representing the ith item's number of calories. Should be the same length as the number of items given!"
+                        }
+                    },
+                    "required": ["calories_list"],
+                    "additionalProperties": False
+                }
+            }
+        }
     )
 
-    return completion.choices[0].message.parsed.calories
+    return json.loads(completion.choices[0].message.content)['calories_list']
 
 
 def acquire_calories(rest: Restaurant) -> None:
@@ -44,17 +61,19 @@ def acquire_calories(rest: Restaurant) -> None:
     i = 0
     for d_key in rest.catalogue:
         food_item = rest.catalogue[d_key]
-        new_str = f"{i}. {food_item.name}\n{food_item.desc}\n\n"
+        new_str = f"Item {i}. {food_item.name}\nItem {i} description: {food_item.desc}\n\n"
         tst_string = input_str + new_str
 
         # Test if we are over limit...
         if len(tst_string) > 4096:
+            print(f"{i}th iteration, character overlimit...")
+
             # Use the input string as is and add on to the lst.
             bld_lst += get_cal_list(input_str, client)
 
             # Reset input string to include this item
-            input_str = ""
-            input_str += new_str
+            i = 0
+            input_str = f"Item {i}. {food_item.name}\nItem {i} description: {food_item.desc}\n\n"
         else:
             input_str = tst_string
 
