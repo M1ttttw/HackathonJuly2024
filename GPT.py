@@ -45,7 +45,7 @@ def get_cal_list(input_str: str, client) -> list:
     return json.loads(completion.choices[0].message.content)['calories_list']
 
 
-def acquire_calories(rest: Restaurant) -> None:
+def acquire_calories(rest: Restaurant, items_per_it: int) -> None:
     """ Calculate the calories for all the food items of the restaurant.
 
     :param rest:
@@ -65,8 +65,11 @@ def acquire_calories(rest: Restaurant) -> None:
         tst_string = input_str + new_str
 
         # Test if we are over limit...
-        if len(tst_string) > 4096:
-            print(f"{i}th iteration, character overlimit...")
+        if i >= items_per_it or len(tst_string) > 4096:
+            if i >= items_per_it:
+                print(f"{i}th iteration, item overlimit...")
+            else:
+                print(f"{i}th iteration, character overlimit")
 
             # Use the input string as is and add on to the lst.
             bld_lst += get_cal_list(input_str, client)
