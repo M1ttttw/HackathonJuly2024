@@ -170,6 +170,7 @@ class Restaurant:
         food_item.id = self.item_cnt
         self.item_cnt += 1
         self.catalogue[food_item.name] = food_item
+        self.d_json["catalogue"][f"{food_item.name}"] = food_item.d_json
 
     def add_discount(self,discount_str:str,food:FoodItem = None):
         #Doordash discount parsing

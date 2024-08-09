@@ -135,39 +135,73 @@ function search() {
 }
 function createItems(data){
     console.log(data);
-    var i = 0;
-    while (i<data.rests.length){
+    // var i = 0;
+    // while (i<data.rests.length){
+    //     var section = $("#output").append("<ul></ul>");
+    //     const name = data.rests[i].name;
+    //     const addr = data.rests[i].addr;
+    //     const app = data.rests[i].app;
+    //     const url = data.rests[i].url;
+    //     const cpd = data.rests[i].rest_cpd;
+    //     const dt = data.rests[i].deliv_time;
+    //     const rc = data.rests[i].review_count;
+    //     const df = data.rests[i].deliv_fee;
+    //     const du = data.rests[i].dist_to_user;
+    //     const rating = data.rests[i].rating;
+    //     console.log(name);
+    //     for (const m_key in data.rests[i].catalogue){
+    //         const f_name = m_key.name;
+    //         const f_desc = m_key.desc;
+    //         const f_price = m_key.price;
+    //         const f_image = m_key.image;
+    //         const f_cal = m_key.calories;
+    //         const f_cpd = m_key.cpd;
+    //         console.log(f_name);
+    //     }
+    //     for (const d_key in data.rests[i].discounts){
+    //         for (const discount in d_key){
+    //             for (const discount_info in discount){
+
+    //             }
+    //         }
+    //     }
+    //     i++;
+    // }
+    for (let rest_name in data.rests) {
         var section = $("#output").append("<ul></ul>");
-        const name = data.rests[i].name;
-        const addr = data.rests[i].addr;
-        const app = data.rests[i].app;
-        const url = data.rests[i].url;
-        const cpd = data.rests[i].rest_cpd;
-        const dt = data.rests[i].deliv_time;
-        const rc = data.rests[i].review_count;
-        const df = data.rests[i].deliv_fee;
-        const du = data.rests[i].dist_to_user;
-        const rating = data.rests[i].rating;
+        let rest = data.rests[rest_name];
+        let name = rest["name"];
+        let addr = rest["addr"];
+        let app = rest["app"];
+        let url = rest["url"];
+        let cpd = rest["rest_cpd"];
+        let dt = rest["deliv_time"];
+        let rc = rest["review_count"];
+        let df = rest["deliv_fee"];
+        let du = rest["dist_to_user"];
+        let rating = rest["rating"];
+        let cat = rest["catalogue"];
+        let discounts = rest["discounts"];
         console.log(name);
-        for (const m_key in data.rests[i].catalogue){
-            const f_name = m_key.name;
-            const f_desc = m_key.desc;
-            const f_price = m_key.price;
-            const f_image = m_key.image;
-            const f_cal = m_key.calories;
-            const f_cpd = m_key.cpd;
+
+        for (let food_name in cat) {
+            let food_item = cat[food_name];
+            let f_name = food_item["name"];
+            let f_desc = food_item["desc"];
+            let f_price = food_item["price"];
+            let f_image = food_item["image"];
+            let f_cal = food_item["calories"];
+            let f_cpd = food_item["cpd"];
             console.log(f_name);
         }
-        for (const d_key in data.rests[i].discounts){
-            for (const discount in d_key){
-                for (const discount_info in discount){
 
-                }
+        for (let d_type in discounts){
+            disc_type = discounts[d_type];
+            for (let discount in disc_type) {
+                
             }
         }
-        i++;
     }
-    
 
 
     
