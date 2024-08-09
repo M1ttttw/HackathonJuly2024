@@ -62,10 +62,7 @@ def ue():
 
 if __name__ == "__main__":
     with app.app_context():
-        # Start by dropping all previous content
         db.drop_all()
-
-        # Then, Create all the schemas needed
         db.create_all()
 
     # It's already preset to run this html doc on a local server
