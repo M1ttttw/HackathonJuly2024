@@ -49,6 +49,7 @@ def acquire_calories(rest: Restaurant, items_per_it: int) -> None:
     """ Calculate the calories for all the food items of the restaurant.
 
     :param rest:
+    :param items_per_it:
     :return:
     """
     # Start a new client and pass on our input_str
