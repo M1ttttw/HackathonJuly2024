@@ -23,7 +23,6 @@ def sd():
         return jsonify({})
     for i, rest in enumerate(rests_lst):
         d["rests"].append(rest.d_json)
-        # print(jsonify(rest.d_json))
     print(d)
     return jsonify(d)
 

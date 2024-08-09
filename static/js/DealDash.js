@@ -102,7 +102,7 @@ function search() {
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
-            $('#output').text(data.rests[0].name).show();
+//            $('#output').text(data.rests[0].name).show();
             createItems(data);
         });
 
@@ -135,8 +135,9 @@ function search() {
 }
 function createItems(data){
     console.log(data);
+    var rest_cnt = 0;
     for (let rest_name in data.rests) {
-        var section = $("#output").append("<ul></ul>");
+
         let rest = data.rests[rest_name];
         let name = rest["name"];
         let addr = rest["addr"];
@@ -150,8 +151,19 @@ function createItems(data){
         let rating = rest["rating"];
         let cat = rest["catalogue"];
         let discounts = rest["discounts"];
+        var descs = $("#output").append("<div id="+rest_cnt.toString()+"></div>");
         console.log(name);
-
+        $(`<p> name: ${name}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p> address: ${addr}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p> app: ${app}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p> url: ${url}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p> delivery time: ${dt}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p> review count: ${rc}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p>delivery fee: ${df}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p>distance: ${du}</p>`).appendTo(`#${rest_cnt}`);
+        $(`<p>rating: ${rating}</p>`).appendTo(`#${rest_cnt}`);
+        $(`#${rest_cnt}`).append(`<ul id='${rest_cnt}_menu'></ul>`);
+        var food_cnt = 0;
         for (let food_name in cat) {
             let food_item = cat[food_name];
             let f_name = food_item["name"];
@@ -160,7 +172,10 @@ function createItems(data){
             let f_image = food_item["image"];
             let f_cal = food_item["calories"];
             let f_cpd = food_item["cpd"];
+            $(`<il id='${rest_cnt}_${food_cnt}'></il>`).appendTo(`#${rest_cnt}_menu`);
+            $(`item name:${f_name}`).appendTo(`#${rest_cnt}_${food_cnt}`);
             console.log(f_name);
+            food_cnt ++;
         }
 
         for (let d_type in discounts) {
@@ -169,6 +184,7 @@ function createItems(data){
                 
             }
         }
+        rest_cnt ++;
     }
 
 
