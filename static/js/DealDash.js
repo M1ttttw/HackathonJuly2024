@@ -102,7 +102,8 @@ function search() {
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
-            $('#output').text(data.rest_1).show();
+            $('#output').text(data.rests[0].name).show();
+            createItems(data);
         });
 
     }
@@ -133,39 +134,38 @@ function search() {
 
 }
 function createItems(data){
-    const rests = JSON.parse(data);
-    for (const key in rests) {
+    console.log(data);
+    var i = 0;
+    while (i<data.rests.length){
         var section = $("#output").append("<ul></ul>");
-        const rest_data = JSON.parse(rests[key]);
-        const name = rest_data.name;
-        const addr = rest_data.addr;
-        const app = rest_data.app;
-        const url = rest_data.url;
-        const cpd = rest_data.rest_cpd;
-        const dt = rest_data.deliv_time;
-        const rc = rest_data.review_count;
-        const df = rest_data.deliv_fee;
-        const du = rest_data.dist_to_user;
-        const rating = rest_data.rating;
-        const menu = JSON.parse(rest_data.catalogue);
-        for (const m_key in menu){
-            const food_data = JSON.parse(menu[m_key]);
-            const f_name = food_data.name;
-            const f_desc = food_data.desc;
-            const f_price = food_data.price;
-            const f_image = food_data.image;
-            const f_cal = food_data.calories;
-            const f_cpd = food_data.cpd;
+        const name = data.rests[i].name;
+        const addr = data.rests[i].addr;
+        const app = data.rests[i].app;
+        const url = data.rests[i].url;
+        const cpd = data.rests[i].rest_cpd;
+        const dt = data.rests[i].deliv_time;
+        const rc = data.rests[i].review_count;
+        const df = data.rests[i].deliv_fee;
+        const du = data.rests[i].dist_to_user;
+        const rating = data.rests[i].rating;
+        console.log(name);
+        for (const m_key in data.rests[i].catalogue){
+            const f_name = m_key.name;
+            const f_desc = m_key.desc;
+            const f_price = m_key.price;
+            const f_image = m_key.image;
+            const f_cal = m_key.calories;
+            const f_cpd = m_key.cpd;
+            console.log(f_name);
         }
-        const discounts = JSON.parse(rest_data.discounts);
-        for (const d_key in discounts){
-            const disnt_data = JSON.parse(discounts[d_key]);
-            for (const discount in disnt_data){
+        for (const d_key in data.rests[i].discounts){
+            for (const discount in d_key){
                 for (const discount_info in discount){
 
                 }
             }
         }
+        i++;
     }
     
 
