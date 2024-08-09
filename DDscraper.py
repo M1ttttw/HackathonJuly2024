@@ -28,10 +28,10 @@ class ScrapeThread(threading.Thread):
         #grab address
         self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.hNVOUs",10).text+" "+wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.kVKROG",10).text)
         #uses search bar in menu
-        item_fld = wait_and_grab(driver,By.ID,"item-search-field")
-        driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
-        item_fld.send_keys(self.food)
-        item_fld.send_keys(Keys.ENTER)
+        # item_fld = wait_and_grab(driver,By.ID,"item-search-field")
+        # driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
+        # item_fld.send_keys(self.food)
+        # item_fld.send_keys(Keys.ENTER)
         #DD unloads elements outside of screen so we must scroll through the page to load elements and add to our data
         #scrolls scrl_cnt amount of times through each menu and grabs all menu items
         scrl_cnt = 5
