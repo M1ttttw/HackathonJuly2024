@@ -28,7 +28,7 @@ class ScrapeThread(threading.Thread):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         rest_driver = webdriver.Chrome(options=options)
-        rest_driver.get(self.url)
+        rest_driver.get(f"{self.url}?search={self.food}")
 
         # We also need to grab the text that describes the restaurant's address
         rest_addr = wait_and_grab(rest_driver,By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
@@ -245,8 +245,8 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
         print(r)
         if len(r.catalogue) < 1:
             rest_list.remove(r)
-        # else:
-        #     acquire_calories(r)
+        else:
+            acquire_calories(r, 15)
     # Return our results!
     return rest_list
 
