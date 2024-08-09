@@ -1,10 +1,11 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
+from flask import request as r
 
 from SkipScrapper import sd_home_scrape
 from DDscraper import dd_scrape
 from UEscraper import ue_scrape
 
-# Setup the server
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -13,36 +14,36 @@ def init():
 
 @app.route('/skip', methods=['POST'])
 def sd():
-    addr = request.form['address']
-    food = request.form['food']
+    addr = r.form['address']
+    food = r.form['food']
 
-    d = {}
-    rests_lst = sd_home_scrape(addr, food, 10)
+    d = {"rests":[]}
+    rests_lst = sd_home_scrape(addr, food, 2)
     if rests_lst is []:
         return jsonify({})
     for i, rest in enumerate(rests_lst):
-        d[f"rest_{i}"] = rest.d_json
-
+        d["rests"].append(rest.d_json)
+        # print(jsonify(rest.d_json))
+    print(d)
     return jsonify(d)
 
 @app.route('/dash', methods=['POST'])
 def dd():
-    addr = request.form['address']
-    food = request.form['food']
+    addr = r.form['address']
+    food = r.form['food']
 
-    d = {}
+    d = {"rests":[]}
     rests_lst = dd_scrape(addr, food, 10)
     if rests_lst is []:
         return jsonify({})
     for i, rest in enumerate(rests_lst):
-        d[f"rest_{i}"] = rest.d_json
-
+        d["rests"].append(rest.d_json)
     return jsonify(d)
 
 @app.route('/eats', methods=['POST'])
 def ue():
-    addr = request.form['address']
-    food = request.form['food']
+    addr = r.form['address']
+    food = r.form['food']
 
     d = {}
     rests_lst = ue_scrape(addr, food, 10)
@@ -56,4 +57,4 @@ def ue():
 
 if __name__ == "__main__":
     # It's already preset to run this html doc on a local server
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
