@@ -1,12 +1,17 @@
 from flask import Flask, render_template, jsonify, request
-from FoodClasses import Restaurant, FoodItem
+from flask_sqlalchemy import SQLAlchemy
 
 from SkipScrapper import sd_home_scrape
 from DDscraper import dd_scrape
 from UEscraper import ue_scrape
 
-
+# Setup the server
 app = Flask(__name__)
+
+# Setup the database for the server
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+db = SQLAlchemy(app)
 
 @app.route('/')
 def init():
@@ -56,5 +61,9 @@ def ue():
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
     # It's already preset to run this html doc on a local server
     app.run(debug=True)
