@@ -13,7 +13,7 @@ def init():
     return render_template("DealDash.html")
 
 @app.route('/scrape', methods=['POST'])
-def sd():
+def scrape():
     addr = r.form['address']
     food = r.form['food']
     scrape_t = int(r.form['scrape_type'])
