@@ -19,6 +19,7 @@ def get_cal_list(input_str: str, client) -> list:
              "content": "Given a list of food items and their descriptions, give an estimate (do not use a range of values) of how many calories each food item has"},
             {"role": "user", "content": input_str},
         ],
+        temperature=0,
         response_format={
             "type": "json_schema",
             "json_schema": {
