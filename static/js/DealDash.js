@@ -97,8 +97,8 @@ function search() {
         console.log("Launching Skip Scraper...");
         $.ajax({
             type: 'POST',
-            url: "/skip",
-            data: { address: userAddress, food: userFood }
+            url: "/scrape",
+            data: { address: userAddress, food: userFood, scrape_type: 0 }
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
@@ -111,8 +111,8 @@ function search() {
         console.log("Launching DoorDash Scraper...");
         $.ajax({
             type: 'POST',
-            url: "/dash",
-            data: { address: userAddress, food: userFood }
+            url: "/scrape",
+            data: { address: userAddress, food: userFood, scrape_type: 1 }
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
@@ -123,8 +123,8 @@ function search() {
         console.log("Launching UberEats Scraper...");
         $.ajax({
             type: 'POST',
-            url: "/eats",
-            data: { address: userAddress, food: userFood }
+            url: "/scrape",
+            data: { address: userAddress, food: userFood, scrape_type: 2 }
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
