@@ -246,14 +246,14 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
         if len(r.catalogue) < 1:
             rest_list.remove(r)
         # else:
-        #     acquire_calories(r, 15)
+        #     acquire_calories(r, 50)
     # Return our results!
     return rest_list
 
 
 if __name__ == "__main__":
     test_addr = "9937 157 St"
-    test_food = "Beef"
+    test_food = "Chicken"
     test_limit = 2
 
     # This is a test
