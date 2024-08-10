@@ -274,15 +274,16 @@ class Restaurant:
         # Grab all values of each key, value pair as a list
         val_list = list(self.catalogue.values())
 
-        # Then we sort by cpd and grab the first show_num.
+        # Then we sort by cpd and grab the first show_num items.
         val_list.sort(key=lambda x: x.cpd, reverse=True)
         final_list = val_list[0: num]
+        best_food = final_list[0]
 
         # Calculate and set the CPD of the restaurant
         for i in range(len(final_list)):
             dj = final_list[i].d_json
             final_list[i] = dj
 
-        self.rest_cpd = final_list[0].cpd
+        self.rest_cpd = best_food.cpd
         self.d_json["rest_cpd"] = self.rest_cpd
         self.d_json["catalogue"] = final_list
