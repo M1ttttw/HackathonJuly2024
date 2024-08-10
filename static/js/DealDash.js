@@ -3,8 +3,9 @@ var inputAlert = false;
 var checkAlert = false;
 
 function search() {
-    
+    var has_btn = false;
     $( "#output" ).remove();
+    $("button").remove();
     $("body").append("<div id='output'></div>")
     // Notify that the search button is clicked for debugging purposes
     console.log("Search button clicked!");
@@ -107,6 +108,9 @@ function search() {
             // $('#output').text(data.address).show();
 //            $('#output').text(data.rests[0].name).show();
             createItems(data);
+            if (!has_btn){
+                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+            }
         });
 
     }
@@ -120,6 +124,9 @@ function search() {
         .done(function(data) {
             // $('#output').text(data.address).show();
             createItems(data);
+            if (!has_btn){
+                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+            }
         });
     }
     if (ueCB.checked) {
@@ -132,11 +139,15 @@ function search() {
         .done(function(data) {
             // $('#output').text(data.address).show();
             createItems(data);
+            if (!has_btn){
+                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+            }
         });
     }
 
 }
 function createItems(data){
+    has_btn = true;
     console.log(data);
     var rest_cnt = 0;
     for (let rest_name in data.rests) {
