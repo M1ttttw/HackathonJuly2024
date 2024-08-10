@@ -179,7 +179,7 @@ def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
         else:
-            acquire_calories(restaurant, 50)
+            acquire_calories(restaurant, 25)
 
     return restaurant_class_lst
 

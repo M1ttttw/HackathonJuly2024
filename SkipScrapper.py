@@ -246,7 +246,7 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
         if len(r.catalogue) < 1:
             rest_list.remove(r)
         else:
-            acquire_calories(r, 50)
+            acquire_calories(r, 25)
     # Return our results!
     return rest_list
 
