@@ -166,10 +166,10 @@ class Restaurant:
         :param food_item:
         :return:
         """
-
-        food_item.id = self.item_cnt
-        self.item_cnt += 1
-        self.catalogue[food_item.name] = food_item
+        if food_item.price>5:
+            food_item.id = self.item_cnt
+            self.item_cnt += 1
+            self.catalogue[food_item.name] = food_item
 
     def add_discount(self,discount_str:str,food:FoodItem = None):
         #Doordash discount parsing

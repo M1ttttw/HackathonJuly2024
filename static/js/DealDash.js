@@ -165,7 +165,7 @@ function createItems(data){
         let rating = rest["rating"];
         let cat = rest["catalogue"];
         let discounts = rest["discounts"];
-        var descs = $("#output").append("<div id="+rest_cnt.toString()+"></div>");
+        var descs = $("#output").append("<div class='restaurant' id="+rest_cnt.toString()+"></div>");
         console.log(name);
         $("<p> name:"+ name +"</p>").appendTo(`#${rest_cnt}`);
         $("<p> address:"+ addr+"</p>").appendTo(`#${rest_cnt}`);
@@ -176,7 +176,7 @@ function createItems(data){
         $(`<p>delivery fee: ${df}</p>`).appendTo(`#${rest_cnt}`);
         $(`<p>distance: ${du}</p>`).appendTo(`#${rest_cnt}`);
         $(`<p>rating: ${rating}</p>`).appendTo(`#${rest_cnt}`);
-        $(`#${rest_cnt}`).append(`<ul id='${rest_cnt}_menu'></ul>`);
+        $(`#${rest_cnt}`).append(`<div id='${rest_cnt}_menu' class='menu'></div>`);
         var food_cnt = 0;
         var max_food_cnt = 5;
         for (let food_name in cat) {
@@ -187,7 +187,7 @@ function createItems(data){
             let f_image = food_item["image"];
             let f_cal = food_item["calories"];
             let f_cpd = food_item["cpd"];
-            $(`<il id='${rest_cnt}_${food_cnt}'></il>`).appendTo(`#${rest_cnt}_menu`);
+            $(`<div id='${rest_cnt}_${food_cnt}' class='item'></div>`).appendTo(`#${rest_cnt}_menu`);
             $("<img src='"+f_image+"'>").appendTo(`#${rest_cnt}_${food_cnt}`);
             $("<p>item name:"+f_name+"</p>").appendTo(`#${rest_cnt}_${food_cnt}`);
             $("<p>item description:"+f_desc+"</p>").appendTo(`#${rest_cnt}_${food_cnt}`);

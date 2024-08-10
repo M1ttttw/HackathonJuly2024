@@ -5,7 +5,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
@@ -17,6 +16,7 @@
 
         p {
             margin: 0px 10px 0px 10px;
+            padding-bottom: 10px;
         }
 
         div.form-check {
@@ -29,6 +29,36 @@
 
         button {
             margin: 10px 10px 10px 10px;
+        }
+        .menu{
+            margin: 5px;
+            border: 2px solid black;
+            background-color: white;
+            height:400px;
+            width:500px;
+            overflow-x:hidden;
+            position: absolute;
+            display: none;
+
+        }
+        .item{
+            padding: 10px;
+            border-bottom: 5px solid gray;
+        }
+        .restaurant{
+            height:auto;
+            width:500px;
+            overflow-y:hidden;
+            border: 2px solid gray;
+            background-color: #DBDCDC;
+            float: left;
+         }
+         .restaurant:hover .menu {
+            display: block;
+        }
+        img{
+            width : 200px;
+            height : 180px;
         }
     </style>
     
