@@ -27,11 +27,11 @@ def scrape():
     # Use the corresponding scraper
     rests_lst = []
     if isSD == 'true':
-        rests_lst += sd_home_scrape(addr, food, 6)
+        rests_lst += sd_home_scrape(addr, food, 2)
     if isDD == 'true':
-        rests_lst += dd_scrape(addr, food, 6)
+        rests_lst += dd_scrape(addr, food, 2)
     if isUE == 'true':
-        rests_lst += ue_scrape(addr, food, 6)
+        rests_lst += ue_scrape(addr, food, 2)
 
     # If the scraper doesn't have anything, just return a empty response
     if rests_lst is []:
@@ -44,7 +44,7 @@ def scrape():
     # Sort by restaurant cpd.
     d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
 
-    print(d)
+    # print(d)
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
 

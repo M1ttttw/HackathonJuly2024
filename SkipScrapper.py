@@ -54,7 +54,7 @@ class ScrapeThread(threading.Thread):
         item_list = rest_driver.find_elements(By.CSS_SELECTOR,".styles__ListItem-sc-120s71t-3.fpnvFo")
             # # We then iterate through the items in that subdivision.
         if len(item_list) > 150:
-            print(self.restaurant.name," too many items")
+            # print(self.restaurant.name," too many items")
             rest_driver.close()
             return
         for item in item_list:
@@ -75,7 +75,7 @@ class ScrapeThread(threading.Thread):
 
             if price_info == "See Item":
                 # Open the item in view, and grab the price
-                print("Found a see item")
+                # print("Found a see item")
                 item.click()
 
                 # Check if you ever entered your address before
@@ -123,7 +123,7 @@ class ScrapeThread(threading.Thread):
                 item_desc = ""
 
 
-            print(item_name, item_desc, item_price)
+            # print(item_name, item_desc, item_price)
 
             # We attempt to grab the image of the item. there are 3 cases we handle
             try:
@@ -179,7 +179,7 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
         return []
     rests_parent = wait_and_grab(web, By.XPATH, "/html/body/div[2]/div/main/div/div/div/div/ul")
     rests_UI_list = rests_parent.find_elements(By.XPATH, "*")
-    print(f"there are {len(rests_UI_list)} restaurants currently in view")
+    # print(f"there are {len(rests_UI_list)} restaurants currently in view")
 
     # Keep a counter to go through a limited number of restaurant.
     rest_count = len(rests_UI_list)
@@ -199,11 +199,11 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
             thread_cnt = active_threads
         total_thread_cnt -= thread_cnt
         for i in range(thread_cnt):
-            print(i)
+            # print(i)
             rest_UI = rests_UI_list[url_cnt]
             # Grab the url of the restaurant we want to check out
             rest_url = wait_and_grab(rest_UI, By.XPATH, ".//div/div[1]/a").get_attribute("href")
-            print(rest_url)
+            # print(rest_url)
 
             # We need to know the restaurant's information, thus, we grab the restaurant's info
             rest_info = rest_UI.text.split("\n")
@@ -219,7 +219,7 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
             rest_deliv_fee = float(rest_deliv_fee_split[0][1:])
 
 
-            print(f"{rest_name}, {rest_deliv_time}, {rest_deliv_fee}, {rest_rate}")
+            # print(f"{rest_name}, {rest_deliv_time}, {rest_deliv_fee}, {rest_rate}")
             rest = Restaurant(rest_name, "", "SkipTheDishes", rest_rate, -1, rest_deliv_fee, -1,
                               rest_deliv_time, rest_url)
             # creates the workers
@@ -248,10 +248,10 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
             if t.is_alive():
                 is_alive = True
         time.sleep(0.5)
-    print(f"Successfully Went through {rest_count} stores")
+    # print(f"Successfully Went through {rest_count} stores")
     # removes restaurants with empty menus
     for r in rest_list:
-        print(r)
+        # print(r)
         if len(r.catalogue) < 1:
             rest_list.remove(r)
         else:
@@ -269,10 +269,10 @@ if __name__ == "__main__":
     start_time = time.time()
     rest_lst = sd_home_scrape(test_addr, test_food, test_limit)
     end_time = time.time()
-    print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
+    # print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
 
     for rest in rest_lst:
         for food_name in rest.catalogue:
             food_item = rest.catalogue[food_name]
-            print(f"{food_item.name} has {food_item.calories} calories and a cpd of {food_item.cpd}")
+            # print(f"{food_item.name} has {food_item.calories} calories and a cpd of {food_item.cpd}")
 

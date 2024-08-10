@@ -57,14 +57,14 @@ class ScrapeThread(threading.Thread):
             food_items = wait_and_grab_elms(driver, By.CSS_SELECTOR, '[data-test^="store-item"]', 30)
         except:
             print("no items present")
-        print(len(food_items))
+        # print(len(food_items))
         # for each food item, grab their relative info
         for food_item in food_items:
             has_price = True
             has_discnt = False
             #grab and seperate item description
             desc = food_item.text.split("\n")
-            print(desc)
+            # print(desc)
             #grab item description
             descs = food_item.find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_element(By.XPATH,"*").find_elements(By.XPATH,"*")
             food_desc = ""
@@ -87,7 +87,7 @@ class ScrapeThread(threading.Thread):
                     discnt = descs[2].find_element(By.TAG_NAME,"span").text
                 if len(discnt) > 0:
                     has_discnt = True
-                    print(discnt_test,discnt," discountm")
+                    # print(discnt_test,discnt," discountm")
             except:
                 print("no discount")
             #if third section is not discount then it is description
@@ -103,7 +103,7 @@ class ScrapeThread(threading.Thread):
                     discnt_clr = descs[3].find_element(By.TAG_NAME,"span").value_of_css_property("color")
                     if len(discnt) > 0:
                         has_discnt = True
-                        print(discnt,discnt_clr," discountm2")
+                        # print(discnt,discnt_clr," discountm2")
 
                 except:
                     print("no discount")
@@ -126,7 +126,7 @@ class ScrapeThread(threading.Thread):
             self.restaurant.add_discount(banner_discnt)
         except:
             print("no banner discnt")
-        print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
+        # print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     # Options for chrome webdriver
@@ -141,13 +141,13 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     srch_fld.send_keys(Keys.ENTER)
     #grabs all restaurants
     restaurant_lst = wait_and_grab(web,By.CSS_SELECTOR,"[data-testid='feed-desktop']").find_elements(By.XPATH,"*")
-    print(len(restaurant_lst))
+    # print(len(restaurant_lst))
     valid_restaurants = []
     urls = []
     #get rid of all closed/pickup only restaurant
     for restaurant in restaurant_lst:
         desc = restaurant.text
-        print(desc.split("\n"))
+        # print(desc.split("\n"))
         if "Pick it up" in desc:
             print("pick up only")
             pass
@@ -176,9 +176,9 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
         total_thread_cnt -= thread_cnt
         # parses the restaurant description and creates the restaurant class
         for i in range(thread_cnt):
-            print(total_thread_cnt)
+            # print(total_thread_cnt)
             desc = valid_restaurants[url_cnt].text.split("\n")
-            print(desc)
+            # print(desc)
             name = desc[0]
             try:
                 rating = clean_float(desc[-2])
@@ -188,7 +188,7 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)
-            print(urls[url_cnt])
+            # print(urls[url_cnt])
             t.start()
             threads.append(t)
             url_cnt += 1
@@ -214,7 +214,7 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
         time.sleep(0.5)
     #removes restaurants with empty menus
     for restaurant in restaurant_class_lst:
-        print(restaurant)
+        # print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
         else:
