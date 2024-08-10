@@ -95,63 +95,14 @@ function search() {
 
     if (error) return;
 
-    // Individually check which delivery services are checked, and call their corresponding scrapers.
-//     // var rests = [];
-//     if (skipCB.checked) {
-//         console.log("Launching Skip Scraper...");
-//         $.ajax({
-//             type: 'POST',
-//             url: "/scrape",
-//             data: { address: userAddress, food: userFood, scrape_type: 0 }
-//         })
-//         .done(function(data) {
-//             // $('#output').text(data.address).show();
-// //            $('#output').text(data.rests[0].name).show();
-//             createItems(data);
-//             if (!has_btn){
-//                 $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
-//             }
-//         });
-
-//     }
-//     if (ddCB.checked) {
-//         console.log("Launching DoorDash Scraper...");
-//         $.ajax({
-//             type: 'POST',
-//             url: "/scrape",
-//             data: { address: userAddress, food: userFood, scrape_type: 1 }
-//         })
-//         .done(function(data) {
-//             // $('#output').text(data.address).show();
-//             createItems(data);
-//             if (!has_btn){
-//                 $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
-//             }
-//         });
-//     }
-//     if (ueCB.checked) {
-//         console.log("Launching UberEats Scraper...");
-//         $.ajax({
-//             type: 'POST',
-//             url: "/scrape",
-//             data: { address: userAddress, food: userFood, scrape_type: 2 }
-//         })
-//         .done(function(data) {
-//             // $('#output').text(data.address).show();
-//             createItems(data);
-//             if (!has_btn){
-//                 $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
-//             }
-//         });
-//     }
-
+    // Use a ajax request, and pass in our check box values + address and food.
     $.ajax({
         type: 'POST',
         url: "/scrape",
         data: { address: userAddress, food: userFood, skip: skipCB.checked, dash: ddCB.checked, eats: ueCB.checked }
     })
     .done(function(data) {
-        // $('#output').text(data.address).show();
+        // Create UI elements and display them based off the data we get back
         createItems(data);
         if (!has_btn){
             $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
