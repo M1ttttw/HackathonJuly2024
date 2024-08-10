@@ -170,7 +170,20 @@ class Restaurant:
             food_item.id = self.item_cnt
             self.item_cnt += 1
             self.catalogue[food_item.name] = food_item
-
+    def check_discount_dup(self,disc):
+        disc_args = disc[1]
+        disc_type = disc[0]
+        for discount in self.discounts:
+            unique = False
+            if discount[0] == disc_type:
+                for i in range(len(disc_args)):
+                    if disc_args[i] != discount[1][i]:
+                        unique = True
+            else:
+                unique = True
+            if not unique:
+                return False
+        return True
     def add_discount(self,discount_str:str,food:FoodItem = None):
         #Doordash discount parsing
         if self.app == "DD":
@@ -182,9 +195,10 @@ class Restaurant:
                 spend_int = clean_int(spend)
                 save = disc_dsc[3]
                 save_int = clean_int(save)
-
-                self.discounts.append((dsc_type,[spend_int,save_int]))
-                self.d_json["discounts"][dsc_type].append([spend_int, save_int])
+                disc = (dsc_type,[spend_int,save_int])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([spend_int, save_int])
             #parsing X% off on orders X$+
             elif "up" in discount_str:
                 dsc_type = 2
@@ -192,30 +206,40 @@ class Restaurant:
                 dsc_int = clean_int(dsc)
                 upto = disc_dsc[4]
                 upto_int = clean_int(upto)
-                self.discounts.append((dsc_type, [dsc_int, upto_int]))
-                self.d_json["discounts"][dsc_type].append([dsc_int, upto_int])
+                disc = (dsc_type, [dsc_int, upto_int])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([dsc_int, upto_int])
             #parsing 0$ delivery
             elif "delivery" in discount_str:
                 dsc_type = 3
-                self.discounts.append((dsc_type, []))
-                self.d_json["discounts"][dsc_type].append([])
+                disc = (dsc_type, [])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([])
         elif self.app == "UE":
             #Buy 1 get 1 free for _ item
             if "Buy" in discount_str:
                 dsc_type = 1
-                self.discounts.append((dsc_type,[food.id]))
-                self.d_json["discounts"][dsc_type].append([food.name])
+                disc = (dsc_type,[food.id])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([food.name])
             #Free item with X$ purchase
             elif "purchase" in discount_str:
                 dsc_type = 2
                 amount = clean_int(discount_str)
-                self.discounts.append((dsc_type,[amount,food.id]))
-                self.d_json["discounts"][dsc_type].append([food.name, amount])
+                disc = (dsc_type,[amount,food.id])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([food.name, amount])
             #Save with 0$ delivery when you order X$ or more
             elif "delivery" in discount_str:
                 dsc_type = 3
-                self.discounts.append((dsc_type,[]))
-                self.d_json["discounts"][dsc_type].append([])
+                disc = (dsc_type,[])
+                if self.check_discount_dup(disc):
+                    self.discounts.append((dsc_type,[]))
+                    self.d_json["discounts"][dsc_type].append([])
             #Save X$ (up to X$) when you order X$ or more
             elif "up to" in discount_str:
                 dsc_type = 4
@@ -223,8 +247,10 @@ class Restaurant:
                 save_int = clean_int(discnt_desc[1])
                 upto_int = clean_int(discnt_desc[4])
                 order_int = clean_int(discnt_desc[-3])
-                self.discounts.append((dsc_type, [save_int, upto_int,order_int]))
-                self.d_json["discounts"][dsc_type].append([save_int, upto_int,order_int])
+                disc = (dsc_type, [save_int, upto_int,order_int])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([save_int, upto_int,order_int])
 
         elif self.app == "SkipTheDishes":
             #Free item with X$ purchase
@@ -237,17 +263,20 @@ class Restaurant:
                     item_name += w
                     item_name += " "
                 item_name = item_name[:-1]
-                self.discounts.append((dsc_type,[self.catalogue[item_name].id,price]))
-                self.d_json["discounts"][dsc_type].append([self.catalogue[item_name].name, price])
+                disc = (dsc_type,[self.catalogue[item_name].id,price])
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([self.catalogue[item_name].name, price])
             #X$ off with X$ purchase
             elif "off" in discount_str:
                 dsc_type = 2
                 discnt_desc = discount_str.split(" ")
                 res1 = clean_int(discnt_desc[0])
                 res2 = clean_int(discnt_desc[-1])
-
-                self.discounts.append((dsc_type,(res1, res2)))
-                self.d_json["discounts"][dsc_type].append([res1, res2])
+                disc = (dsc_type,(res1, res2))
+                if self.check_discount_dup(disc):
+                    self.discounts.append(disc)
+                    self.d_json["discounts"][dsc_type].append([res1, res2])
     def __str__(self):
         string = ("name:"+self.name + "\naddress:"+ self.addr+"\napp:"+self.app+
                 "\ndelivery fee:"+str(self.deliv_fee)+"\ndelivery time:"+str(self.deliv_time)+"\ndistance to user:"+str(self.dist_to_user)

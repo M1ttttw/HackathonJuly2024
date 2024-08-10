@@ -76,7 +76,7 @@ class ScrapeThread(threading.Thread):
             try:
                 food_price = clean_float(descs[1].text)
             except:
-                print("no price")
+                # print("no price")
                 has_price = False
                 continue
             #test for discount
@@ -89,14 +89,16 @@ class ScrapeThread(threading.Thread):
                     has_discnt = True
                     # print(discnt_test,discnt," discountm")
             except:
-                print("no discount")
+                pass
+                # print("no discount")
             #if third section is not discount then it is description
             if not has_discnt:
                 # try to grab description
                 try:
                     food_desc = descs[2].text
                 except:
-                    print("no desc")
+                    pass
+                    # print("no desc")
                 #if the third section is not discount and there exists a fourth section then it is discount
                 try:
                     discnt = descs[3].text
@@ -106,12 +108,13 @@ class ScrapeThread(threading.Thread):
                         # print(discnt,discnt_clr," discountm2")
 
                 except:
-                    print("no discount")
+                    pass
+                    # print("no discount")
             #try to grab image url
             try:
                 image = food_item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
             except:
-                print("image not found")
+                # print("image not found")
                 image = "not found"
             # add fooditem to restaurant class
             if has_price:
@@ -125,7 +128,8 @@ class ScrapeThread(threading.Thread):
             banner_discnt = driver.find_element(By.CSS_SELECTOR,'[data-testid="eater-message-card"]').text
             self.restaurant.add_discount(banner_discnt)
         except:
-            print("no banner discnt")
+            pass
+            # print("no banner discnt")
         # print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
 def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:

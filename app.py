@@ -27,11 +27,18 @@ def scrape():
     # Use the corresponding scraper
     rests_lst = []
     if isSD == 'true':
-        rests_lst += sd_home_scrape(addr, food, 2)
+        rests_lst += sd_home_scrape(addr, food, 6)
     if isDD == 'true':
-        rests_lst += dd_scrape(addr, food, 2)
+        rests_lst += dd_scrape(addr, food, 6)
     if isUE == 'true':
-        rests_lst += ue_scrape(addr, food, 2)
+        hacky_fix = 0
+        while hacky_fix<5:
+            try:
+                rests_lst += ue_scrape(addr, food, 6)
+                hacky_fix = 5
+            except:
+                print("ue_broken")
+                hacky_fix += 1
 
     # If the scraper doesn't have anything, just return a empty response
     if rests_lst is []:
@@ -44,11 +51,11 @@ def scrape():
     # Sort by restaurant cpd.
     d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
 
-    # print(d)
+    print(d)
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
 
 
 if __name__ == "__main__":
     # It's already preset to run this html doc on a local server
-    app.run(host="0.0.0.0")
+    app.run(port=3000)
