@@ -3,6 +3,9 @@ var inputAlert = false;
 var checkAlert = false;
 
 function search() {
+    
+    $( "#output" ).remove();
+    $("body").append("<div id='output'></div>")
     // Notify that the search button is clicked for debugging purposes
     console.log("Search button clicked!");
 

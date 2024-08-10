@@ -24,7 +24,7 @@ def scrape():
 
     # Use the corresponding scraper
     if scrape_t == 0:
-        rests_lst = sd_home_scrape(addr, food, 10)
+        rests_lst = sd_home_scrape(addr, food, 2)
     elif scrape_t == 1:
         rests_lst = dd_scrape(addr, food, 10)
     else:
