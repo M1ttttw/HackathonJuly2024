@@ -23,13 +23,12 @@ def scrape():
     d = {"rests":[]}
 
     # Use the corresponding scraper
-    match scrape_t:
-        case 0:
-            rests_lst = sd_home_scrape(addr, food, 2)
-        case 1:
-            rests_lst = dd_scrape(addr, food, 10)
-        case _:
-            rests_lst = ue_scrape(addr, food, 10)
+    if scrape_t == 0:
+        rests_lst = sd_home_scrape(addr, food, 2)
+    elif scrape_t == 1:
+        rests_lst = dd_scrape(addr, food, 10)
+    else:
+        rests_lst = ue_scrape(addr, food, 10)
 
     # If the scraper doesn't have anything, just return a empty response
     if rests_lst is []:
