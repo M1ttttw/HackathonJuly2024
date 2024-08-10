@@ -41,7 +41,9 @@ def scrape():
         rest.showcase_restaurant()
         d["rests"].append(rest.d_json)
 
+    # Sort by restaurant cpd.
     d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
+
     print(d)
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
