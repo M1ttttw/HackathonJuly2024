@@ -28,7 +28,7 @@ class ScrapeThread(threading.Thread):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         rest_driver = webdriver.Chrome(options=options)
-        rest_driver.get(f"{self.url}?search={self.food}")
+        rest_driver.get(f"{self.url}?search={self.food.replace(" ", "%20")}")
 
         # We also need to grab the text that describes the restaurant's address
         rest_addr = wait_and_grab(rest_driver,By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
