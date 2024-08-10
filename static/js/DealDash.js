@@ -198,7 +198,7 @@ function createItems(data){
                 }
                 
                 if (discount_str.length>0){
-                    $(`<il id='${rest_cnt}_${discount_cnt}'>`+discount_str+"</il>").appendTo(`#${rest_cnt}_discount`); 
+                    $(`<il id='${rest_cnt}_${discount_cnt}'><p>`+discount_str+"</p></il>").appendTo(`#${rest_cnt}_discount`); 
                     discount_cnt ++;
                 }
             }

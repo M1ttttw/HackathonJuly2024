@@ -177,6 +177,16 @@ def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
                     t.kill()
                 except:
                     print("thread killed")
+    is_alive = False
+    for t in threads:
+        if t.is_alive():
+            is_alive = True
+    while is_alive:
+        is_alive = False
+        for t in threads:
+            if t.is_alive():
+                is_alive = True
+        time.sleep(0.5)
     for restaurant in restaurant_class_lst:
         print(restaurant)
         if len(restaurant.catalogue) < 1:

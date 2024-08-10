@@ -238,7 +238,16 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
                     t.kill()
                 except:
                     print("thread killed")
-
+    is_alive = False
+    for t in threads:
+        if t.is_alive():
+            is_alive = True
+    while is_alive:
+        is_alive = False
+        for t in threads:
+            if t.is_alive():
+                is_alive = True
+        time.sleep(0.5)
     print(f"Successfully Went through {rest_count} stores")
     # removes restaurants with empty menus
     for r in rest_list:

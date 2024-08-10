@@ -182,6 +182,7 @@ class Restaurant:
                 spend_int = clean_int(spend)
                 save = disc_dsc[3]
                 save_int = clean_int(save)
+
                 self.discounts.append((dsc_type,[spend_int,save_int]))
                 self.d_json["discounts"][dsc_type].append([spend_int, save_int])
             #parsing X% off on orders X$+
