@@ -27,11 +27,11 @@ def scrape():
     # Use the corresponding scraper
     rests_lst = []
     if isSD == 'true':
-        rests_lst += sd_home_scrape(addr, food, 2)
+        rests_lst += sd_home_scrape(addr, food, 6)
     if isDD == 'true':
-        rests_lst += dd_scrape(addr, food, 2)
+        rests_lst += dd_scrape(addr, food, 6)
     if isUE == 'true':
-        rests_lst += ue_scrape(addr, food, 2)
+        rests_lst += ue_scrape(addr, food, 6)
 
     # If the scraper doesn't have anything, just return a empty response
     if rests_lst is []:

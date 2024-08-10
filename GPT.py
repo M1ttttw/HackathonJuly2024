@@ -95,6 +95,9 @@ def acquire_calories(rest: Restaurant, items_per_it: int) -> None:
         food_item = rest.catalogue[d_key]
 
         # Set the calories we got back from gpt and calculate the cpd for each item
-        food_item.set_cal(bld_lst[i])
+        try:
+            food_item.set_cal(bld_lst[i])
+        except:
+            food_item.set_cal(0)
         food_item.calc_cal_per_dollar()
         i += 1
