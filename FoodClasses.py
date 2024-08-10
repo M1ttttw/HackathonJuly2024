@@ -157,7 +157,6 @@ class Restaurant:
     def add_addr(self,address:str):
         self.addr = address
         self.d_json["addr"] = address
-
     def add_item(self, food_item: FoodItem) -> None:
         """ Add the <food_item> to the catalogue
 
@@ -166,7 +165,7 @@ class Restaurant:
         :param food_item:
         :return:
         """
-        if food_item.price>5:
+        if food_item.price>5 and food_item.name not in self.catalogue:
             food_item.id = self.item_cnt
             self.item_cnt += 1
             self.catalogue[food_item.name] = food_item
@@ -174,6 +173,7 @@ class Restaurant:
         disc_args = disc[1]
         disc_type = disc[0]
         for discount in self.discounts:
+            # print(discount,disc)
             unique = False
             if discount[0] == disc_type:
                 for i in range(len(disc_args)):
