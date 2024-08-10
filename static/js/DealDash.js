@@ -153,10 +153,10 @@ function createItems(data){
         let discounts = rest["discounts"];
         var descs = $("#output").append("<div id="+rest_cnt.toString()+"></div>");
         console.log(name);
-        $(`<p> name: ${name}</p>`).appendTo(`#${rest_cnt}`);
-        $(`<p> address: ${addr}</p>`).appendTo(`#${rest_cnt}`);
+        $("<p> name:"+ name +"</p>").appendTo(`#${rest_cnt}`);
+        $("<p> address:"+ addr+"</p>").appendTo(`#${rest_cnt}`);
         $(`<p> app: ${app}</p>`).appendTo(`#${rest_cnt}`);
-        $(`<p> url: ${url}</p>`).appendTo(`#${rest_cnt}`);
+        $("<p> url: "+url+"</p>").appendTo(`#${rest_cnt}`);
         $(`<p> delivery time: ${dt}</p>`).appendTo(`#${rest_cnt}`);
         $(`<p> review count: ${rc}</p>`).appendTo(`#${rest_cnt}`);
         $(`<p>delivery fee: ${df}</p>`).appendTo(`#${rest_cnt}`);
@@ -164,6 +164,7 @@ function createItems(data){
         $(`<p>rating: ${rating}</p>`).appendTo(`#${rest_cnt}`);
         $(`#${rest_cnt}`).append(`<ul id='${rest_cnt}_menu'></ul>`);
         var food_cnt = 0;
+        var max_food_cnt = 5;
         for (let food_name in cat) {
             let food_item = cat[food_name];
             let f_name = food_item["name"];
@@ -173,16 +174,57 @@ function createItems(data){
             let f_cal = food_item["calories"];
             let f_cpd = food_item["cpd"];
             $(`<il id='${rest_cnt}_${food_cnt}'></il>`).appendTo(`#${rest_cnt}_menu`);
-            $(`item name:${f_name}`).appendTo(`#${rest_cnt}_${food_cnt}`);
+            $("<img src='"+f_image+"'>").appendTo(`#${rest_cnt}_${food_cnt}`);
+            $("<p>item name:"+f_name+"</p>").appendTo(`#${rest_cnt}_${food_cnt}`);
+            $("<p>item description:"+f_desc+"</p>").appendTo(`#${rest_cnt}_${food_cnt}`);
+            $(`<p>item price:${f_price}\$</p>`).appendTo(`#${rest_cnt}_${food_cnt}`);
             console.log(f_name);
             food_cnt ++;
-        }
-
-        for (let d_type in discounts) {
-            disc_type = discounts[d_type];
-            for (let discount in disc_type) {
-                
+            if (food_cnt == max_food_cnt){
+                break;
             }
+        }
+        $(`#${rest_cnt}`).append(`<ul id='${rest_cnt}_discount'></ul>`);
+        for (let d_type in discounts) {
+            var discount_cnt = 0;
+            disc_args = discounts[d_type];
+            for (discount_arg of disc_args) {
+                var discount_str = "";
+                console.log(disc_args);
+                if (app === "SkipTheDishes"){
+                    if (d_type == 1){
+                        discount_str =  "Free "+ discount_arg[0] + ` on purchases ${discount_arg[1]}$ +`;
+
+                    }else if (d_type == 2){
+                        discount_str = `${discount_arg[0]}$ off with `+ `${discount_arg[1]}$ purchase+`;
+                    }
+                }else if(app === "UE"){
+                    if (d_type == 1){
+                        discount_str =  "Buy One Get One Free For "+ discount_arg[0];
+                    }else if(d_type==2){
+                        discount_str ="Free "+ discount_arg[0]+ ` on purchases ${discount_arg[1]}$ +`;
+                    }else if(d_type==3){
+                        discount_str = `0$ delivery on orders ${discount_arg[0]}$+`;
+
+                    }else if(d_type==4){
+                        discount_str =  `Save ${discount_arg[0]}$`+ ` (up to ${discount_arg[1]}$)`+ ` when you order ${discount_arg[2]}$ or more`;
+                    }
+                }else if(app==="DD"){
+                    if(d_type==1){
+                        discount_str = "Free "+ discount_arg[0] + ` on purchases ${discount_arg[1]}$ +`;
+                    }else if(d_type==2){
+                        discount_str = `${discount_arg[0]}% off`+ ` on orders ${discount_arg[1]}$ +`;
+                    }else if(d_type==3){
+                        discount_str = `0$ delivery on orders ${discount_arg[0]}$+`;
+                    }
+                }
+                
+                if (discount_str.length>0){
+                    $(`<il id='${rest_cnt}_${discount_cnt}'>`+discount_str+"</il>").appendTo(`#${rest_cnt}_discount`); 
+                    discount_cnt ++;
+                }
+            }
+            
         }
         rest_cnt ++;
     }
