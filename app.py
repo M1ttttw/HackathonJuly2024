@@ -24,7 +24,7 @@ def scrape():
 
     # Use the corresponding scraper
     if scrape_t == 0:
-        rests_lst = sd_home_scrape(addr, food, 2)
+        rests_lst = sd_home_scrape(addr, food, 10)
     elif scrape_t == 1:
         rests_lst = dd_scrape(addr, food, 10)
     else:
@@ -35,6 +35,7 @@ def scrape():
         return jsonify({})
     for i, rest in enumerate(rests_lst):
         # Add the restaurant's d_json representation.
+        rest.showcase_restaurant()
         d["rests"].append(rest.d_json)
     print(d)
     # We now have a dictionary representation ready to jsonify.
