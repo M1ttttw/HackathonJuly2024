@@ -35,6 +35,7 @@ def scrape():
         return jsonify({})
     for i, rest in enumerate(rests_lst):
         # Add the restaurant's d_json representation.
+        rest.showcase_restaurant()
         d["rests"].append(rest.d_json)
     print(d)
     # We now have a dictionary representation ready to jsonify.

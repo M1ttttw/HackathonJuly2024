@@ -141,7 +141,7 @@ class Restaurant:
         self.d_json["addr"] = rest_address
         self.d_json["app"] = rest_app
         self.d_json["url"] = rest_url
-        self.d_json["catalogue"] = {}
+        self.d_json["catalogue"] = []
         self.d_json["rating"] = rest_rating
         self.d_json["dist_to_user"] = rest_dist
         self.d_json["deliv_fee"] = rest_fee
@@ -170,7 +170,6 @@ class Restaurant:
         food_item.id = self.item_cnt
         self.item_cnt += 1
         self.catalogue[food_item.name] = food_item
-        self.d_json["catalogue"][f"{food_item.name}"] = food_item.d_json
 
     def add_discount(self,discount_str:str,food:FoodItem = None):
         #Doordash discount parsing
@@ -281,10 +280,11 @@ class Restaurant:
 
         # Calculate and set the CPD of the restaurant
         acc = 0
-        for item in final_list:
-            acc += item.cpd
+        for i in range(len(final_list)):
+            acc += final_list[i].cpd
+            dj = final_list[i].d_json
+            final_list[i] = dj
 
         self.rest_cpd = acc
         self.d_json["rest_cpd"] = self.rest_cpd
-        return final_list
-
+        self.d_json["catalogue"] = final_list
