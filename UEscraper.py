@@ -201,8 +201,8 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
         print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
-        else:
-            acquire_calories(restaurant, 25)
+    for restaurant in restaurant_class_lst:
+        acquire_calories(restaurant, 25)
     return restaurant_class_lst
 
 

@@ -203,7 +203,7 @@ class Restaurant:
             if "Buy" in discount_str:
                 dsc_type = 1
                 self.discounts.append((dsc_type,[food.id]))
-                self.d_json["discounts"][dsc_type].append(food.name)
+                self.d_json["discounts"][dsc_type].append([food.name])
             #Free item with X$ purchase
             elif "purchase" in discount_str:
                 dsc_type = 2
