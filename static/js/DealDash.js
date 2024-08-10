@@ -119,7 +119,7 @@ function search() {
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
-
+            createItems(data);
         });
     }
     if (ueCB.checked) {
@@ -131,7 +131,7 @@ function search() {
         })
         .done(function(data) {
             // $('#output').text(data.address).show();
-
+            createItems(data);
         });
     }
 

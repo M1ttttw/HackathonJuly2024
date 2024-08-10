@@ -26,7 +26,10 @@ class ScrapeThread(threading.Thread):
         driver.get(self.url)
         time.sleep(1)
         #grab address
-        self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.hNVOUs",10).text+" "+wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.kVKROG",10).text)
+        try:
+            self.restaurant.add_addr(wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.hNVOUs",10).text+" "+wait_and_grab(driver,By.CSS_SELECTOR,".Text-sc-16fu6d-0.kVKROG",10).text)
+        except:
+            print("no address")
         #uses search bar in menu
         item_fld = wait_and_grab(driver,By.ID,"item-search-field")
         driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)

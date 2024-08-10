@@ -35,15 +35,8 @@ class ScrapeThread(threading.Thread):
         adr_btn = wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[2]/div/div/div[2]/div/div/div/div/ul/button")
         adr_btn.click()
         wait_for_elem(driver,By.CSS_SELECTOR,"[clip-rule='evenodd']")
-        #grab rest name
-        self.restaurant.name = wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[1]/div[3]/div/div/div[1]/h1").text
         #grab rest address
         self.restaurant.add_addr(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[3]/div/section/ul/button[1]/div[2]").text.replace("\n"," "))
-        #grab rating
-        try:
-            self.restaurant.rating = clean_float(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[1]/div[3]/div/div/div[1]/div/p[1]/span[1]").text)
-        except:
-            print("no rating")
         #grab delivery fee
         self.restaurant.deliv_fee = clean_float(wait_and_grab(driver,By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[2]/main/div[1]/div[2]/div/div[2]/div[2]/div/div/div[1]/div/div/p/span[2]").text)
         #grab review count
@@ -120,7 +113,7 @@ class ScrapeThread(threading.Thread):
                 self.restaurant.add_item(food)
             # if there is discount then add it
             if has_discnt:
-                self.restaurant.add_discount(discnt,food,food.name)
+                self.restaurant.add_discount(discnt,food)
         #if restuarant has banner discount then add it
         try:
             banner_discnt = driver.find_element(By.CSS_SELECTOR,'[data-testid="eater-message-card"]').text
@@ -180,8 +173,12 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
             print(total_thread_cnt)
             desc = valid_restaurants[url_cnt].text.split("\n")
             print(desc)
-            name = ""
-            r = Restaurant(name, "", "UE", 0, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt])
+            name = desc[0]
+            try:
+                rating = clean_float(desc[-2])
+            except:
+                rating = -1
+            r = Restaurant(name, "", "UE", rating, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt])
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)
