@@ -264,9 +264,9 @@ class Restaurant:
         :return:
         """
         # Clamp the parameter between 0 and the length of the catalogue
-        if show_num < 0:
-            num = 0
-        elif show_num > len(self.catalogue):
+        if show_num <= 1:
+            num = 1
+        elif show_num >= len(self.catalogue):
             num = len(self.catalogue)
         else:
             num = show_num
@@ -279,12 +279,10 @@ class Restaurant:
         final_list = val_list[0: num]
 
         # Calculate and set the CPD of the restaurant
-        acc = 0
         for i in range(len(final_list)):
-            acc += final_list[i].cpd
             dj = final_list[i].d_json
             final_list[i] = dj
 
-        self.rest_cpd = acc
+        self.rest_cpd = final_list[0].cpd
         self.d_json["rest_cpd"] = self.rest_cpd
         self.d_json["catalogue"] = final_list
