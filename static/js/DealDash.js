@@ -4,9 +4,7 @@ var checkAlert = false;
 
 function search() {
     var has_btn = false;
-    $( "#output" ).remove();
-    $("button").remove();
-    $("body").append("<div id='output'></div>")
+
     // Notify that the search button is clicked for debugging purposes
     console.log("Search button clicked!");
 
@@ -94,6 +92,11 @@ function search() {
     }
 
     if (error) return;
+
+    // Remove/Add UI elements when performing the search
+    $( "#output" ).remove();
+    $("button").remove();
+    $("body").append("<div id='output'></div>");
 
     // Use a ajax request, and pass in our check box values + address and food.
     $.ajax({

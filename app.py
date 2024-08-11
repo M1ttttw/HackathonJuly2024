@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify
 from flask import request as r
+from threading import Lock
 
 from SkipScrapper import sd_home_scrape
 from DDscraper import dd_scrape
@@ -7,6 +8,7 @@ from UEscraper import ue_scrape
 
 
 app = Flask(__name__)
+req_mutex = Lock()
 
 @app.route('/')
 def init():
@@ -14,6 +16,9 @@ def init():
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
+    # Acquire the lock and prevent other request threads from running
+    req_mutex.acquire()
+
     # Grab the data sent along with the request
     addr = r.form['address']
     food = r.form['food']
@@ -43,8 +48,11 @@ def scrape():
 
     # Sort by restaurant cpd.
     d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
-
     print(d)
+
+    # Release the lock
+    req_mutex.release()
+
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
 
