@@ -63,7 +63,7 @@ def sd_init(adr,web):
 
 #inputs location and item into doordash
 def dd_init(adr,food,web):
-    web.get("https://www.doordash.com/search/store/"+food)
+    web.get("https://www.doordash.com/search/store/"+food.replace(" ", "%20"))
     #current workaround is to disable custom locations and use the defualt locatiom
     # loc_btn = wait_and_grab(web, By.CSS_SELECTOR, ".styles__ButtonRoot-sc-1nqx07s-0.ixDTkG")
     # loc_btn.click()
