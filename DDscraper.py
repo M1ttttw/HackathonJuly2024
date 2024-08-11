@@ -62,7 +62,7 @@ class ScrapeThread(threading.Thread):
                     image = wait_and_grab(food_item,By.TAG_NAME,"source",1).get_attribute("srcset").split(" ")[0]
                 except:
                     print("image not found")
-                    image = "not found"
+                    image = ""
                 #add fooditem to restaurant class
                 self.restaurant.add_item(FoodItem(food_title,food_desc,food_price,image))
             #scrolls

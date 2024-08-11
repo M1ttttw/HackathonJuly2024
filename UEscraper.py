@@ -115,7 +115,7 @@ class ScrapeThread(threading.Thread):
                 image = food_item.find_element(By.TAG_NAME, "source").get_attribute("srcset")
             except:
                 # print("image not found")
-                image = "not found"
+                image = ""
             # add fooditem to restaurant class
             if has_price:
                 food = FoodItem(food_title, food_desc, food_price, image)

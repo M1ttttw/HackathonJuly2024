@@ -152,7 +152,7 @@ function createItems(data){
             let f_cal = food_item["calories"];
             let f_cpd = food_item["cpd"];
             $(`<div id='${rest_cnt}_${food_cnt}' class='item'></div>`).appendTo(`#${rest_cnt}_menu`);
-            $("<img src='"+f_image+"'>").appendTo(`#${rest_cnt}_${food_cnt}`);
+            if (f_image != "") { $("<img src='"+f_image+"'>").appendTo(`#${rest_cnt}_${food_cnt}`); }
             $("<p>item name:"+f_name+"</p>").appendTo(`#${rest_cnt}_${food_cnt}`);
             $("<p>item description:"+f_desc+"</p>").appendTo(`#${rest_cnt}_${food_cnt}`);
             $(`<p>item price:${f_price}\$</p>`).appendTo(`#${rest_cnt}_${food_cnt}`);

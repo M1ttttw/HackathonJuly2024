@@ -136,7 +136,7 @@ class ScrapeThread(threading.Thread):
                                                  ".//div/div[1]/div/div/div[2]/div/div/img").get_attribute("src")
                 except:
                     # Case 3: It just has no image at all...
-                    item_img = f"{item_name} img not found"
+                    item_img = ""
 
             # Create a new food item with the stored info
             food_item = FoodItem(item_name, item_desc, item_price, item_img)
