@@ -31,14 +31,7 @@ def scrape():
     if isDD == 'true':
         rests_lst += dd_scrape(addr, food, 6)
     if isUE == 'true':
-        hacky_fix = 0
-        while hacky_fix<5:
-            try:
-                rests_lst += ue_scrape(addr, food, 6)
-                hacky_fix = 5
-            except:
-                print("ue_broken")
-                hacky_fix += 1
+        rests_lst += ue_scrape(addr, food, 6)
 
     # If the scraper doesn't have anything, just return a empty response
     if rests_lst is []:

@@ -138,7 +138,13 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     options.add_argument("--start-maximized")
     # options.add_argument("--headless")
     web = webdriver.Chrome(options=options)
-    ue_init(adr,web)
+
+    i = 0
+    ret_init = ue_init(adr,web)
+    while ret_init == -2 and i < 5:
+        ret_init = ue_init(adr, web)
+        i += 1
+
     #searches food in search bar
     srch_fld = wait_and_grab(web,By.ID,"search-suggestions-typeahead-input")
     srch_fld.send_keys(food)
