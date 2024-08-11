@@ -72,7 +72,7 @@ class ScrapeThread(threading.Thread):
         driver.close()
 
 #main scraper
-def dd_rest_scrape(adr,food,limit):
+def dd_rest_scrape(adr,food):
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")

@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import select
+from FoodClasses import FoodItem as FI
+from FoodClasses import Restaurant
 from selenium import webdriver
 
 from SkipScrapper import sd_rest_scrape,sd_menu_scrape
@@ -16,9 +18,10 @@ from UEscraper import ue_rest_scrape,ue_menu_scrape
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
-engine = create_engine('sqlite:///db.sqlite3')
+engine = create_engine('sqlite:///db.sqlite3',connect_args={'timeout': 30})
 Session = sessionmaker(engine)
 db = SQLAlchemy(app)
+
 class Base(DeclarativeBase):
     pass
 class Restaurants(Base):
@@ -64,57 +67,160 @@ def scrape():
 
         # Use the corresponding scraper
         rests_lst = []
-        uqe_urls = []
 
+        limit = 2
         if isSD == 'true':
-            result = sd_rest_scrape(addr,food,2)
+            result = sd_rest_scrape(addr,food)
             urls = result[1]
             vr = result[0]
             web = result[2]
+            urls = urls[0:limit]
+            vr = vr[0:limit]
+            uqe_urls = {}
+            n_uqe_urls = {}
+            url_cnt = 0
             for url in urls:
                 print(url)
                 statement = select(Restaurants).filter_by(url=url)
                 if len(session.execute(statement).all())==0:
-                    uqe_urls.append(url)
-            r_lst = sd_menu_scrape(addr, food, vr)
-            for res in r_lst:
-                rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
-                                   review_cnt=res.review_count)
-                session.add(rest)
+                    uqe_urls[url] = vr[url_cnt]
+                else:
+                    n_uqe_urls[url] = vr[url_cnt]
+                url_cnt += 1
+            vr = []
+            for i in uqe_urls:
+                vr.append(uqe_urls[i])
+            if len(list(uqe_urls.keys()))>0:
+                r_lst = sd_menu_scrape(addr, food, vr,list(uqe_urls.keys()))
+                for res in r_lst:
+                    rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
+                                       review_cnt=res.review_count)
+                    session.add(rest)
+                    for food in res.catalogue:
+                        fi = res.catalogue[food]
+                        food_item = FoodItem(name=fi.name,desc=fi.desc,rest_url = res.url,price = fi.price,image=fi.image,calories=fi.calories)
+                        session.add(food_item)
+                rests_lst += r_lst
+            if len(list(n_uqe_urls.keys())) > 0:
+                r_lst = []
+                for url in list(n_uqe_urls.keys()):
+                    statement = select(Restaurants).filter_by(url=url)
+                    rest = session.execute(statement).first()[0]
+                    real_rest = Restaurant(rest.name,rest.addr,rest.app,rest.rating,0,0,rest.review_cnt,0,rest.url)
+                    r_lst.append(real_rest)
+                    statement = select(FoodItem).filter_by(rest_url=url)
+                    r_food = session.execute(statement).all()
+                    for f in r_food:
+                        f = f[0]
+                        fi = FI(f.name,f.desc,f.price,f.image)
+                        fi.set_cal(f.calories)
+                        real_rest.add_item(fi)
+                rests_lst += r_lst
             web.close()
-            rests_lst += r_lst
+            session.commit()
+
         if isDD == 'true':
-            result = dd_rest_scrape(addr, food, 2)
-            urls = result[0]
-            vr = result[1]
+            result = dd_rest_scrape(addr, food)
+            urls = result[1]
+            vr = result[0]
             web = result[2]
+            urls = urls[0:limit]
+            vr = vr[0:limit]
+            uqe_urls = {}
+            n_uqe_urls = {}
+            url_cnt = 0
             for url in urls:
                 print(url)
                 statement = select(Restaurants).filter_by(url=url)
-                if len(session.execute(statement).all())==0:
-                    uqe_urls.append(url)
-            r_lst = dd_menu_scrape(addr, food, vr,urls)
-            for res in r_lst:
-                rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
-                                   review_cnt=res.review_count)
-                session.add(rest)
+                if len(session.execute(statement).all()) == 0:
+                    uqe_urls[url] = vr[url_cnt]
+                else:
+                    n_uqe_urls[url] = vr[url_cnt]
+                url_cnt += 1
+            vr = []
+            for i in uqe_urls:
+                vr.append(uqe_urls[i])
+            if len(list(uqe_urls.keys())) > 0:
+                r_lst = dd_menu_scrape(addr, food, vr, list(uqe_urls.keys()))
+                for res in r_lst:
+                    rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
+                                       review_cnt=res.review_count)
+                    session.add(rest)
+                    for food in res.catalogue:
+                        fi = res.catalogue[food]
+                        food_item = FoodItem(name=fi.name, desc=fi.desc, rest_url=res.url, price=fi.price,
+                                             image=fi.image, calories=fi.calories)
+                        session.add(food_item)
+                rests_lst += r_lst
+            if len(list(n_uqe_urls.keys())) > 0:
+                r_lst = []
+                for url in list(n_uqe_urls.keys()):
+                    statement = select(Restaurants).filter_by(url=url)
+                    rest = session.execute(statement).first()[0]
+                    real_rest = Restaurant(rest.name, rest.addr, rest.app, rest.rating, 0, 0, rest.review_cnt, 0,
+                                           rest.url)
+                    r_lst.append(real_rest)
+                    statement = select(FoodItem).filter_by(rest_url=url)
+                    r_food = session.execute(statement).all()
+                    for f in r_food:
+                        f = f[0]
+                        fi = FI(f.name, f.desc, f.price, f.image)
+                        fi.set_cal(f.calories)
+                        real_rest.add_item(fi)
+                rests_lst += r_lst
             web.close()
+            session.commit()
         if isUE == 'true':
             result = ue_rest_scrape(addr, food)
-            urls = result[0]
-            vr = result[1]
+            urls = result[1]
+            vr = result[0]
             web = result[2]
+            urls = urls[0:limit]
+            vr = vr[0:limit]
+            uqe_urls = {}
+            n_uqe_urls = {}
+            url_cnt = 0
             for url in urls:
                 print(url)
                 statement = select(Restaurants).filter_by(url=url)
-                if len(session.execute(statement).all())==0:
-                    uqe_urls.append(url)
-            r_lst = ue_menu_scrape(addr, food, vr,urls)
-            for res in r_lst:
-                rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
-                                   review_cnt=res.review_count)
-                session.add(rest)
+                if len(session.execute(statement).all()) == 0:
+                    uqe_urls[url] = vr[url_cnt]
+                else:
+                    n_uqe_urls[url] = vr[url_cnt]
+                url_cnt += 1
+            vr = []
+            for i in uqe_urls:
+                vr.append(uqe_urls[i])
+            if len(list(uqe_urls.keys())) > 0:
+                r_lst = ue_menu_scrape(addr, food, vr, list(uqe_urls.keys()))
+                for res in r_lst:
+                    rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
+                                       review_cnt=res.review_count)
+                    session.add(rest)
+                    for food in res.catalogue:
+                        fi = res.catalogue[food]
+                        food_item = FoodItem(name=fi.name, desc=fi.desc, rest_url=res.url, price=fi.price,
+                                             image=fi.image, calories=fi.calories)
+                        session.add(food_item)
+                rests_lst += r_lst
+            if len(list(n_uqe_urls.keys())) > 0:
+                r_lst = []
+                for url in list(n_uqe_urls.keys()):
+                    statement = select(Restaurants).filter_by(url=url)
+                    rest = session.execute(statement).first()[0]
+                    real_rest = Restaurant(rest.name, rest.addr, rest.app, rest.rating, 0, 0, rest.review_cnt, 0,
+                                           rest.url)
+                    r_lst.append(real_rest)
+                    statement = select(FoodItem).filter_by(rest_url=url)
+                    r_food = session.execute(statement).all()
+                    for f in r_food:
+                        f = f[0]
+                        fi = FI(f.name, f.desc, f.price, f.image)
+                        fi.set_cal(f.calories)
+                        real_rest.add_item(fi)
+                rests_lst += r_lst
             web.close()
+            session.commit()
 
         # If the scraper doesn't have anything, just return a empty response
         if rests_lst is []:
@@ -128,7 +234,7 @@ def scrape():
         d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
 
         print(d)
-        session.commit()
+
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
 

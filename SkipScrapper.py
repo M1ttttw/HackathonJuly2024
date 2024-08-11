@@ -153,7 +153,7 @@ class ScrapeThread(threading.Thread):
 
 
 
-def sd_rest_scrape(addr, food, limit=5):
+def sd_rest_scrape(addr, food):
     # Create a new web driver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -185,7 +185,7 @@ def sd_rest_scrape(addr, food, limit=5):
         urls.append(rest_url)
     return [rests_UI_list,urls,web]
     # print(f"there are {len(rests_UI_list)} restaurants currently in view")
-def sd_menu_scrape(addr,food,rests_UI_list,timeout=25):
+def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
     # Keep a counter to go through a limited number of restaurant.
     rest_list = []
     active_threads = 2
@@ -203,8 +203,9 @@ def sd_menu_scrape(addr,food,rests_UI_list,timeout=25):
         for i in range(thread_cnt):
             # print(i)
             rest_UI = rests_UI_list[url_cnt]
+            rest_url = urls[url_cnt]
             # Grab the url of the restaurant we want to check out
-            rest_url = wait_and_grab(rest_UI, By.XPATH, ".//div/div[1]/a").get_attribute("href")
+
             # print(rest_url)
 
             # We need to know the restaurant's information, thus, we grab the restaurant's info
