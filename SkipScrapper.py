@@ -31,8 +31,8 @@ class ScrapeThread(threading.Thread):
         rest_driver.get(f"{self.url}?search={self.food.replace(' ', '%20')}")
 
         # We also need to grab the text that describes the restaurant's address
-        rest_addr = wait_and_grab(rest_driver,By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
-                                                       'div/div/div/div[2]/div[1]/span/span[2]/p').text
+        rest_addr = wait_and_grab(rest_driver, By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
+                                                        'div/div/div/div[2]/div[1]/span/span[2]/p').text
         self.restaurant.add_addr(rest_addr)
         # Convenience store pages are very different, take advantage of this!
         try:
@@ -153,7 +153,7 @@ class ScrapeThread(threading.Thread):
 
 
 
-def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
+def sd_rest_scrape(addr, food, limit=5):
     # Create a new web driver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -179,15 +179,17 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
         return []
     rests_parent = wait_and_grab(web, By.XPATH, "/html/body/div[2]/div/main/div/div/div/div/ul")
     rests_UI_list = rests_parent.find_elements(By.XPATH, "*")
+    urls = []
+    for rest in rests_UI_list:
+        rest_url = wait_and_grab(rest, By.XPATH, ".//div/div[1]/a").get_attribute("href")
+        urls.append(rest_url)
+    return [rests_UI_list,urls,web]
     # print(f"there are {len(rests_UI_list)} restaurants currently in view")
-
+def sd_menu_scrape(addr,food,rests_UI_list,timeout=25):
     # Keep a counter to go through a limited number of restaurant.
-    rest_count = len(rests_UI_list)
     rest_list = []
     active_threads = 2
-    if rest_count>limit:
-        rest_count = limit
-    total_thread_cnt = rest_count
+    total_thread_cnt = len(rests_UI_list)
     threads = []
     url_cnt = 0
     # total thread cnt indicates how many threads we need to run in total to go through all restaurants
@@ -260,19 +262,19 @@ def sd_home_scrape(addr, food, limit=5,timeout= 25)->list[Restaurant]:
     return rest_list
 
 
-if __name__ == "__main__":
-    test_addr = "9937 157 St"
-    test_food = "Chicken"
-    test_limit = 2
-
-    # This is a test
-    start_time = time.time()
-    rest_lst = sd_home_scrape(test_addr, test_food, test_limit)
-    end_time = time.time()
-    # print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
-
-    for rest in rest_lst:
-        for food_name in rest.catalogue:
-            food_item = rest.catalogue[food_name]
-            # print(f"{food_item.name} has {food_item.calories} calories and a cpd of {food_item.cpd}")
+# if __name__ == "__main__":
+#     test_addr = "9937 157 St"
+#     test_food = "Chicken"
+#     test_limit = 2
+#
+#     # This is a test
+#     start_time = time.time()
+#     rest_lst = sd_home_scrape(test_addr, test_food, test_limit)
+#     end_time = time.time()
+#     # print(f"Test took {end_time - start_time} seconds for {test_limit} restaurants")
+#
+#     for rest in rest_lst:
+#         for food_name in rest.catalogue:
+#             food_item = rest.catalogue[food_name]
+#             # print(f"{food_item.name} has {food_item.calories} calories and a cpd of {food_item.cpd}")
 
