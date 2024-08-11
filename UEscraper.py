@@ -188,7 +188,7 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
                 rating = clean_float(desc[-2])
             except:
                 rating = -1
-            r = Restaurant(name, "", "UE", rating, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt])
+            r = Restaurant(name, "", "UE", rating, -1, -1, -1, clean_int(desc[-1]),urls[url_cnt])
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)

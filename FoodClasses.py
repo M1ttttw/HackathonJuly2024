@@ -173,7 +173,6 @@ class Restaurant:
         disc_args = disc[1]
         disc_type = disc[0]
         for discount in self.discounts:
-            # print(discount,disc)
             unique = False
             if discount[0] == disc_type:
                 for i in range(len(disc_args)):
