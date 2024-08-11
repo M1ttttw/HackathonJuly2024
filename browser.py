@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote import webelement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+from selenium.common.exceptions import TimeoutException
 
 
 def wait_for_elem(web_elem, search_type: str, search_val: str, timeout = 5):
@@ -55,11 +56,16 @@ def sd_init(adr,web):
     adr_fld = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[1]/div/div[1]/div[1]/div/input")
     adr_fld.send_keys(adr)
 
-    adr_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[1]/div/div[2]/ul/li[1]/button")
-    adr_btn.click()
+    try:
+        adr_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[1]/div/div[2]/ul/li[1]/button")
+        adr_btn.click()
+    except TimeoutException:
+        # Return a error value indicating no address found...
+        return -1
 
     adr_conf_btn = wait_and_grab(web, By.XPATH, "/html/body/div[1]/div/main/div[1]/div[1]/div[2]/div/div[3]/button")
     adr_conf_btn.click()
+    return 0
 
 #inputs location and item into doordash
 def dd_init(adr,food,web):
@@ -93,8 +99,18 @@ def ue_init(adr,web):
 
     adr_lst = wait_and_grab(web, By.ID, "location-typeahead-home-menu")
 
-    adr_btn = wait_and_grab(adr_lst, By.TAG_NAME, "li")
-    adr_btn.click()
+    try:
+        adr_btn = wait_and_grab(adr_lst, By.TAG_NAME, "li")
+        adr_btn.click()
+    except TimeoutException:
+        return -2
+
+    try:
+        wait_for_elem(web, By.ID, "search-suggestions-typeahead-input")
+    except:
+        return -1
+
+    return 0
 
 
 #when calling the functions make sure to space out the address and add the city for the adr param
@@ -104,6 +120,6 @@ if __name__ == "__main__":
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     web = webdriver.Chrome(options=options)
-    sd_init("4820 201 st",web)
-    dd_init("4820 201 st","chicken",web)
-    ue_init("4820 201 st langley",web)
+    # sd_init("f",web)
+    # dd_init("4820 201 st","chicken",web)
+    ue_init("f",web)
