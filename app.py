@@ -27,7 +27,7 @@ def scrape():
     # Use the corresponding scraper
     rests_lst = []
     if isSD == 'true':
-        rests_lst += sd_home_scrape(addr, food, 6)
+        rests_lst += sd_home_scrape(addr, food, 2)
     if isDD == 'true':
         rests_lst += dd_scrape(addr, food, 6)
     if isUE == 'true':
