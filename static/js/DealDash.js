@@ -124,6 +124,7 @@ function createItems(data){
         let addr = rest["addr"];
         let app = rest["app"];
         let url = rest["url"];
+        let image = rest["image"];
         let cpd = rest["rest_cpd"];
         let dt = rest["deliv_time"];
         let rc = rest["review_count"];
@@ -134,6 +135,7 @@ function createItems(data){
         let discounts = rest["discounts"];
         var descs = $("#output").append("<div class='restaurant' id="+rest_cnt.toString()+"></div>");
         console.log(name);
+        if (image != "") $("<img src='"+image+"'>").appendTo(`#${rest_cnt}`);
         $("<p> name:"+ name +"</p>").appendTo(`#${rest_cnt}`);
         $("<p> address:"+ addr+"</p>").appendTo(`#${rest_cnt}`);
         $(`<p> app: ${app}</p>`).appendTo(`#${rest_cnt}`);
