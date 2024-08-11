@@ -139,6 +139,7 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     # options.add_argument("--headless")
     web = webdriver.Chrome(options=options)
 
+    # Hacky Fix involving rerunning ue_init for odd timeouts.
     i = 0
     ret_init = ue_init(adr,web)
     while ret_init == -2 and i < 5:
