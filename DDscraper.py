@@ -153,11 +153,26 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
         for i in range(thread_cnt):
             desc = valid_restaurants[url_cnt]
             name = wait_and_grab(desc,By.CSS_SELECTOR,"[data-telemetry-id='store.name']").text
-            rating = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.VlCPZ").text)
-            distance = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
-            delivery_fee = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,"[data-testid='STORE_TEXT_PRICING_INFO']").text)
-            rev_cnt = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.cZhUKR.sc-3b51c52-0.hNbRoa").text[4:])
-            delivery_time = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
+            try:
+                rating = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.VlCPZ").text)
+            except:
+                rating = -1
+            try:
+                distance = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
+            except:
+                distance = -1
+            try:
+                delivery_fee = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,"[data-testid='STORE_TEXT_PRICING_INFO']").text)
+            except:
+                delivery_fee = -1
+            try:
+                rev_cnt = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.cZhUKR.sc-3b51c52-0.hNbRoa").text[4:])
+            except:
+                rev_cnt=-1
+            try:
+                delivery_time = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
+            except:
+                delivery_time = -1
             try:
                 rest_img = desc.find_element(By.TAG_NAME, "img").get_attribute("src")
             except:

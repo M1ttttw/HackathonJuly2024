@@ -52,7 +52,7 @@ def init():
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
-    def db_retrieve(addr,food,rest_scraper,menu_scraper):
+    def db_retrieve(addr,food,rest_scraper,menu_scraper,limit):
         rests_lst = []
         result = rest_scraper(addr, food)
         urls = result[1]
@@ -65,7 +65,8 @@ def scrape():
         url_cnt = 0
         for url in urls:
             print(url)
-            statement = select(Restaurants).filter_by(url=url)
+            cleaned_url = url.split("?")[0]
+            statement = select(Restaurants).filter_by(url=cleaned_url)
             if len(session.execute(statement).all()) == 0:
                 uqe_urls[url] = vr[url_cnt]
             else:
@@ -77,23 +78,25 @@ def scrape():
         if len(list(uqe_urls.keys())) > 0:
             r_lst = menu_scraper(addr, food, vr, list(uqe_urls.keys()))
             for res in r_lst:
-                rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
+                cleaned_url = res.url.split("?")[0]
+                rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=cleaned_url, rating=res.rating,
                                    review_cnt=res.review_count,rest_img = res.image)
                 session.add(rest)
                 for food in res.catalogue:
                     fi = res.catalogue[food]
-                    food_item = FoodItem(name=fi.name, desc=fi.desc, rest_url=res.url, price=fi.price, image=fi.image,
+                    food_item = FoodItem(name=fi.name, desc=fi.desc, rest_url=cleaned_url, price=fi.price, image=fi.image,
                                          calories=fi.calories)
                     session.add(food_item)
             rests_lst += r_lst
         if len(list(n_uqe_urls.keys())) > 0:
             r_lst = []
             for url in list(n_uqe_urls.keys()):
-                statement = select(Restaurants).filter_by(url=url)
+                cleaned_url = url.split("?")[0]
+                statement = select(Restaurants).filter_by(url=cleaned_url)
                 rest = session.execute(statement).first()[0]
-                real_rest = Restaurant(rest.name, rest.addr, rest.app, rest.rating, 0, 0, rest.review_cnt, 0, rest.url,rest.rest_img)
+                real_rest = Restaurant(rest.name, rest.addr, rest.app, rest.rating, 0, 0, rest.review_cnt, 0,cleaned_url,rest.rest_img)
                 r_lst.append(real_rest)
-                statement = select(FoodItem).filter_by(rest_url=url)
+                statement = select(FoodItem).filter_by(rest_url=cleaned_url)
                 r_food = session.execute(statement).all()
                 for f in r_food:
                     f = f[0]
@@ -120,20 +123,23 @@ def scrape():
         # Use the corresponding scraper
         rests_lst = []
 
-        limit = 2
+
         if isSD == 'true':
-            rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape)
+            rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
 
         if isDD == 'true':
-            rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape)
+            rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
         if isUE == 'true':
-            rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape)
+            rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
 
         # If the scraper doesn't have anything, just return a empty response
         if rests_lst is []:
             return jsonify({})
         for rest in rests_lst:
             # Add the restaurant's d_json representation.
+            print(rest.name)
+            print(len(rest.catalogue))
+            print(rest.app)
             rest.showcase_restaurant()
             d["rests"].append(rest.d_json)
 
