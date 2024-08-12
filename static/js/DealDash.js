@@ -4,9 +4,7 @@ var checkAlert = false;
 
 function search() {
     var has_btn = false;
-    $( "#output" ).remove();
-    $("button").remove();
-    $("body").append("<div id='output'></div>")
+
     // Notify that the search button is clicked for debugging purposes
     console.log("Search button clicked!");
 
@@ -95,6 +93,11 @@ function search() {
 
     if (error) return;
 
+    // Remove/Add UI elements when performing the search
+    $( "#output" ).remove();
+    $("button").remove();
+    $("body").append("<div id='output'></div>");
+
     // Use a ajax request, and pass in our check box values + address and food.
     $.ajax({
         type: 'POST',
@@ -121,6 +124,7 @@ function createItems(data){
         let addr = rest["addr"];
         let app = rest["app"];
         let url = rest["url"];
+        let image = rest["image"];
         let cpd = rest["rest_cpd"];
         let dt = rest["deliv_time"];
         let rc = rest["review_count"];
@@ -131,6 +135,7 @@ function createItems(data){
         let discounts = rest["discounts"];
         var descs = $("#output").append("<div class='restaurant' id="+rest_cnt.toString()+"></div>");
         console.log(name);
+        if (image != "") $("<img src='"+image+"'>").appendTo(`#${rest_cnt}`);
         $("<p> name:"+ name +"</p>").appendTo(`#${rest_cnt}`);
         $("<p> address:"+ addr+"</p>").appendTo(`#${rest_cnt}`);
         $(`<p> app: ${app}</p>`).appendTo(`#${rest_cnt}`);

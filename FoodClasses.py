@@ -95,6 +95,7 @@ class Restaurant:
     addr: a string that distinguishes which specific restaurant
     app: a string that represents which app the restaurant was found.
     url: a string that represents the url of the restaurant
+    image: a string url that represents the image of the restaurant
     catalogue: a list of FoodItems
     rest_cpd: the calories per dollar score of all the items in the catalogue here.
     rating: the rating of the restaurant
@@ -109,6 +110,7 @@ class Restaurant:
     addr: str
     app: str
     url: str
+    image: str
     catalogue: dict[str, FoodItem]
     rest_cpd: float
     rating: float
@@ -120,11 +122,12 @@ class Restaurant:
     d_json: dict
 
     def __init__(self, rest_name: str, rest_address: str, rest_app: str, rest_rating: float, rest_dist: float,
-                 rest_fee: float, rev_count: int, rest_deliv_time: float, rest_url: str) -> None:
+                 rest_fee: float, rev_count: int, rest_deliv_time: float, rest_url: str, rest_img: str) -> None:
         self.name = rest_name
         self.addr = rest_address
         self.app = rest_app
         self.url = rest_url
+        self.image = rest_img
         self.catalogue = dict()
         self.rating = rest_rating
         self.dist_to_user = rest_dist
@@ -141,6 +144,7 @@ class Restaurant:
         self.d_json["addr"] = rest_address
         self.d_json["app"] = rest_app
         self.d_json["url"] = rest_url
+        self.d_json["image"] = rest_img
         self.d_json["catalogue"] = []
         self.d_json["rating"] = rest_rating
         self.d_json["dist_to_user"] = rest_dist
