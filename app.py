@@ -28,6 +28,7 @@ class Restaurants(Base):
     name = db.Column(db.String(100), nullable=False)
     addr = db.Column(db.String(100))
     url = db.Column(db.String(200), primary_key=True)
+    rest_img = db.Column(db.String(200))
     app = db.Column(db.String(20),nullable = False)
     rating = db.Column(db.Integer)
     review_cnt = db.Column(db.Integer)
@@ -77,7 +78,7 @@ def scrape():
             r_lst = menu_scraper(addr, food, vr, list(uqe_urls.keys()))
             for res in r_lst:
                 rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=res.url, rating=res.rating,
-                                   review_cnt=res.review_count)
+                                   review_cnt=res.review_count,rest_img = res.image)
                 session.add(rest)
                 for food in res.catalogue:
                     fi = res.catalogue[food]
@@ -90,7 +91,7 @@ def scrape():
             for url in list(n_uqe_urls.keys()):
                 statement = select(Restaurants).filter_by(url=url)
                 rest = session.execute(statement).first()[0]
-                real_rest = Restaurant(rest.name, rest.addr, rest.app, rest.rating, 0, 0, rest.review_cnt, 0, rest.url)
+                real_rest = Restaurant(rest.name, rest.addr, rest.app, rest.rating, 0, 0, rest.review_cnt, 0, rest.url,rest.rest_img)
                 r_lst.append(real_rest)
                 statement = select(FoodItem).filter_by(rest_url=url)
                 r_food = session.execute(statement).all()
@@ -105,7 +106,7 @@ def scrape():
         return rests_lst
     with Session() as session:
         # Base.metadata.drop_all(engine)
-        # Base.metadata.create_all(engine)
+        Base.metadata.create_all(engine)
         # Grab the data sent along with the request
         addr = r.form['address']
         food = r.form['food']

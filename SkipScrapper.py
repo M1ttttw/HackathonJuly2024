@@ -220,9 +220,10 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
             # Cut out the fat in rest_deliv_fee_str
             rest_deliv_fee_split = rest_deliv_fee_str.split(" ")
             rest_deliv_fee = float(rest_deliv_fee_split[0][1:])
-
-            rest_img = rest_UI.find_element(By.TAG_NAME,"img").get_attribute("src")
-
+            try:
+                rest_img = rest_UI.find_element(By.TAG_NAME,"img").get_attribute("src")
+            except:
+                rest_img = ""
             # print(f"{rest_name}, {rest_deliv_time}, {rest_deliv_fee}, {rest_rate}")
             rest = Restaurant(rest_name, "", "SkipTheDishes", rest_rate, -1, rest_deliv_fee, -1,
                               rest_deliv_time, rest_url,rest_img)

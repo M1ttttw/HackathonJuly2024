@@ -194,8 +194,11 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25)->list[Restaurant]
                 rating = clean_float(desc[-2])
             except:
                 rating = -1
-            rest_img = valid_restaurants[url_cnt].find_element(By.TAG_NAME, "source").get_attribute("srcset")
-            r = Restaurant(name, "", "UE", rating, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt],rest_img)
+            try:
+                rest_img = valid_restaurants[url_cnt].find_element(By.TAG_NAME, "source").get_attribute("srcset")
+            except:
+                rest_img = ""
+            r = Restaurant(name, "", "UE", rating, -1, -1, -1, clean_int(desc[-1]),urls[url_cnt],rest_img)
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)

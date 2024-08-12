@@ -170,7 +170,7 @@ class Restaurant:
         :param food_item:
         :return:
         """
-        if food_item.price>5:
+        if food_item.price>5 and self.catalogue.get(food_item.name) is None:
             food_item.id = self.item_cnt
             self.item_cnt += 1
             self.catalogue[food_item.name] = food_item
