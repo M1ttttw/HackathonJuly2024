@@ -33,8 +33,8 @@ class ScrapeThread(threading.Thread):
         #uses search bar in menu
         item_fld = wait_and_grab(driver,By.ID,"item-search-field")
         driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
-        item_fld.send_keys(self.food)
-        item_fld.send_keys(Keys.ENTER)
+        # item_fld.send_keys(self.food)
+        # item_fld.send_keys(Keys.ENTER)
         #DD unloads elements outside of screen so we must scroll through the page to load elements and add to our data
         #scrolls scrl_cnt amount of times through each menu and grabs all menu items
         scrl_cnt = 5
@@ -59,7 +59,7 @@ class ScrapeThread(threading.Thread):
                 desc = food_item.text.split("\n")
                 # print(desc)
                 try:
-                    image = wait_and_grab(food_item,By.TAG_NAME,"source",1).get_attribute("srcset").split(" ")[0]
+                    image = wait_and_grab(food_item,By.TAG_NAME,"source",0.1).get_attribute("srcset").split(" ")[0]
                 except:
                     print("image not found")
                     image = ""
@@ -72,7 +72,7 @@ class ScrapeThread(threading.Thread):
         driver.close()
 
 #main scraper
-def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
+def dd_rest_scrape(adr,food):
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -118,7 +118,7 @@ def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
     #loop through again to remove all the convinience stores
     #also save the urls to the store page
     valid_restaurants = []
-    restaurant_class_lst = []
+
     urls = []
     for restaurant in open_stores:
         url = restaurant.find_element(By.TAG_NAME,"a").get_attribute("href")
@@ -128,14 +128,14 @@ def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
         else:
             valid_restaurants.append(restaurant)
             urls.append(url)
+    return [valid_restaurants,urls,web]
     # print(urls)
+def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
+    restaurant_class_lst = []
     #create active_threads amount of worker threads to each open a browser to scroll through and collect all the menu datas
     #WARNING: THIS IS COMPUTATIONALLY EXPENSIVE AND ONLY INCREASE ACTIVE THREADS IF YOU HAVE GOOD COMPUTER
-    rest_cnt = len(urls)
-    if rest_cnt > limit:
-        rest_cnt = limit
     threads = []
-    total_thread_cnt = rest_cnt
+    total_thread_cnt = len(urls)
     active_threads = 2
     url_cnt = 0
     #total thread cnt indicates how many threads we need to run in total to go through all restaurants
@@ -196,9 +196,9 @@ def dd_scrape(adr,food,limit,timeout=30)->list[Restaurant]:
 
     return restaurant_class_lst
 
-if __name__ == "__main__":
-    start_time = time.time()
-    dd_scrape("1970 158a st","chicken",10)
-    end_time = time.time()
-    # print(f"Test took {end_time - start_time} seconds for 10 restaurants")
-
+# if __name__ == "__main__":
+#     start_time = time.time()
+#     dd_scrape("1970 158a st","chicken",10)
+#     end_time = time.time()
+#     # print(f"Test took {end_time - start_time} seconds for 10 restaurants")
+#

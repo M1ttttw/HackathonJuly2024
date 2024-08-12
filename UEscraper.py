@@ -132,7 +132,7 @@ class ScrapeThread(threading.Thread):
             # print("no banner discnt")
         # print(self.restaurant.name+" has this many items: ",len(self.restaurant.catalogue))
         driver.close()
-def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
+def ue_rest_scrape(adr,food):
     # Options for chrome webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -150,12 +150,12 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     srch_fld = wait_and_grab(web,By.ID,"search-suggestions-typeahead-input")
     srch_fld.send_keys(food)
     srch_fld.send_keys(Keys.ENTER)
-    #grabs all restaurants
-    restaurant_lst = wait_and_grab(web,By.CSS_SELECTOR,"[data-testid='feed-desktop']").find_elements(By.XPATH,"*")
+    # grabs all restaurants
+    restaurant_lst = wait_and_grab(web, By.CSS_SELECTOR, "[data-testid='feed-desktop']").find_elements(By.XPATH, "*")
     # print(len(restaurant_lst))
     valid_restaurants = []
     urls = []
-    #get rid of all closed/pickup only restaurant
+    # get rid of all closed/pickup only restaurant
     for restaurant in restaurant_lst:
         desc = restaurant.text
         # print(desc.split("\n"))
@@ -167,14 +167,13 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
             pass
         else:
             valid_restaurants.append(restaurant)
-            urls.append(wait_and_grab(restaurant,By.TAG_NAME,"a").get_attribute("href"))
-    #limits the restaurants to limit
-    rest_cnt = len(urls)
-    if rest_cnt>limit:
-        rest_cnt = limit
+            urls.append(wait_and_grab(restaurant, By.TAG_NAME, "a").get_attribute("href"))
+    return [valid_restaurants,urls,web]
+
+def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25)->list[Restaurant]:
     restaurant_class_lst = []
     threads = []
-    total_thread_cnt = rest_cnt
+    total_thread_cnt = len(urls)
     active_threads = 2
     url_cnt = 0
     # total thread cnt indicates how many threads we need to run in total to go through all restaurants
@@ -233,8 +232,8 @@ def ue_scrape(adr,food,limit,timeout=25)->list[Restaurant]:
     return restaurant_class_lst
 
 
-if __name__ == "__main__":
-    start_time = time.time()
-    ue_scrape("1970 158a st","chicken",10)
-    end_time = time.time()
-    print(f"Test took {end_time - start_time} seconds for 10 restaurants")
+# if __name__ == "__main__":
+#     start_time = time.time()
+#     ue_scrape("1970 158a st","chicken",10)
+#     end_time = time.time()
+#     print(f"Test took {end_time - start_time} seconds for 10 restaurants")
