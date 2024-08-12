@@ -9,6 +9,7 @@ from sqlalchemy import select
 from FoodClasses import FoodItem as FI
 from FoodClasses import Restaurant
 from selenium import webdriver
+from threading import Lock
 
 from SkipScrapper import sd_rest_scrape,sd_menu_scrape
 from DDscraper import dd_rest_scrape,dd_menu_scrape
@@ -21,6 +22,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 engine = create_engine('sqlite:///db.sqlite3',connect_args={'timeout': 30})
 Session = sessionmaker(engine)
 db = SQLAlchemy(app)
+req_mutex = Lock()
+
 class Base(DeclarativeBase):
     pass
 class Restaurants(Base):
@@ -108,6 +111,9 @@ def scrape():
         session.commit()
         return rests_lst
     with Session() as session:
+        # Acquire the lock
+        req_mutex.acquire()
+
         # Base.metadata.drop_all(engine)
         Base.metadata.create_all(engine)
         # Grab the data sent along with the request
@@ -147,6 +153,9 @@ def scrape():
         d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
 
         print(d)
+
+    # We are done, release the mutex.
+    req_mutex.release()
 
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)
