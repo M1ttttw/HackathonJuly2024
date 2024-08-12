@@ -33,8 +33,8 @@ class ScrapeThread(threading.Thread):
         #uses search bar in menu
         item_fld = wait_and_grab(driver,By.ID,"item-search-field")
         driver.execute_script("arguments[0].scrollIntoView(true);", item_fld)
-        item_fld.send_keys(self.food)
-        item_fld.send_keys(Keys.ENTER)
+        # item_fld.send_keys(self.food)
+        # item_fld.send_keys(Keys.ENTER)
         #DD unloads elements outside of screen so we must scroll through the page to load elements and add to our data
         #scrolls scrl_cnt amount of times through each menu and grabs all menu items
         scrl_cnt = 5
@@ -59,7 +59,7 @@ class ScrapeThread(threading.Thread):
                 desc = food_item.text.split("\n")
                 # print(desc)
                 try:
-                    image = wait_and_grab(food_item,By.TAG_NAME,"source",1).get_attribute("srcset").split(" ")[0]
+                    image = wait_and_grab(food_item,By.TAG_NAME,"source",0.1).get_attribute("srcset").split(" ")[0]
                 except:
                     print("image not found")
                     image = ""
