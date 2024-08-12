@@ -231,18 +231,15 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=15)->list[Restaurant]
                     print("thread killedX2")
         time.sleep(0.5)
     #removes restaurants with empty menus
-    l = len(restaurant_class_lst)
-    p = 0
-    while (p<l):
-        restaurant = restaurant_class_lst[p]
+    i = 0
+    while i < len(restaurant_class_lst):
+        restaurant = restaurant_class_lst[i]
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
-            restaurant_class_lst.remove(restaurant)
-            p-=1
-            l-=1
-        # else:
-        #     acquire_calories(restaurant, 25)
-        p+=1
+            restaurant_class_lst.pop(i)
+        else:
+            # acquire_calories(restaurant, 25)
+            i += 1
     return restaurant_class_lst
 
 

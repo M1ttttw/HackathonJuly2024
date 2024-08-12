@@ -255,12 +255,15 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=15):
         time.sleep(0.5)
     # print(f"Successfully Went through {rest_count} stores")
     # removes restaurants with empty menus
-    for r in rest_list:
-        # print(r)
-        if len(r.catalogue) < 1:
-            rest_list.remove(r)
-        # else:
-        #     acquire_calories(r, 25)
+    i = 0
+    while i < len(rest_list):
+        restaurant = rest_list[i]
+        # print(restaurant)
+        if len(restaurant.catalogue) < 1:
+            rest_list.pop(i)
+        else:
+            # acquire_calories(restaurant, 25)
+            i += 1
     # Return our results!
     return rest_list
 

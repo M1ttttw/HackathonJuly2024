@@ -209,12 +209,15 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=15):
             if t.is_alive():
                 is_alive = True
         time.sleep(0.5)
-    for restaurant in restaurant_class_lst:
+    i = 0
+    while i < len(restaurant_class_lst):
+        restaurant = restaurant_class_lst[i]
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
-            restaurant_class_lst.remove(restaurant)
-        # else:
-        #     acquire_calories(restaurant, 25)
+            restaurant_class_lst.pop(i)
+        else:
+            # acquire_calories(restaurant, 25)
+            i += 1
 
     return restaurant_class_lst
 
