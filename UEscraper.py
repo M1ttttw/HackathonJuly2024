@@ -170,7 +170,7 @@ def ue_rest_scrape(adr,food):
             urls.append(wait_and_grab(restaurant, By.TAG_NAME, "a").get_attribute("href"))
     return [valid_restaurants,urls,web]
 
-def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25)->list[Restaurant]:
+def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=15)->list[Restaurant]:
     restaurant_class_lst = []
     threads = []
     total_thread_cnt = len(urls)

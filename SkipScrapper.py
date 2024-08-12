@@ -185,7 +185,7 @@ def sd_rest_scrape(addr, food):
         urls.append(rest_url)
     return [rests_UI_list,urls,web]
     # print(f"there are {len(rests_UI_list)} restaurants currently in view")
-def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
+def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=15):
     # Keep a counter to go through a limited number of restaurant.
     rest_list = []
     active_threads = 2

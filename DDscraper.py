@@ -133,7 +133,7 @@ def dd_rest_scrape(adr,food):
             urls.append(url)
     return [valid_restaurants,urls,web]
     # print(urls)
-def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
+def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=15):
     restaurant_class_lst = []
     #create active_threads amount of worker threads to each open a browser to scroll through and collect all the menu datas
     #WARNING: THIS IS COMPUTATIONALLY EXPENSIVE AND ONLY INCREASE ACTIVE THREADS IF YOU HAVE GOOD COMPUTER
