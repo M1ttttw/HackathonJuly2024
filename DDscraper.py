@@ -55,8 +55,11 @@ class ScrapeThread(threading.Thread):
                 except:
                     print("no descp")
                     food_desc = ""
-                food_price = clean_float(wait_and_grab(food_item,By.CSS_SELECTOR,"[data-anchor-id='StoreMenuItemPrice']").text)
-                desc = food_item.text.split("\n")
+                try:
+                    food_price = clean_float(wait_and_grab(food_item,By.CSS_SELECTOR,"[data-anchor-id='StoreMenuItemPrice']").text)
+                except:
+                    food_price = 10000
+                # desc = food_item.text.split("\n")
                 # print(desc)
                 try:
                     image = wait_and_grab(food_item,By.TAG_NAME,"source",0.1).get_attribute("srcset").split(" ")[0]
@@ -155,7 +158,8 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
             delivery_fee = clean_float(wait_and_grab(desc,By.CSS_SELECTOR,"[data-testid='STORE_TEXT_PRICING_INFO']").text)
             rev_cnt = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.cZhUKR.sc-3b51c52-0.hNbRoa").text[4:])
             delivery_time = clean_int(wait_and_grab(desc,By.CSS_SELECTOR,".InlineChildren__StyledInlineChildren-sc-nu44vp-0.iImEHZ").text)
-            r = Restaurant(name, "", "DD", rating, distance, delivery_fee, rev_cnt, delivery_time, urls[url_cnt])
+            rest_img = desc.find_element(By.TAG_NAME, "img").get_attribute("src")
+            r = Restaurant(name, "", "DD", rating, distance, delivery_fee, rev_cnt, delivery_time, urls[url_cnt],rest_img)
             try:
                 discount = valid_restaurants[url_cnt].find_element(By.CSS_SELECTOR,".sc-a488a75b-0.dHRtoo").text
                 r.add_discount(discount)
@@ -191,8 +195,8 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
-        else:
-            acquire_calories(restaurant, 25)
+        # else:
+        #     acquire_calories(restaurant, 25)
 
     return restaurant_class_lst
 

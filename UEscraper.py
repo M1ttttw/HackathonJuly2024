@@ -194,7 +194,8 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25)->list[Restaurant]
                 rating = clean_float(desc[-2])
             except:
                 rating = -1
-            r = Restaurant(name, "", "UE", rating, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt])
+            rest_img = valid_restaurants[url_cnt].find_element(By.TAG_NAME, "source").get_attribute("srcset")
+            r = Restaurant(name, "", "UE", rating, 0, 0, 0, clean_int(desc[-1]),urls[url_cnt],rest_img)
             restaurant_class_lst.append(r)
             # creates the workers
             t = ScrapeThread(urls[url_cnt], food, r,adr)
@@ -227,8 +228,8 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25)->list[Restaurant]
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
-        else:
-            acquire_calories(restaurant, 25)
+        # else:
+        #     acquire_calories(restaurant, 25)
     return restaurant_class_lst
 
 
