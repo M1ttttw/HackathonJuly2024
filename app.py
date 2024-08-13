@@ -132,7 +132,6 @@ def scrape():
 
             if isSD == 'true':
                 rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
-
             if isDD == 'true':
                 rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
             if isUE == 'true':
