@@ -102,13 +102,19 @@ function search() {
     $.ajax({
         type: 'POST',
         url: "/scrape",
-        data: { address: userAddress, food: userFood, skip: skipCB.checked, dash: ddCB.checked, eats: ueCB.checked }
-    })
-    .done(function(data) {
-        // Create UI elements and display them based off the data we get back
-        createItems(data);
-        if (!has_btn){
-            $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+        data: { address: userAddress, food: userFood, skip: skipCB.checked, dash: ddCB.checked, eats: ueCB.checked },
+        success: function(data) {
+            // Create UI elements and display them based off the data we get back
+            createItems(data);
+            if (!has_btn){
+                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+            }
+        },
+        error: function(error) {
+            console.log(`Request to server failed!`);
+            if (!has_btn){
+                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+            }
         }
     });
 

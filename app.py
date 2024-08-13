@@ -111,48 +111,53 @@ def scrape():
         session.commit()
         return rests_lst
     with Session() as session:
-        # Acquire the lock
-        req_mutex.acquire()
+        try:
+            # Acquire the lock
+            req_mutex.acquire()
 
-        # Base.metadata.drop_all(engine)
-        Base.metadata.create_all(engine)
-        # Grab the data sent along with the request
-        addr = r.form['address']
-        food = r.form['food']
-        isSD = r.form['skip']
-        isDD = r.form['dash']
-        isUE = r.form['eats']
+            # Base.metadata.drop_all(engine)
+            Base.metadata.create_all(engine)
+            # Grab the data sent along with the request
+            addr = r.form['address']
+            food = r.form['food']
+            isSD = r.form['skip']
+            isDD = r.form['dash']
+            isUE = r.form['eats']
 
-        # Create a response json
-        d = {"rests":[]}
+            # Create a response json
+            d = {"rests":[]}
 
-        # Use the corresponding scraper
-        rests_lst = []
+            # Use the corresponding scraper
+            rests_lst = []
 
+            if isSD == 'true':
+                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
 
-        if isSD == 'true':
-            rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
+            if isDD == 'true':
+                rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
+            if isUE == 'true':
+                rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
 
-        if isDD == 'true':
-            rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
-        if isUE == 'true':
-            rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
+            # If the scraper doesn't have anything, just return a empty response
+            if rests_lst is []:
+                req_mutex.release()
+                return jsonify({})
+            for rest in rests_lst:
+                # Add the restaurant's d_json representation.
+                print(rest.name)
+                print(len(rest.catalogue))
+                print(rest.app)
+                rest.showcase_restaurant()
+                d["rests"].append(rest.d_json)
 
-        # If the scraper doesn't have anything, just return a empty response
-        if rests_lst is []:
-            return jsonify({})
-        for rest in rests_lst:
-            # Add the restaurant's d_json representation.
-            print(rest.name)
-            print(len(rest.catalogue))
-            print(rest.app)
-            rest.showcase_restaurant()
-            d["rests"].append(rest.d_json)
+            # Sort by restaurant cpd.
+            d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
 
-        # Sort by restaurant cpd.
-        d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
-
-        print(d)
+            print(d)
+        except Exception as e:
+            # Errors may cause deadlocks between requests! So release locks before errors happen
+            req_mutex.release()
+            raise e # This is cursed, but we should at least let the client know that something happened...
 
     # We are done, release the mutex.
     req_mutex.release()
