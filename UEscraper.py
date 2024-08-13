@@ -232,19 +232,20 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
         time.sleep(0.5)
     banned_urls = []
     #removes restaurants with empty menus
-    i = 0
-    while i < len(restaurant_class_lst):
-        restaurant = restaurant_class_lst[i]
+    l = len(restaurant_class_lst)
+    p = 0
+    while (p < l):
+        restaurant = restaurant_class_lst[p]
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
             banned_urls.append(restaurant.url)
-            p-=1
-            l-=1
+            p -= 1
+            l -= 1
         # else:
         #     acquire_calories(restaurant, 25)
-        p+=1
-    return [restaurant_class_lst,banned_urls]
+        p += 1
+    return [restaurant_class_lst, banned_urls]
 
 
 # if __name__ == "__main__":
