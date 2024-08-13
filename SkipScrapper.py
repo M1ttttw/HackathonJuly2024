@@ -185,7 +185,7 @@ def sd_rest_scrape(addr, food):
         urls.append(rest_url)
     return [rests_UI_list,urls,web]
     # print(f"there are {len(rests_UI_list)} restaurants currently in view")
-def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=15):
+def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
     # Keep a counter to go through a limited number of restaurant.
     rest_list = []
     active_threads = 2
@@ -202,6 +202,7 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=15):
         total_thread_cnt -= thread_cnt
         for i in range(thread_cnt):
             # print(i)
+
             rest_UI = rests_UI_list[url_cnt]
             rest_url = urls[url_cnt]
             # Grab the url of the restaurant we want to check out
@@ -255,15 +256,22 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=15):
         time.sleep(0.5)
     # print(f"Successfully Went through {rest_count} stores")
     # removes restaurants with empty menus
-    for r in rest_list:
-        # print(r)
-        if len(r.catalogue) < 1:
-            rest_list.remove(r)
+    banned_urls = []
+    # removes restaurants with empty menus
+    l = len(rest_list)
+    p = 0
+    while (p < l):
+        restaurant = rest_list[p]
+        # print(restaurant)
+        if len(restaurant.catalogue) < 1:
+            rest_list.remove(restaurant)
+            banned_urls.append(restaurant.url)
+            p -= 1
+            l -= 1
         # else:
-        #     acquire_calories(r, 25)
-    # Return our results!
-    return rest_list
-
+        #     acquire_calories(restaurant, 25)
+        p += 1
+    return [rest_list, banned_urls]
 
 # if __name__ == "__main__":
 #     test_addr = "9937 157 St"

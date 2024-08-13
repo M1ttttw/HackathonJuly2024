@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify
 from flask import request as r
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, PrimaryKeyConstraint
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase
@@ -46,6 +46,19 @@ class FoodItem(Base):
 
     def __repr__(self):
         return f'<FoodItems {self.name}>'
+class Discount(Base):
+    __tablename__ = "discount"
+    disc_type = db.Column(db.Integer)
+    rest_url = db.Column(db.String(200),ForeignKey(Restaurants.url))
+    arg_food = db.Column(db.String(200),ForeignKey(FoodItem.name))
+    arg0 = db.Column(db.Integer)
+    arg1 = db.Column(db.Integer)
+    arg2 = db.Column(db.Integer)
+    disc_id = db.Column(db.Integer)
+    __table_args__ = (PrimaryKeyConstraint(rest_url, disc_id),{},)
+class Banned(Base):
+    __tablename__ ="banned_urls"
+    url = db.Column(db.String(200),primary_key = True)
 @app.route('/')
 def init():
     return render_template("DealDash.html")
@@ -63,30 +76,59 @@ def scrape():
         uqe_urls = {}
         n_uqe_urls = {}
         url_cnt = 0
+        b_url_cleaned = []
         for url in urls:
             print(url)
             cleaned_url = url.split("?")[0]
             statement = select(Restaurants).filter_by(url=cleaned_url)
-            if len(session.execute(statement).all()) == 0:
+            statement2 = select(Banned).filter_by(url=cleaned_url)
+            b_urls = session.execute(statement2).all()
+            for u in b_urls:
+                b_url_cleaned.append(u[0].url)
+            r_query = session.execute(statement).all()
+            b_query = session.execute(statement2).all()
+            if len(r_query) == 0 and len(b_query)==0:
                 uqe_urls[url] = vr[url_cnt]
-            else:
+            elif len(b_query)==0:
                 n_uqe_urls[url] = vr[url_cnt]
             url_cnt += 1
         vr = []
         for i in uqe_urls:
             vr.append(uqe_urls[i])
         if len(list(uqe_urls.keys())) > 0:
-            r_lst = menu_scraper(addr, food, vr, list(uqe_urls.keys()))
+            data = menu_scraper(addr, food, vr, list(uqe_urls.keys()))
+            r_lst = data[0]
             for res in r_lst:
+                dsc_cnt = 0
                 cleaned_url = res.url.split("?")[0]
                 rest = Restaurants(name=res.name, addr=res.addr, app=res.app, url=cleaned_url, rating=res.rating,
-                                   review_cnt=res.review_count,rest_img = res.image)
+                                   review_cnt=res.review_count,rest_img=res.image)
                 session.add(rest)
                 for food in res.catalogue:
                     fi = res.catalogue[food]
                     food_item = FoodItem(name=fi.name, desc=fi.desc, rest_url=cleaned_url, price=fi.price, image=fi.image,
                                          calories=fi.calories)
                     session.add(food_item)
+                for dsc in res.discounts:
+
+                    f_name = None
+                    args = [None,None,None]
+                    dsc_type = dsc[0]
+                    dsc_arg = dsc[1]
+                    for i in range(len(dsc_arg)):
+                        if type(dsc_arg[i]) == str:
+                            f_name = dsc_arg[i]
+                        else:
+                            args[i]=dsc_arg[i]
+                    discount = Discount(disc_type = dsc_type,rest_url = cleaned_url,arg_food = f_name,arg0=args[0],arg1=args[1],arg2=args[2],disc_id=dsc_cnt)
+                    dsc_cnt += 1
+                    session.add(discount)
+            b_lst = data[1]
+            for b in b_lst:
+                br = Banned(url=b)
+                session.add(br)
+
+
             rests_lst += r_lst
         if len(list(n_uqe_urls.keys())) > 0:
             r_lst = []
@@ -103,6 +145,23 @@ def scrape():
                     fi = FI(f.name, f.desc, f.price, f.image)
                     fi.set_cal(f.calories)
                     real_rest.add_item(fi)
+                statement = select(Discount).filter_by(rest_url=cleaned_url)
+                r_discount = session.execute(statement).all()
+                discounts = []
+                for disc in r_discount:
+                    args = []
+                    d = disc[0]
+                    if d.arg_food is not None:
+                        args.append(d.arg_food)
+                    if d.arg0 is not None:
+                        args.append(d.arg0)
+                        if d.arg1 is not None:
+                            args.append(d.arg1)
+                            if d.arg2 is not None:
+                                args.append(d.arg2)
+                    real_rest.d_json["discounts"][d.disc_type].append(args)
+                    discounts.append((d.disc_type,args))
+                real_rest.discounts = discounts
             rests_lst += r_lst
         web.close()
         session.commit()
@@ -145,7 +204,6 @@ def scrape():
 
         # Sort by restaurant cpd.
         d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
-
         print(d)
 
     # We now have a dictionary representation ready to jsonify.

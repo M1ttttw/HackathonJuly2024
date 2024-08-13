@@ -225,7 +225,7 @@ class Restaurant:
             #Buy 1 get 1 free for _ item
             if "Buy" in discount_str:
                 dsc_type = 1
-                disc = (dsc_type,[food.id])
+                disc = (dsc_type,[food.name])
                 if self.check_discount_dup(disc):
                     self.discounts.append(disc)
                     self.d_json["discounts"][dsc_type].append([food.name])
@@ -233,7 +233,7 @@ class Restaurant:
             elif "purchase" in discount_str:
                 dsc_type = 2
                 amount = clean_int(discount_str)
-                disc = (dsc_type,[amount,food.id])
+                disc = (dsc_type,[amount,food.name])
                 if self.check_discount_dup(disc):
                     self.discounts.append(disc)
                     self.d_json["discounts"][dsc_type].append([food.name, amount])
@@ -267,7 +267,7 @@ class Restaurant:
                     item_name += w
                     item_name += " "
                 item_name = item_name[:-1]
-                disc = (dsc_type,[self.catalogue[item_name].id,price])
+                disc = (dsc_type,[self.catalogue[item_name].name,price])
                 if self.check_discount_dup(disc):
                     self.discounts.append(disc)
                     self.d_json["discounts"][dsc_type].append([self.catalogue[item_name].name, price])

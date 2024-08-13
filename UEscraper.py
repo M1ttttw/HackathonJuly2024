@@ -170,7 +170,7 @@ def ue_rest_scrape(adr,food):
             urls.append(wait_and_grab(restaurant, By.TAG_NAME, "a").get_attribute("href"))
     return [valid_restaurants,urls,web]
 
-def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=15)->list[Restaurant]:
+def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=25):
     restaurant_class_lst = []
     threads = []
     total_thread_cnt = len(urls)
@@ -230,6 +230,7 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=15)->list[Restaurant]
                 except:
                     print("thread killedX2")
         time.sleep(0.5)
+    banned_urls = []
     #removes restaurants with empty menus
     l = len(restaurant_class_lst)
     p = 0
@@ -238,12 +239,13 @@ def ue_menu_scrape(adr,food,valid_restaurants,urls,timeout=15)->list[Restaurant]
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
+            banned_urls.append(restaurant.url)
             p-=1
             l-=1
         # else:
         #     acquire_calories(restaurant, 25)
         p+=1
-    return restaurant_class_lst
+    return [restaurant_class_lst,banned_urls]
 
 
 # if __name__ == "__main__":

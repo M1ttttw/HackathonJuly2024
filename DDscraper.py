@@ -37,10 +37,10 @@ class ScrapeThread(threading.Thread):
         # item_fld.send_keys(Keys.ENTER)
         #DD unloads elements outside of screen so we must scroll through the page to load elements and add to our data
         #scrolls scrl_cnt amount of times through each menu and grabs all menu items
-        scrl_cnt = 5
+        scrl_cnt = 20
         cnt = 0
         while cnt < scrl_cnt:
-            time.sleep(1)
+            time.sleep(0.5)
             #try to grab all the menu items. if none are present then that means we are at the bottom and we can break the loop
             try:
                 food_items = wait_and_grab_elms(driver,By.CSS_SELECTOR, ".sc-234bce1d-2.hAZmjs",5)
@@ -133,7 +133,7 @@ def dd_rest_scrape(adr,food):
             urls.append(url)
     return [valid_restaurants,urls,web]
     # print(urls)
-def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=15):
+def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=40):
     restaurant_class_lst = []
     #create active_threads amount of worker threads to each open a browser to scroll through and collect all the menu datas
     #WARNING: THIS IS COMPUTATIONALLY EXPENSIVE AND ONLY INCREASE ACTIVE THREADS IF YOU HAVE GOOD COMPUTER
@@ -193,12 +193,6 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=15):
         #joins the workers
         for t in threads:
             t.join(timeout)
-            if t.is_alive():
-                print("timeout")
-                try:
-                    t.kill()
-                except:
-                    print("thread killed")
     is_alive = False
     for t in threads:
         if t.is_alive():
@@ -209,14 +203,22 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=15):
             if t.is_alive():
                 is_alive = True
         time.sleep(0.5)
-    for restaurant in restaurant_class_lst:
+    banned_urls = []
+    # removes restaurants with empty menus
+    l = len(restaurant_class_lst)
+    p = 0
+    while (p < l):
+        restaurant = restaurant_class_lst[p]
         # print(restaurant)
         if len(restaurant.catalogue) < 1:
             restaurant_class_lst.remove(restaurant)
+            banned_urls.append(restaurant.url)
+            p -= 1
+            l -= 1
         # else:
         #     acquire_calories(restaurant, 25)
-
-    return restaurant_class_lst
+        p += 1
+    return [restaurant_class_lst, banned_urls]
 
 # if __name__ == "__main__":
 #     start_time = time.time()

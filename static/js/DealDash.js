@@ -140,11 +140,11 @@ function createItems(data){
         $("<p> address:"+ addr+"</p>").appendTo(`#${rest_cnt}`);
         $(`<p> app: ${app}</p>`).appendTo(`#${rest_cnt}`);
         $("<p> url: "+url+"</p>").appendTo(`#${rest_cnt}`);
-        $(`<p> delivery time: ${dt}</p>`).appendTo(`#${rest_cnt}`);
-        $(`<p> review count: ${rc}</p>`).appendTo(`#${rest_cnt}`);
-        $(`<p>delivery fee: ${df}</p>`).appendTo(`#${rest_cnt}`);
-        $(`<p>distance: ${du}</p>`).appendTo(`#${rest_cnt}`);
-        $(`<p>rating: ${rating}</p>`).appendTo(`#${rest_cnt}`);
+        if (dt>0) $(`<p> delivery time: ${dt}</p>`).appendTo(`#${rest_cnt}`);
+        if (rc>0)$(`<p> review count: ${rc}</p>`).appendTo(`#${rest_cnt}`);
+        if (df>0)$(`<p>delivery fee: ${df}</p>`).appendTo(`#${rest_cnt}`);
+        if (du>0)$(`<p>distance: ${du}</p>`).appendTo(`#${rest_cnt}`);
+        if (rating>0)$(`<p>rating: ${rating}</p>`).appendTo(`#${rest_cnt}`);
         $(`#${rest_cnt}`).append(`<div id='${rest_cnt}_menu' class='menu'></div>`);
         var food_cnt = 0;
         var max_food_cnt = 5;
