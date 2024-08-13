@@ -147,6 +147,7 @@ def scrape():
                     f = f[0]
                     fi = FI(f.name, f.desc, f.price, f.image)
                     fi.set_cal(f.calories)
+                    fi.calc_cal_per_dollar()
                     real_rest.add_item(fi)
                 statement = select(Discount).filter_by(rest_url=cleaned_url)
                 r_discount = session.execute(statement).all()
@@ -205,7 +206,7 @@ def scrape():
                 print(rest.name)
                 print(len(rest.catalogue))
                 print(rest.app)
-                rest.showcase_restaurant()
+                rest.showcase_restaurant(filter=food)
                 d["rests"].append(rest.d_json)
 
             # Sort by restaurant cpd.

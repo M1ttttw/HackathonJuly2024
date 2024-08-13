@@ -290,7 +290,7 @@ class Restaurant:
             string += i + str(self.catalogue[i]) + "\n"
         return string
 
-    def showcase_restaurant(self, show_num=5) -> None:
+    def showcase_restaurant(self, show_num=5,filter = None) -> None:
         """ Sort the catalogue by cpd, and return the first <show_num> items. Calculate and set the cpd score for the
         restaurant
 
@@ -299,17 +299,26 @@ class Restaurant:
         """
         if len(self.catalogue) == 0:
             return
-
+        filtered = {}
+        if filter is not None:
+            filter = filter.lower()
+            for i in self.catalogue:
+                if filter in i.lower() or filter in self.catalogue[i].desc.lower():
+                    filtered[i] = self.catalogue[i]
+        else:
+            filtered = self.catalogue
         # Clamp the parameter between 0 and the length of the catalogue
         if show_num <= 1:
             num = 1
-        elif show_num >= len(self.catalogue):
-            num = len(self.catalogue)
+        elif show_num >= len(filtered):
+            num = len(filtered)
         else:
             num = show_num
+        if len(filtered) == 0:
+            return
 
         # Grab all values of each key, value pair as a list
-        val_list = list(self.catalogue.values())
+        val_list = list(filtered.values())
 
         # Then we sort by cpd and grab the first show_num items.
         val_list.sort(key=lambda x: x.cpd, reverse=True)
