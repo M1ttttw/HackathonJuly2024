@@ -124,6 +124,9 @@ def scrape():
             isDD = r.form['dash']
             isUE = r.form['eats']
 
+            if addr == "r1":
+                raise ZeroDivisionError
+
             # Create a response json
             d = {"rests":[]}
 
@@ -131,12 +134,11 @@ def scrape():
             rests_lst = []
 
             if isSD == 'true':
-                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
-
+                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,2)
             if isDD == 'true':
-                rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
+                rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,2)
             if isUE == 'true':
-                rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
+                rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,2)
 
             # If the scraper doesn't have anything, just return a empty response
             if rests_lst is []:
