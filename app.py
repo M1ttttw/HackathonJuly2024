@@ -9,6 +9,7 @@ from sqlalchemy import select
 from FoodClasses import FoodItem as FI
 from FoodClasses import Restaurant
 from selenium import webdriver
+from threading import Lock
 
 from SkipScrapper import sd_rest_scrape,sd_menu_scrape
 from DDscraper import dd_rest_scrape,dd_menu_scrape
@@ -21,6 +22,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 engine = create_engine('sqlite:///db.sqlite3',connect_args={'timeout': 30})
 Session = sessionmaker(engine)
 db = SQLAlchemy(app)
+req_mutex = Lock()
+
 class Base(DeclarativeBase):
     pass
 class Restaurants(Base):
@@ -167,44 +170,55 @@ def scrape():
         session.commit()
         return rests_lst
     with Session() as session:
-        # Base.metadata.drop_all(engine)
-        Base.metadata.create_all(engine)
-        # Grab the data sent along with the request
-        addr = r.form['address']
-        food = r.form['food']
-        isSD = r.form['skip']
-        isDD = r.form['dash']
-        isUE = r.form['eats']
+        try:
+            # Acquire the lock
+            req_mutex.acquire()
 
-        # Create a response json
-        d = {"rests":[]}
+            # Base.metadata.drop_all(engine)
+            Base.metadata.create_all(engine)
+            # Grab the data sent along with the request
+            addr = r.form['address']
+            food = r.form['food']
+            isSD = r.form['skip']
+            isDD = r.form['dash']
+            isUE = r.form['eats']
 
-        # Use the corresponding scraper
-        rests_lst = []
+            # Create a response json
+            d = {"rests":[]}
 
+            # Use the corresponding scraper
+            rests_lst = []
 
-        if isSD == 'true':
-            rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
+            if isSD == 'true':
+                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
+            if isDD == 'true':
+                rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
+            if isUE == 'true':
+                rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
 
-        if isDD == 'true':
-            rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
-        if isUE == 'true':
-            rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
+            # If the scraper doesn't have anything, just return a empty response
+            if rests_lst is []:
+                req_mutex.release()
+                return jsonify({})
+            for rest in rests_lst:
+                # Add the restaurant's d_json representation.
+                print(rest.name)
+                print(len(rest.catalogue))
+                print(rest.app)
+                rest.showcase_restaurant()
+                d["rests"].append(rest.d_json)
 
-        # If the scraper doesn't have anything, just return a empty response
-        if rests_lst is []:
-            return jsonify({})
-        for rest in rests_lst:
-            # Add the restaurant's d_json representation.
-            print(rest.name)
-            print(len(rest.catalogue))
-            print(rest.app)
-            rest.showcase_restaurant()
-            d["rests"].append(rest.d_json)
+            # Sort by restaurant cpd.
+            d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
 
-        # Sort by restaurant cpd.
-        d["rests"].sort(key=lambda x: x["rest_cpd"], reverse=True)
-        print(d)
+            print(d)
+        except Exception as e:
+            # Errors may cause deadlocks between requests! So release locks before errors happen
+            req_mutex.release()
+            raise e # This is cursed, but we should at least let the client know that something happened...
+
+    # We are done, release the mutex.
+    req_mutex.release()
 
     # We now have a dictionary representation ready to jsonify.
     return jsonify(d)

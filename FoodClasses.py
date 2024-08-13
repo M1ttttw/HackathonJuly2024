@@ -290,13 +290,16 @@ class Restaurant:
             string += i + str(self.catalogue[i]) + "\n"
         return string
 
-    def showcase_restaurant(self, show_num=5) -> list[FoodItem]:
+    def showcase_restaurant(self, show_num=5) -> None:
         """ Sort the catalogue by cpd, and return the first <show_num> items. Calculate and set the cpd score for the
         restaurant
 
         :param show_num:
         :return:
         """
+        if len(self.catalogue) == 0:
+            return
+
         # Clamp the parameter between 0 and the length of the catalogue
         if show_num <= 1:
             num = 1
