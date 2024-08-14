@@ -216,7 +216,7 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=40):
             p -= 1
             l -= 1
         # else:
-        #     acquire_calories(restaurant, 25)
+        #     acquire_calories(restaurant, 500, 32768)
         p += 1
     return [restaurant_class_lst, banned_urls]
 
