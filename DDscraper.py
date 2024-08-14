@@ -62,7 +62,7 @@ class ScrapeThread(threading.Thread):
                 # desc = food_item.text.split("\n")
                 # print(desc)
                 try:
-                    image = wait_and_grab(food_item,By.TAG_NAME,"source",0.1).get_attribute("srcset").split(" ")[0]
+                    image = food_item.find_element(By.TAG_NAME,"source").get_attribute("srcset").split(" ")[0]
                 except:
                     print("image not found")
                     image = ""

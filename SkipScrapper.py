@@ -118,7 +118,7 @@ class ScrapeThread(threading.Thread):
             # Some item's don't have descriptions, so we need to take that into account
 
             try:
-                item_desc = item.find_element(By.CSS_SELECTOR,'[itemprop="description"]').text
+                item_desc = item.find_element(By.CSS_SELECTOR,'[itemprop="description"]').get_attribute("content")
             except:
                 item_desc = ""
 
