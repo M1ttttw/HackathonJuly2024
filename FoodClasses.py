@@ -290,6 +290,15 @@ class Restaurant:
             string += i + str(self.catalogue[i]) + "\n"
         return string
 
+    def normalize_rating(self) -> None:
+        """ Normalize the rating attribute to the out of 10 scale
+
+        :return:
+        """
+        if self.app == "DD" or self.app == "UE":
+            self.rating = (self.rating / 5) * 10
+            self.d_json["rating"] = self.rating
+
     def showcase_restaurant(self, show_num=5,filter = None) -> None:
         """ Sort the catalogue by cpd, and return the first <show_num> items. Calculate and set the cpd score for the
         restaurant
@@ -330,6 +339,7 @@ class Restaurant:
             dj = final_list[i].d_json
             final_list[i] = dj
 
+        self.normalize_rating()
         self.rest_cpd = best_food.cpd
         self.d_json["rest_cpd"] = self.rest_cpd
         self.d_json["catalogue"] = final_list
