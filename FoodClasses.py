@@ -296,7 +296,7 @@ class Restaurant:
         :return:
         """
         if self.app == "DD" or self.app == "UE":
-            self.rating = (self.rating / 5) * 10
+            self.rating = round((self.rating / 5) * 10, 1)
             self.d_json["rating"] = self.rating
 
     def showcase_restaurant(self, show_num=5,filter = None) -> None:
