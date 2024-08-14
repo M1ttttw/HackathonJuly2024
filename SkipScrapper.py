@@ -269,7 +269,7 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
             p -= 1
             l -= 1
         # else:
-        #     acquire_calories(restaurant, 25)
+        #     acquire_calories(restaurant, 500, 32768)
         p += 1
     return [rest_list, banned_urls]
 

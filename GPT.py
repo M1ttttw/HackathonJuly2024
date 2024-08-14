@@ -28,25 +28,40 @@ def get_cal_list(input_str: str, client) -> list:
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "calories_list": {
+                        "calories_tuples": {
                             "type": "array",
                             "items": {
-                                "type": "integer"
+                                "type": "object",
+                                "properties": {
+                                    "item_id": {
+                                        "type": "integer"
+                                    },
+                                    "item_calories": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": ["item_id", "item_calories"],
+                                "additionalProperties": False
                             },
-                            "description": "A list of calories, the ith number representing the ith item's number of calories. Should be the same length as the number of items given!"
+                            "description": "A list of tuples containing an item id, and it's corresponding calories. Should be the same length as the number of items given!"
                         }
                     },
-                    "required": ["calories_list"],
+                    "required": ["calories_tuples"],
                     "additionalProperties": False
                 }
             }
         }
     )
 
-    return json.loads(completion.choices[0].message.content)['calories_list']
+    cal_tuples = json.loads(completion.choices[0].message.content)['calories_tuples']
+    cal_lst = [0] * len(cal_tuples)
+    for i in range(len(cal_tuples)):
+        cal_lst[i] = cal_tuples[i]['item_calories']
+
+    return cal_lst
 
 
-def acquire_calories(rest: Restaurant, items_per_it: int) -> None:
+def acquire_calories(rest: Restaurant, items_per_it: int, char_lim = 4096) -> None:
     """ Calculate the calories for all the food items of the restaurant.
 
     :param rest:
@@ -67,7 +82,7 @@ def acquire_calories(rest: Restaurant, items_per_it: int) -> None:
         tst_string = input_str + new_str
 
         # Test if we are over limit...
-        if i >= items_per_it or len(tst_string) > 4096:
+        if i >= items_per_it or len(tst_string) > char_lim:
             if i >= items_per_it:
                 print(f"{i}th iteration, item overlimit...")
             else:
