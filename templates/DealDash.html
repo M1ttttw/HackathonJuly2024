@@ -60,6 +60,14 @@
             width : 200px;
             height : 180px;
         }
+        .warning{
+            color:red;
+            background-color: pink;
+            display: none;
+        }
+        .loading{
+            display: none;
+        }
     </style>
     
     <!-- Import the javascript file -->
@@ -101,6 +109,7 @@
             UberEats
             </label>
         </div>
+        <p class="warning" id="restErr">Please check at least one restaurant</p>
     </div>
 
     <!-- Create two text fields one for address, the other for food -->
@@ -108,14 +117,19 @@
         <div class="form-group">
             <input class="form-control" id="addressField" aria-describedby="emailHelp" placeholder="Address">
         </div>
-    
         <div class="form-group">
             <input class="form-control" id="foodField" aria-describedby="emailHelp" placeholder="Food">
         </div>
+        <p class="warning" id="inputErr">Please input both addresses and food</p>
+        <div class="form-group" id ="loading">
+            Num of restaurants to load:
+            <input id="loadCount" aria-describedby="emailHelp" placeholder="Food" value="18">
+        </div>
     </div>
+    <p class="warning" id="intErr">Please input a valid number</p>
     
-    <button onclick="search()">Search</button>
-
+    <button onclick="search()" id="srchBtn">Search</button>
+    <img src='https://i.gifer.com/ZKZg.gif' class='loading' id="loadingAnim">
     <div id="output">
     </div>
   </body>

@@ -183,7 +183,8 @@ def scrape():
             isSD = r.form['skip']
             isDD = r.form['dash']
             isUE = r.form['eats']
-
+            loadCnt = int(r.form["loadCnt"])
+            avg_load = loadCnt//3
             # Create a response json
             d = {"rests":[]}
 
@@ -191,11 +192,11 @@ def scrape():
             rests_lst = []
 
             if isSD == 'true':
-                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,6)
+                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,(loadCnt-avg_load*3)+avg_load)
             if isDD == 'true':
-                rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,6)
+                rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,avg_load)
             if isUE == 'true':
-                rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,6)
+                rests_lst += db_retrieve(addr,food,ue_rest_scrape,ue_menu_scrape,avg_load)
 
             # If the scraper doesn't have anything, just return a empty response
             if rests_lst is []:

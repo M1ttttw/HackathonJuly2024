@@ -1,7 +1,4 @@
 
-var inputAlert = false;
-var checkAlert = false;
-
 function search() {
     var has_btn = false;
 
@@ -18,102 +15,56 @@ function search() {
     var userAddress = addressField.value;
     var foodField = document.getElementById("foodField");
     var userFood = foodField.value;
-
+    var loadCnt = Number($("#loadCount").val());
+    $("#inputErr").hide();
+    $("#intErr").hide();
+    $("#restErr").hide();
     // Notify what the current values are
     console.log(`Adress: ${userAddress}\nFood: ${userFood}\nUsing Skip: ${skipCB.checked}\nUsing DD: ${ddCB.checked}\nUsing UE: ${ueCB.checked}`);
 
     // Check for errors
-    var error = false;
-
     // Check if there are blank values in any of the two input fields
     if (userAddress == "" || userFood == "") {
         // Debug to alert that this condition works
         console.log("Error, cannot start without a value for address or food!")
-
-        if (inputAlert == false) {
-            // Notify that we are creating the new text element
-            console.log("Creating alert text...");
-
-            // Create a new text that can be formatted to alert the user that they haven't texted anything in!
-            var alertString = "Please put a value into food AND address!";
-            var alertNode = document.createTextNode(alertString);
-            var paraElem = document.createElement("p");
-            paraElem.id = "inputAlertText";
-            paraElem.appendChild(alertNode);
-
-            // Set the color to red and bold
-            paraElem.style = "color:red;font-weight:bold;";
-
-            // Grab the inputFieldSection element and add this new text to it
-            var inpFldSection = document.getElementById("inputFieldSection");
-            inpFldSection.appendChild(paraElem);
-            
-            inputAlert = true;
-        }
-        error = true;
-    } else {
-        // Delete the alert alert texts if we previously created one.
-        var inputAlertElem = document.getElementById("inputAlertText");
-        if (inputAlertElem != null) {
-            inputAlert = false;
-            inputAlertElem.remove();
-        }
+        $("#inputErr").show();
+        return;
+    
+    } else if (isNaN(loadCnt)){
+        $("#intErr").show();
+        return;
     }
 
     // Make sure atleast one checkbox is clicked.
     if (skipCB.checked == false && ddCB.checked == false && ueCB.checked == false) {
         console.log("Error, cannot search without a delivery service...");
-
-        if (checkAlert == false) {
-            // Create a new text that can be formatted to alert the user that they haven't texted anything in!
-            var alertString = "Please check atleast one delivery service before you search!";
-            var alertNode = document.createTextNode(alertString);
-            var paraElem = document.createElement("p");
-            paraElem.id = "checkAlertText";
-            paraElem.appendChild(alertNode);
-            
-            // Set the color to red and bold
-            paraElem.style = "color:red;font-weight:bold;";
-            
-            // Grab the inputFieldSection element and add this new text to it
-            var checkFldSection = document.getElementById("checkboxSection");
-            checkFldSection.appendChild(paraElem);
-                        
-            checkAlert = true;
-        }
-        error = true;
-    } else {
-        // Delete the alert alert texts if we previously created one.
-        var checkAlertElem = document.getElementById("checkAlertText");
-        if (checkAlertElem != null) {
-            checkAlert = false;
-            checkAlertElem.remove();
-        }
+        $("#restErr").show();
+        return;
     }
 
-    if (error) return;
-
     // Remove/Add UI elements when performing the search
-    $("button").remove();
-
+    $("#srchBtn").hide();
+    $("#loadingAnim").show();
     // Use a ajax request, and pass in our check box values + address and food.
     $.ajax({
         type: 'POST',
         url: "/scrape",
-        data: { address: userAddress, food: userFood, skip: skipCB.checked, dash: ddCB.checked, eats: ueCB.checked },
+        data: { address: userAddress, food: userFood, skip: skipCB.checked, dash: ddCB.checked, eats: ueCB.checked ,loadCnt},
         success: function(data) {
             // Create UI elements and display them based off the data we get back
             $( "#output" ).remove();
             $("body").append("<div id='output'></div>");
             createItems(data);
             if (!has_btn){
-                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+                $("#loadingAnim").hide();
+                $("#srchBtn").show();
             }
         },
         error: function(error) {
             console.log(`Request to server failed!`);
             if (!has_btn){
-                $("<button onclick='search()'>Search</button>").insertBefore( "#output" );
+                $("#loadingAnim").hide();
+                $("#srchBtn").show();
             }
         }
     });

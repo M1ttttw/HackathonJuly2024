@@ -31,8 +31,11 @@ class ScrapeThread(threading.Thread):
         rest_driver.get(f"{self.url}")
 
         # We also need to grab the text that describes the restaurant's address
-        rest_addr = wait_and_grab(rest_driver, By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
+        try:
+            rest_addr = wait_and_grab(rest_driver, By.XPATH, '//*[@id="root"]/div/main/div/div/div/div[1]/div/div[2]/'
                                                         'div/div/div/div[2]/div[1]/span/span[2]/p').text
+        except:
+            rest_addr = ""
         self.restaurant.add_addr(rest_addr)
         # Convenience store pages are very different, take advantage of this!
         try:
