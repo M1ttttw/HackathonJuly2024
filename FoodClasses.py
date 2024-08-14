@@ -316,6 +316,11 @@ class Restaurant:
                     filtered[i] = self.catalogue[i]
         else:
             filtered = self.catalogue
+        for i in filtered:
+            for d in self.discounts:
+                if d[0] == 1:
+                    if i in d[1]:
+                        filtered[i].set_cal((filtered[i].calories+1)*2)
         # Clamp the parameter between 0 and the length of the catalogue
         if show_num <= 1:
             num = 1
