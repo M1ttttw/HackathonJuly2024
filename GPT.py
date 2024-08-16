@@ -68,9 +68,13 @@ def acquire_calories(rest: Restaurant, items_per_it: int, char_lim = 4096) -> No
     :param items_per_it:
     :return:
     """
+    f = open("token.txt", "r")
+
+    k = f.read()
+
     # Start a new client and pass on our input_str
     client = OpenAI(
-        api_key="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")
+        api_key=k)
 
     # Build an input string to pass on as input for ChatGPT. and build a results list of calories
     input_str = ""

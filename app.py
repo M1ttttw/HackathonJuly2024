@@ -203,7 +203,10 @@ def scrape():
             rests_lst = []
 
             if isSD == 'true':
-                rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,(loadCnt-avg_load*3)+avg_load)
+                try:
+                    rests_lst += db_retrieve(addr,food,sd_rest_scrape,sd_menu_scrape,(loadCnt-avg_load*3)+avg_load)
+                except:
+                    pass
             if isDD == 'true':
                 rests_lst += db_retrieve(addr,food,dd_rest_scrape,dd_menu_scrape,avg_load)
             if isUE == 'true':
