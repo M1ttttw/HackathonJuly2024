@@ -188,6 +188,8 @@ def sd_rest_scrape(addr, food):
         urls.append(rest_url)
     return [rests_UI_list,urls,web]
     # print(f"there are {len(rests_UI_list)} restaurants currently in view")
+
+
 def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
     # Keep a counter to go through a limited number of restaurant.
     rest_list = []
@@ -214,8 +216,13 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
 
             # We need to know the restaurant's information, thus, we grab the restaurant's info
             rest_info = rest_UI.text.split("\n")
-            rest_name, rest_deliv_time_str, rest_deliv_fee_str, rest_rate = (rest_info[0], rest_info[1], rest_info[2],
-                                                                             float(rest_info[3]))
+            print(rest_info)
+            rest_name, rest_deliv_time_str, rest_deliv_fee_str = (rest_info[0], rest_info[1], rest_info[2])
+
+            if rest_info[3] == "New":
+                rest_rate = 0
+            else:
+                rest_rate = float(rest_info[3])
 
             # Cut out the fat in rest_deliv_time_str
             rest_deliv_time_split = rest_deliv_time_str.split(" ")
@@ -272,7 +279,7 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
             p -= 1
             l -= 1
         # else:
-        #     acquire_calories(restaurant, 500, 32768)
+        #     acquire_calories(restaurant, 100, 32768)
         p += 1
     return [rest_list, banned_urls]
 
