@@ -278,8 +278,8 @@ def sd_menu_scrape(addr,food,rests_UI_list,urls,timeout=25):
             banned_urls.append(restaurant.url)
             p -= 1
             l -= 1
-        # else:
-        #     acquire_calories(restaurant, 100, 32768)
+        else:
+            acquire_calories(restaurant, 100, 32768)
         p += 1
     return [rest_list, banned_urls]
 
