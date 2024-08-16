@@ -179,7 +179,7 @@ def sd_rest_scrape(addr, food):
         wait_for_elem(web, By.XPATH, '//*[@id="root"]/div/main/div/div/div/div/ul/li[1]/div/div[1]/div/a')
     except:
         # If we time out, we return nothing as there may be a chance that no restaurants showed up...
-        return []
+        return [[], [], web]
     rests_parent = wait_and_grab(web, By.XPATH, "/html/body/div[2]/div/main/div/div/div/div/ul")
     rests_UI_list = rests_parent.find_elements(By.XPATH, "*")
     urls = []
