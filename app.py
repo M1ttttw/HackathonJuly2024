@@ -26,6 +26,7 @@ req_mutex = Lock()
 
 class Base(DeclarativeBase):
     pass
+#definint our db tables
 class Restaurants(Base):
     __tablename__ = "restaurants"
     name = db.Column(db.String(100), nullable=False)
@@ -68,8 +69,10 @@ def init():
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
+    #function that calls our scrapers and returns the scraped infos
     def db_retrieve(addr,food,rest_scraper,menu_scraper,limit):
         rests_lst = []
+        #rest scraper scrapes the avaliable restaurants nearby
         result = rest_scraper(addr, food)
         urls = result[1]
         vr = result[0]
@@ -80,16 +83,20 @@ def scrape():
         n_uqe_urls = {}
         url_cnt = 0
         b_url_cleaned = []
+        #go through each url and scrape if it is not in our database
         for url in urls:
             print(url)
+            #removes unessesary php arguments
             cleaned_url = url.split("?")[0]
             statement = select(Restaurants).filter_by(url=cleaned_url)
             statement2 = select(Banned).filter_by(url=cleaned_url)
+            #b_urls are banned stores that have a different layout (liquor stores/convinience stores)
             b_urls = session.execute(statement2).all()
             for u in b_urls:
                 b_url_cleaned.append(u[0].url)
             r_query = session.execute(statement).all()
             b_query = session.execute(statement2).all()
+            
             if len(r_query) == 0 and len(b_query)==0:
                 uqe_urls[url] = vr[url_cnt]
             elif len(b_query)==0:
