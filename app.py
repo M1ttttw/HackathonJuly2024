@@ -138,9 +138,13 @@ def scrape():
             #if there are any timeouts then we add it to the banned urls
             b_lst = data[1]
             for b in b_lst:
-                br = Banned(url=b)
-                session.add(br)
+                bq_statement = select(Banned).filter_by(url=cleaned_url)
+                b_query = session.execute(bq_statement)
 
+                # Add this to the banned database only if it hasn't existed prior
+                if len(b_query) == 0:
+                    br = Banned(url=b)
+                    session.add(br)
 
             rests_lst += r_lst
         #for all the none unique restaurants (resturants that exists in our db) we pull it
