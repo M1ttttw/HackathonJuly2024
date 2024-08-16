@@ -138,8 +138,8 @@ def scrape():
             #if there are any timeouts then we add it to the banned urls
             b_lst = data[1]
             for b in b_lst:
-                bq_statement = select(Banned).filter_by(url=cleaned_url)
-                b_query = session.execute(bq_statement)
+                bq_statement = select(Banned).filter_by(url=b)
+                b_query = session.execute(bq_statement).all()
 
                 # Add this to the banned database only if it hasn't existed prior
                 if len(b_query) == 0:
