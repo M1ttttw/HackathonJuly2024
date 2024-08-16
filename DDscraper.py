@@ -98,7 +98,7 @@ def dd_rest_scrape(adr,food):
         restaurants_lst = wait_and_grab_elms(web,By.CSS_SELECTOR,clean_id)
     except:
         print("no id")
-        return
+        return [[], [], web]
     #parse through all the items to get rid of any closed, duplicate or none restaurant elements
     cnt = 0
     open_stores = []
