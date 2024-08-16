@@ -98,7 +98,7 @@ def dd_rest_scrape(adr,food):
         restaurants_lst = wait_and_grab_elms(web,By.CSS_SELECTOR,clean_id)
     except:
         print("no id")
-        return
+        return [[], [], web]
     #parse through all the items to get rid of any closed, duplicate or none restaurant elements
     cnt = 0
     open_stores = []
@@ -215,8 +215,8 @@ def dd_menu_scrape(adr,food,valid_restaurants,urls,timeout=40):
             banned_urls.append(restaurant.url)
             p -= 1
             l -= 1
-        # else:
-        #     acquire_calories(restaurant, 500, 32768)
+        else:
+            acquire_calories(restaurant, 100, 32768)
         p += 1
     return [restaurant_class_lst, banned_urls]
 
