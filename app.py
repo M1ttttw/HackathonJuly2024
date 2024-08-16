@@ -96,15 +96,17 @@ def scrape():
                 b_url_cleaned.append(u[0].url)
             r_query = session.execute(statement).all()
             b_query = session.execute(statement2).all()
-            
+            #if restaurant is not banned and not inside our db then it is unqiue and we must scrape it
             if len(r_query) == 0 and len(b_query)==0:
                 uqe_urls[url] = vr[url_cnt]
+            #else if it is not banned but inside out db then we pull it
             elif len(b_query)==0:
                 n_uqe_urls[url] = vr[url_cnt]
             url_cnt += 1
         vr = []
         for i in uqe_urls:
             vr.append(uqe_urls[i])
+        #for all unique restaurants (restaurants not inside our db) we scrape it and we store it in our db
         if len(list(uqe_urls.keys())) > 0:
             data = menu_scraper(addr, food, vr, list(uqe_urls.keys()))
             r_lst = data[0]
@@ -133,6 +135,7 @@ def scrape():
                     discount = Discount(disc_type = dsc_type,rest_url = cleaned_url,arg_food = f_name,arg0=args[0],arg1=args[1],arg2=args[2],disc_id=dsc_cnt)
                     dsc_cnt += 1
                     session.add(discount)
+            #if there are any timeouts then we add it to the banned urls
             b_lst = data[1]
             for b in b_lst:
                 br = Banned(url=b)
@@ -140,6 +143,7 @@ def scrape():
 
 
             rests_lst += r_lst
+        #for all the none unique restaurants (resturants that exists in our db) we pull it
         if len(list(n_uqe_urls.keys())) > 0:
             r_lst = []
             for url in list(n_uqe_urls.keys()):

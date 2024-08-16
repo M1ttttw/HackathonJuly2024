@@ -74,6 +74,7 @@ function createItems(data){
     has_btn = true;
     console.log(data);
     var rest_cnt = 0;
+    // for all entries in our restaurants json we create an element for each one
     for (let rest_name in data.rests) {
 
         let rest = data.rests[rest_name];
@@ -90,9 +91,11 @@ function createItems(data){
         let rating = rest["rating"];
         let cat = rest["catalogue"];
         let discounts = rest["discounts"];
+        //add restaurant container
         var descs = $("#output").append("<div class='restaurant' id="+rest_cnt.toString()+"></div>");
         console.log(name);
         if (image != "") $("<img src='"+image+"'>").appendTo(`#${rest_cnt}`);
+        //add attributes of restaurant
         $("<p> name:"+ name +"</p>").appendTo(`#${rest_cnt}`);
         $("<p> address:"+ addr+"</p>").appendTo(`#${rest_cnt}`);
         $(`<p> app: ${app}</p>`).appendTo(`#${rest_cnt}`);
@@ -102,9 +105,11 @@ function createItems(data){
         if (df>0)$(`<p>delivery fee: ${df}</p>`).appendTo(`#${rest_cnt}`);
         if (du>0)$(`<p>distance: ${du}</p>`).appendTo(`#${rest_cnt}`);
         if (rating>0)$(`<p>rating: ${rating}</p>`).appendTo(`#${rest_cnt}`);
+        // create the dropdown menu for the food items
         $(`#${rest_cnt}`).append(`<div id='${rest_cnt}_menu' class='menu'></div>`);
         var food_cnt = 0;
         var max_food_cnt = 5;
+        //add the food items
         for (let food_name in cat) {
             let food_item = cat[food_name];
             let f_name = food_item["name"];
@@ -124,13 +129,16 @@ function createItems(data){
                 break;
             }
         }
+        //create the discount container
         $(`#${rest_cnt}`).append(`<ul id='${rest_cnt}_discount'></ul>`);
+        //add discounts to the container
         for (let d_type in discounts) {
             var discount_cnt = 0;
             disc_args = discounts[d_type];
             for (discount_arg of disc_args) {
                 var discount_str = "";
                 console.log(disc_args);
+                //parses json response to generate discount string
                 if (app === "SkipTheDishes"){
                     if (d_type == 1){
                         discount_str =  "Free "+ discount_arg[0] + ` on purchases ${discount_arg[1]}$ +`;
